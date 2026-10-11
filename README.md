@@ -1,4 +1,4 @@
-# litex-doc
+# litex-resources
 
 This directory collects reference materials related to Litex, helping human authors and AI understand, write, and maintain Litex code more effectively.
 
