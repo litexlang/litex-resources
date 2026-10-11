@@ -1,0 +1,17 @@
+# Node: chain (adjacent order)
+# Run: litex -f examples/proof_nodes/chain/adjacent_order.lit
+
+1 < 2 < 3
+
+# Instantiate a stored chain from consistent order premises.
+forall x, y, z R:
+    x < y
+    y < z
+    =>:
+        x < y < z
+
+forall a, b, c R:
+    a < b
+    b < c
+    =>:
+        a < b < c

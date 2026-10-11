@@ -1,0 +1,10 @@
+# knowledge_base / def_abstract_prop: marked
+# Run: litex -f examples/knowledge_base/def_abstract_prop/marked.lit
+# Stored: marked.def_abstract_prop.json
+
+abstract_prop marked(x)
+
+forall x R:
+    $marked(x)
+    =>:
+        $marked(x)

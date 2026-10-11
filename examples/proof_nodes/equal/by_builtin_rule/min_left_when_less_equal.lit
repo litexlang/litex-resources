@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.MinLeftWhenLessEqual
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/min_left_when_less_equal.lit
+
+forall a R, b R:
+    a <= b
+    =>:
+        min(a, b) = a

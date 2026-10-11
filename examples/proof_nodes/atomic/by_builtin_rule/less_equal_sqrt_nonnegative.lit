@@ -1,0 +1,7 @@
+# Node: atomic.ByBuiltinRule.LessEqual.SqrtNonnegative
+# Run: litex -f examples/proof_nodes/atomic/by_builtin_rule/less_equal_sqrt_nonnegative.lit
+
+forall x R:
+    0 <= x
+    =>:
+        0 <= sqrt(x)

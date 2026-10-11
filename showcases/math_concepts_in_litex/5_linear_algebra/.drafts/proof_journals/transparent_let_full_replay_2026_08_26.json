@@ -1,0 +1,297 @@
+{
+  "schema_version": 1,
+  "section": "showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+  "session_command": [
+    "target/release/litex",
+    "-compact",
+    "-session",
+    "-before",
+    "showcases/math_concepts_in_litex/5_linear_algebra/main.lit"
+  ],
+  "timeout_seconds": 180,
+  "skipped_source_lines": [
+
+  ],
+  "started_at": "2026-08-26T09:31:04+08:00",
+  "completed": false,
+  "blocks": [
+    {
+      "id": "main_9",
+      "source_line": 9,
+      "header": "struct Field<K nonempty_set>:",
+      "candidate_code": "struct Field<K nonempty_set>:\n    zero K\n    one K\n    add fn(x, y K) K\n    neg fn(x K) K\n    mul fn(x, y K) K\n    inv fn(x K) K\n    <=>:\n        zero != one\n        forall x, y, z K:\n            add(add(x, y), z) = add(x, add(y, z))\n            mul(mul(x, y), z) = mul(x, mul(y, z))\n            mul(x, add(y, z)) = add(mul(x, y), mul(x, z))\n        forall x, y K:\n            add(x, y) = add(y, x)\n            mul(x, y) = mul(y, x)\n        forall x K:\n            add(zero, x) = x\n            add(x, neg(x)) = zero\n            mul(one, x) = x\n        forall x K:\n            x != zero\n            =>:\n                mul(x, inv(x)) = one\n\n# A vector space over one fixed scalar field stores its vector operations and\n# compatibility laws as one first-class object.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_9",
+        "ok": true,
+        "seconds": 0.011
+      }
+    },
+    {
+      "id": "main_36",
+      "source_line": 36,
+      "header": "struct VectorSpace<K nonempty_set, field &Field<K>, V nonempty_set>:",
+      "candidate_code": "struct VectorSpace<K nonempty_set, field &Field<K>, V nonempty_set>:\n    zero V\n    add fn(x, y V) V\n    smul fn(a K, x V) V\n    <=>:\n        forall x, y, z V:\n            add(add(x, y), z) = add(x, add(y, z))\n        forall x, y V:\n            add(x, y) = add(y, x)\n        forall x V:\n            add(zero, x) = x\n            exist y V st {add(x, y) = zero}\n        forall a, b K, x V:\n            smul(field.mul(a, b), x) = smul(a, smul(b, x))\n            smul(field.add(a, b), x) = add(smul(a, x), smul(b, x))\n        forall a K, x, y V:\n            smul(a, add(x, y)) = add(smul(a, x), smul(a, y))\n        forall x V:\n            smul(field.one, x) = x\n\n# Settings name recurring theorem contexts. The mathematical data and laws\n# remain owned by the declaration-typed struct values above.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_36",
+        "ok": true,
+        "seconds": 0.029
+      }
+    },
+    {
+      "id": "main_58",
+      "source_line": 58,
+      "header": "setting FieldSetting(K nonempty_set, field &Field<K>)",
+      "candidate_code": "setting FieldSetting(K nonempty_set, field &Field<K>)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_58",
+        "ok": true,
+        "seconds": 0.001
+      }
+    },
+    {
+      "id": "main_60",
+      "source_line": 60,
+      "header": "setting VectorSpaceSetting([FieldSetting(K, field)], V nonempty_set, space &VectorSpace<K, field, V>)",
+      "candidate_code": "setting VectorSpaceSetting([FieldSetting(K, field)], V nonempty_set, space &VectorSpace<K, field, V>)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_60",
+        "ok": true,
+        "seconds": 0.0
+      }
+    },
+    {
+      "id": "main_62",
+      "source_line": 62,
+      "header": "setting VectorSpacesSetting([FieldSetting(K, field)], V, W nonempty_set, source &VectorSpace<K, field, V>, target &VectorSpace<K, field, W>)",
+      "candidate_code": "setting VectorSpacesSetting([FieldSetting(K, field)], V, W nonempty_set, source &VectorSpace<K, field, V>, target &VectorSpace<K, field, W>)\n\n# Any element acting as a left additive identity must equal the stored zero.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_62",
+        "ok": true,
+        "seconds": 0.0
+      }
+    },
+    {
+      "id": "main_65",
+      "source_line": 65,
+      "header": "thm additive_identity_unique:",
+      "candidate_code": "thm additive_identity_unique:\n    ? forall [VectorSpaceSetting], identity_candidate V:\n        forall x V:\n            space.add(identity_candidate, x) = x\n        =>:\n            identity_candidate = space.zero\n    space.add(identity_candidate, space.zero) = space.zero\n    space.add(identity_candidate, space.zero) = space.add(space.zero, identity_candidate) = identity_candidate\n\n# Existence comes from the vector-space law; associativity and commutativity\n# show that any two additive inverses coincide.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_65",
+        "ok": true,
+        "seconds": 0.348
+      }
+    },
+    {
+      "id": "main_76",
+      "source_line": 76,
+      "header": "thm additive_inverse_exists_unique:",
+      "candidate_code": "thm additive_inverse_exists_unique:\n    ? forall [VectorSpaceSetting], x V:\n        exist! y V st {space.add(x, y) = space.zero}\n    obtain y from exist y V st {space.add(x, y) = space.zero}\n    forall y1, y2 V:\n        space.add(x, y1) = space.zero\n        space.add(x, y2) = space.zero\n        =>:\n            space.add(y2, x) = space.add(x, y2) = space.zero\n            y1 = space.add(space.zero, y1) = space.add(space.add(y2, x), y1) = space.add(y2, space.add(x, y1)) = space.add(y2, space.zero) = space.add(space.zero, y2) = y2\n    witness exist! y2 V st {space.add(x, y2) = space.zero} from y\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_76",
+        "ok": true,
+        "seconds": 0.93
+      }
+    },
+    {
+      "id": "main_88",
+      "source_line": 88,
+      "header": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:",
+      "candidate_code": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:\n    have fn vector_neg by exist!:\n        ? forall x V:\n            exist! y V st {space.add(x, y) = space.zero}\n        by thm additive_inverse_exists_unique(K, field, V, space, x)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_88",
+        "ok": true,
+        "seconds": 0.229
+      }
+    },
+    {
+      "id": "main_94",
+      "source_line": 94,
+      "header": "thm vector_neg_spec:",
+      "candidate_code": "thm vector_neg_spec:\n    ? forall [VectorSpaceSetting], x V:\n        space.add(x, \\vector_neg<K, field, V, space>(x)) = space.zero\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_94",
+        "ok": true,
+        "seconds": 0.084
+      }
+    },
+    {
+      "id": "main_98",
+      "source_line": 98,
+      "header": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:",
+      "candidate_code": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:\n    have fn vector_sub(u, v V) V = space.add(u, \\vector_neg<K, field, V, space>(v))\n\n# Add the inverse of the common left operand to both sides.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_98",
+        "ok": true,
+        "seconds": 0.078
+      }
+    },
+    {
+      "id": "main_102",
+      "source_line": 102,
+      "header": "thm add_left_cancel:",
+      "candidate_code": "thm add_left_cancel:\n    ? forall [VectorSpaceSetting], x, y, z V:\n        space.add(x, y) = space.add(x, z)\n        =>:\n            y = z\n    let neg = \\vector_neg<K, field, V, space>\n    by thm vector_neg_spec(K, field, V, space, x) => space.add(x, neg(x)) = space.zero\n    space.add(neg(x), x) = space.add(x, neg(x)) = space.zero\n    space.add(neg(x), space.add(x, y)) = space.add(space.add(neg(x), x), y)\n    space.add(space.add(neg(x), x), y) = space.add(space.zero, y) = y\n    space.add(neg(x), space.add(x, z)) = space.add(space.add(neg(x), x), z)\n    space.add(space.add(neg(x), x), z) = space.add(space.zero, z) = z\n    y = space.add(neg(x), space.add(x, y)) = space.add(neg(x), space.add(x, z)) = z\n\n# Compare 0*x with 0*x + 0*x and cancel to derive the zero-scalar law.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_102",
+        "ok": true,
+        "seconds": 2.801
+      }
+    },
+    {
+      "id": "main_117",
+      "source_line": 117,
+      "header": "thm vector_space_scalar_constants_in_carrier:",
+      "candidate_code": "thm vector_space_scalar_constants_in_carrier:\n    ? forall [VectorSpaceSetting]:\n        field.zero $in K\n        field.one $in K\n    field.zero $in K\n    field.one $in K\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_117",
+        "ok": true,
+        "seconds": 0.075
+      }
+    },
+    {
+      "id": "main_124",
+      "source_line": 124,
+      "header": "thm zero_scalar_times_vector:",
+      "candidate_code": "thm zero_scalar_times_vector:\n    ? forall [VectorSpaceSetting], x V:\n        space.smul(field.zero, x) = space.zero\n    have p V = space.smul(field.zero, x)\n    field.add(field.zero, field.zero) = field.zero\n    space.smul(field.add(field.zero, field.zero), x) = space.add(space.smul(field.zero, x), space.smul(field.zero, x))\n    space.smul(field.add(field.zero, field.zero), x) = space.smul(field.zero, x) = p\n    space.add(space.smul(field.zero, x), space.smul(field.zero, x)) = space.add(p, p)\n    p = space.add(p, p)\n    space.add(p, space.zero) = space.add(space.zero, p) = p\n    space.add(p, p) = space.add(p, space.zero)\n    by thm add_left_cancel(K, field, V, space, p, p, space.zero)\n    p = space.zero\n\n# Distribute a scalar over 0+0, then cancel the repeated term.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_124",
+        "ok": true,
+        "seconds": 1.644
+      }
+    },
+    {
+      "id": "main_139",
+      "source_line": 139,
+      "header": "thm scalar_times_zero_vector:",
+      "candidate_code": "thm scalar_times_zero_vector:\n    ? forall [VectorSpaceSetting], a K:\n        space.smul(a, space.zero) = space.zero\n    have q V = space.smul(a, space.zero)\n    space.add(space.zero, space.zero) = space.zero\n    space.smul(a, space.add(space.zero, space.zero)) = space.smul(a, space.zero) = q\n    space.smul(a, space.add(space.zero, space.zero)) = space.add(space.smul(a, space.zero), space.smul(a, space.zero)) = space.add(q, q)\n    q = space.add(q, q)\n    space.add(q, space.zero) = space.add(space.zero, q) = q\n    space.add(q, q) = space.add(q, space.zero)\n    by thm add_left_cancel(K, field, V, space, q, q, space.zero) => q = space.zero\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_139",
+        "ok": true,
+        "seconds": 1.337
+      }
+    },
+    {
+      "id": "main_151",
+      "source_line": 151,
+      "header": "prop is_linear_map([VectorSpacesSetting], T fn(v V) W):",
+      "candidate_code": "prop is_linear_map([VectorSpacesSetting], T fn(v V) W):\n    forall u, v V:\n        T(source.add(u, v)) = target.add(T(u), T(v))\n    forall a K, v V:\n        T(source.smul(a, v)) = target.smul(a, T(v))\n\n# A linear-map setting extends the two-space context with linearity of T.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_151",
+        "ok": true,
+        "seconds": 0.034
+      }
+    },
+    {
+      "id": "main_158",
+      "source_line": 158,
+      "header": "setting LinearMapSetting([VectorSpacesSetting], T fn(v V) W):",
+      "candidate_code": "setting LinearMapSetting([VectorSpacesSetting], T fn(v V) W):\n    $is_linear_map(K, field, V, W, source, target, T)\n\n# A subspace contains zero and is closed under vector addition and scalar action.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_158",
+        "ok": true,
+        "seconds": 0.001
+      }
+    },
+    {
+      "id": "main_162",
+      "source_line": 162,
+      "header": "prop is_subspace([VectorSpaceSetting], U power_set(V)):",
+      "candidate_code": "prop is_subspace([VectorSpaceSetting], U power_set(V)):\n    space.zero $in U\n    forall u, v V:\n        u $in U\n        v $in U\n        =>:\n            space.add(u, v) $in U\n    forall a K, v V:\n        v $in U\n        =>:\n            space.smul(a, v) $in U\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_162",
+        "ok": true,
+        "seconds": 0.02
+      }
+    },
+    {
+      "id": "main_174",
+      "source_line": 174,
+      "header": "template<V, W set, zeroW W, T fn(v V) W>:",
+      "candidate_code": "template<V, W set, zeroW W, T fn(v V) W>:\n    have linear_kernel power_set(V) = {x V: T(x) = zeroW}\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_174",
+        "ok": true,
+        "seconds": 0.003
+      }
+    },
+    {
+      "id": "main_177",
+      "source_line": 177,
+      "header": "template<V set, zeroV V>:",
+      "candidate_code": "template<V set, zeroV V>:\n    have zero_subspace power_set(V) = {zeroV}\n\n# Additivity forces the image of zero to be the target zero vector.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_177",
+        "ok": true,
+        "seconds": 0.002
+      }
+    },
+    {
+      "id": "main_181",
+      "source_line": 181,
+      "header": "thm linear_map_sends_zero_to_zero:",
+      "candidate_code": "thm linear_map_sends_zero_to_zero:\n    ? forall [LinearMapSetting]:\n        T(source.zero) = target.zero\n    source.add(source.zero, source.zero) = source.zero\n    T(source.add(source.zero, source.zero)) = target.add(T(source.zero), T(source.zero))\n    target.add(T(source.zero), T(source.zero)) = T(source.add(source.zero, source.zero)) = T(source.zero)\n    target.add(T(source.zero), target.zero) = target.add(target.zero, T(source.zero)) = T(source.zero)\n    target.add(T(source.zero), T(source.zero)) = target.add(T(source.zero), target.zero)\n    by thm add_left_cancel(K, field, W, target, T(source.zero), T(source.zero), target.zero) => T(source.zero) = target.zero\n\n# Apply the map to x + (-x) and use uniqueness of the target inverse.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_181",
+        "ok": true,
+        "seconds": 1.717
+      }
+    },
+    {
+      "id": "main_192",
+      "source_line": 192,
+      "header": "thm linear_map_sends_neg_to_neg:",
+      "candidate_code": "thm linear_map_sends_neg_to_neg:\n    ? forall [LinearMapSetting], x V:\n        T(\\vector_neg<K, field, V, source>(x)) = \\vector_neg<K, field, W, target>(T(x))\n    let source_neg = \\vector_neg<K, field, V, source>\n    let target_neg = \\vector_neg<K, field, W, target>\n    by thm vector_neg_spec(K, field, V, source, x) => source.add(x, source_neg(x)) = source.zero\n    by thm vector_neg_spec(K, field, W, target, T(x)) => target.add(T(x), target_neg(T(x))) = target.zero\n    by thm linear_map_sends_zero_to_zero(K, field, V, W, source, target, T) => T(source.zero) = target.zero\n    T(source.add(x, source_neg(x))) = target.add(T(x), T(source_neg(x)))\n    T(source.add(x, source_neg(x))) = T(source.zero) = target.zero\n    target.add(T(x), T(source_neg(x))) = target.zero\n    target.add(T(x), target_neg(T(x))) = target.zero\n    target.add(T(x), T(source_neg(x))) = target.add(T(x), target_neg(T(x)))\n    by thm add_left_cancel(K, field, W, target, T(x), T(source_neg(x)), target_neg(T(x))) => T(source_neg(x)) = target_neg(T(x))\n\n# Verify zero membership and closure under addition and scalar multiplication\n# for the native set-builder kernel.\n",
+      "status": "failed",
+      "session_result": {
+        "event": "block",
+        "id": "main_192",
+        "ok": false,
+        "seconds": 2.917,
+        "trace": "{\n  \"error_type\": \"ExecStmtError\",\n  \"result\": \"error\",\n  \"line\": 1,\n  \"source_kind\": \"file\",\n  \"source\": \"main\",\n  \"path\": \"/Users/shenjiachen/主要文件夹/GeekGems/litex/golitex/showcases/math_concepts_in_litex/5_linear_algebra/main.lit\",\n  \"message\": \"thm linear_map_sends_neg_to_neg:\\n    ? forall K nonempty_set, field &main::Field<K>, V, W nonempty_set, source &main::VectorSpace<K, field, V>, target &main::VectorSpace<K, field, W>, T fn (v V) W, x V:\\n        $main::is_linear_map(K, field, V, W, source, target, T)\\n        =>:\\n            T(\\\\main::vector_neg<K, field, V, source>(x)) = \\\\main::vector_neg<K, field, W, target>(T(x))\\n    let source_neg = \\\\main::vector_neg<K, field, V, source>\\n    let target_neg = \\\\main::vector_neg<K, field, W, target>\\n    by thm main::vector_neg_spec(K, field, V, source, x) => source.add(x, main::source_neg(x)) = source.zero\\n    by thm main::vector_neg_spec(K, field, W, target, T(x)) => target.add(T(x), main::target_neg(T(x))) = target.zero\\n    by thm main::linear_map_sends_zero_to_zero(K, field, V, W, source, target, T) => T(source.zero) = target.zero\\n    T(source.add(x, main::source_neg(x))) = target.add(T(x), T(main::source_neg(x)))\\n    T(source.add(x, main::source_neg(x))) = T(source.zero) = target.zero\\n    target.add(T(x), T(main::source_neg(x))) = target.zero\\n    target.add(T(x), main::target_neg(T(x))) = target.zero\\n    target.add(T(x), T(main::source_neg(x))) = target.add(T(x), main::target_neg(T(x)))\\n    by thm main::add_left_cancel(K, field, W, target, T(x), T(main::source_neg(x)), main::target_neg(T(x))) => T(main::source_neg(x)) = main::target_neg(T(x))\",\n  \"type\": \"try block\",\n  \"statement\": \"try:\\n    thm linear_map_sends_neg_to_neg:\\n        ? forall K nonempty_set, field &main::Field<K>, V, W nonempty_set, source &main::VectorSpace<K, field, V>, target &main::VectorSpace<K, field, W>, T fn (v V) W, x V:\\n            $main::is_linear_map(K, field, V, W, source, target, T)\\n            =>:\\n                T(\\\\main::vector_neg<K, field, V, source>(x)) = \\\\main::vector_neg<K, field, W, target>(T(x))\\n        let source_neg = \\\\main::vector_neg<K, field, V, source>\\n        let target_neg = \\\\main::vector_neg<K, field, W, target>\\n        by thm main::vector_neg_spec(K, field, V, source, x) => source.add(x, main::source_neg(x)) = source.zero\\n        by thm main::vector_neg_spec(K, field, W, target, T(x)) => target.add(T(x), main::target_neg(T(x))) = target.zero\\n        by thm main::linear_map_sends_zero_to_zero(K, field, V, W, source, target, T) => T(source.zero) = target.zero\\n        T(source.add(x, main::source_neg(x))) = target.add(T(x), T(main::source_neg(x)))\\n        T(source.add(x, main::source_neg(x))) = T(source.zero) = target.zero\\n        target.add(T(x), T(main::source_neg(x))) = target.zero\\n        target.add(T(x), main::target_neg(T(x))) = target.zero\\n        target.add(T(x), T(main::source_neg(x))) = target.add(T(x), main::target_neg(T(x)))\\n        by thm main::add_left_cancel(K, field, W, target, T(x), T(main::source_neg(x)), main::target_neg(T(x))) => T(main::source_neg(x)) = main::target_neg(T(x))\",\n  \"phases\": {\n    \"verify_well_definedness\": {\n      \"status\": \"success\"\n    },\n    \"verify_process\": {\n      \"status\": \"error\",\n      \"message\": \"thm linear_map_sends_neg_to_neg:\\n    ? forall K nonempty_set, field &main::Field<K>, V, W nonempty_set, source &main::VectorSpace<K, field, V>, target &main::VectorSpace<K, field, W>, T fn (v V) W, x V:\\n        $main::is_linear_map(K, field, V, W, source, target, T)\\n        =>:\\n            T(\\\\main::vector_neg<K, field, V, source>(x)) = \\\\main::vector_neg<K, field, W, target>(T(x))\\n    let source_neg = \\\\main::vector_neg<K, field, V, source>\\n    let target_neg = \\\\main::vector_neg<K, field, W, target>\\n    by thm main::vector_neg_spec(K, field, V, source, x) => source.add(x, main::source_neg(x)) = source.zero\\n    by thm main::vector_neg_spec(K, field, W, target, T(x)) => target.add(T(x), main::target_neg(T(x))) = target.zero\\n    by thm main::linear_map_sends_zero_to_zero(K, field, V, W, source, target, T) => T(source.zero) = target.zero\\n    T(source.add(x, main::source_neg(x))) = target.add(T(x), T(main::source_neg(x)))\\n    T(source.add(x, main::source_neg(x))) = T(source.zero) = target.zero\\n    target.add(T(x), T(main::source_neg(x))) = target.zero\\n    target.add(T(x), main::target_neg(T(x))) = target.zero\\n    target.add(T(x), T(main::source_neg(x))) = target.add(T(x), main::target_neg(T(x)))\\n    by thm main::add_left_cancel(K, field, W, target, T(x), T(main::source_neg(x)), main::target_neg(T(x))) => T(main::source_neg(x)) = main::target_neg(T(x))\"\n    },\n    \"affect_environment\": {\n      \"status\": \"not_run\",\n      \"message\": \"previous phase failed\"\n    }\n  },\n  \"previous_error\":\n  {\n    \"error_type\": \"UnknownError\",\n    \"result\": \"error\",\n    \"line\": 4,\n    \"source_kind\": \"file\",\n    \"source\": \"main\",\n    \"path\": \"/Users/shenjiachen/主要文件夹/GeekGems/litex/golitex/showcases/math_concepts_in_litex/5_linear_algebra/main.lit\",\n    \"message\": \"thm `linear_map_sends_neg_to_neg` failed: cannot prove then-clause\",\n    \"type\": \"equality fact\",\n    \"statement\": \"T(\\\\main::vector_neg<K, field, V, source>(x)) = \\\\main::vector_neg<K, field, W, target>(T(x))\",\n    \"failed_goal\": \"T(\\\\main::vector_neg<K, field, V, source>(x)) = \\\\main::vector_neg<K, field, W, target>(T(x))\",\n    \"then_clause_index\": 1,\n    \"then_clause_count\": 1,\n    \"unknown_result\": {\n      \"type\": \"atomic fact unknown\",\n      \"goal\": \"T(\\\\main::vector_neg<K, field, V, source>(x)) = \\\\main::vector_neg<K, field, W, target>(T(x))\"\n    },\n    \"phases\": {\n      \"verify_well_definedness\": {\n        \"status\": \"success\"\n      },\n      \"verify_process\": {\n        \"status\": \"error\",\n        \"message\": \"thm `linear_map_sends_neg_to_neg` failed: cannot prove then-clause\"\n      },\n      \"affect_environment\": {\n        \"status\": \"not_run\",\n        \"message\": \"previous phase failed\"\n      }\n    }\n  }\n}"
+      }
+    }
+  ],
+  "ready": {
+    "event": "ready",
+    "mode": "project"
+  }
+}

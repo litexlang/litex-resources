@@ -1,0 +1,396 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+  "proof_spine": [
+    "package a scalar field and a vector space over that field as callable structures",
+    "derive canonical vector negation, cancellation, and scalar-zero laws from the vector-space axioms",
+    "define linear maps, subspaces, kernels, and the zero subspace over arbitrary carriers",
+    "prove that linear maps preserve zero, kernels are subspaces, and injectivity is equivalent to zero kernel",
+    "construct the real field, the real line, and the real plane, then consume the abstract interfaces with coordinate projection"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Package the scalar carrier operations and field laws as a first-class Field structure.",
+      "dependencies": ["K nonempty_set", "builtin equality and logic"],
+      "attempts": [
+        {
+          "candidate": "struct Field<K nonempty_set> with zero, one, add, neg, mul, inv, and the field laws",
+          "result": "failed",
+          "verifier_evidence": "session protocol_error: expected run, artifacts, or close",
+          "diagnosis": "The Litex source was sent without the required run <id> <utf8-byte-count> frame, so it did not reach the parser.",
+          "next_change": "Resend the identical outermost try block in a correctly sized run frame in the same session."
+        }
+      ],
+      "accepted_litex": "struct Field<K nonempty_set>:\n    zero K\n    one K\n    add fn(x, y K) K\n    neg fn(x K) K\n    mul fn(x, y K) K\n    inv fn(x K) K\n    <=>:\n        zero != one\n        forall x, y, z K:\n            add(add(x, y), z) = add(x, add(y, z))\n            mul(mul(x, y), z) = mul(x, mul(y, z))\n            mul(x, add(y, z)) = add(mul(x, y), mul(x, z))\n        forall x, y K:\n            add(x, y) = add(y, x)\n            mul(x, y) = mul(y, x)\n        forall x K:\n            add(zero, x) = x\n            add(x, neg(x)) = zero\n            mul(one, x) = x\n        forall x K:\n            x != zero\n            =>:\n                mul(x, inv(x)) = one",
+      "reusable_lesson": "A Field structure can use the verified LADR ScalarSystem law surface directly; session source must be byte-framed even when it is wrapped in try.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Package a vector carrier, its field value, vector operations, and the LADR vector-space laws.",
+      "dependencies": ["B001 Field<K>"],
+      "attempts": [],
+      "accepted_litex": "struct VectorSpace<K, V nonempty_set>:\n    field &Field<K>\n    zero V\n    add fn(x, y V) V\n    smul fn(a K, x V) V\n    <=>:\n        forall x, y, z V:\n            add(add(x, y), z) = add(x, add(y, z))\n        forall x, y V:\n            add(x, y) = add(y, x)\n        forall x V:\n            add(zero, x) = x\n            exist y V st {add(x, y) = zero}\n        forall a, b K, x V:\n            smul(field.mul(a, b), x) = smul(a, smul(b, x))\n            smul(field.add(a, b), x) = add(smul(a, x), smul(b, x))\n        forall a K, x, y V:\n            smul(a, add(x, y)) = add(smul(a, x), smul(a, y))\n        forall x V:\n            smul(field.one, x) = x",
+      "reusable_lesson": "The vector space owns one Field<K> value, so downstream scalar laws remain coherent without repeating six scalar-operation parameters.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Show that the vector-space zero is the unique additive identity.",
+      "dependencies": ["B002 VectorSpace<K,V> additive identity and commutativity laws"],
+      "attempts": [],
+      "accepted_litex": "thm additive_identity_unique:\n    ? forall K, V nonempty_set, space &VectorSpace<K, V>, identity_candidate V:\n        forall x V:\n            space.add(identity_candidate, x) = x\n        =>:\n            identity_candidate = space.zero\n    space.add(identity_candidate, space.zero) = space.zero\n    space.add(identity_candidate, space.zero) = space.add(space.zero, identity_candidate) = identity_candidate",
+      "reusable_lesson": "The LADR two-line identity-uniqueness proof verifies unchanged over the Field-owned vector-space structure.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "source_order": 4,
+      "intent": "Upgrade additive-inverse existence from the structure law to unique existence.",
+      "dependencies": ["B002 VectorSpace<K,V> associativity, commutativity, identity, and inverse existence"],
+      "attempts": [],
+      "accepted_litex": "thm additive_inverse_exists_unique:\n    ? forall K, V nonempty_set, space &VectorSpace<K, V>, x V:\n        exist! y V st {space.add(x, y) = space.zero}\n    obtain y from exist y V st {space.add(x, y) = space.zero}\n    forall y1, y2 V:\n        space.add(x, y1) = space.zero\n        space.add(x, y2) = space.zero\n        =>:\n            space.add(y2, x) = space.add(x, y2) = space.zero\n            y1 = space.add(space.zero, y1) = space.add(space.add(y2, x), y1) = space.add(y2, space.add(x, y1)) = space.add(y2, space.zero) = space.add(space.zero, y2) = y2\n    witness exist! y2 V st {space.add(x, y2) = space.zero} from y",
+      "reusable_lesson": "Existence stays a structure law; uniqueness is proved once before exposing canonical vector negation.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "source_order": 5,
+      "intent": "Expose the unique additive inverse as a callable vector_neg function family.",
+      "dependencies": ["B004 additive_inverse_exists_unique"],
+      "attempts": [],
+      "accepted_litex": "template<K, V nonempty_set, space &VectorSpace<K, V>>:\n    have fn vector_neg by exist!:\n        ? forall x V:\n            exist! y V st {space.add(x, y) = space.zero}\n        by thm additive_inverse_exists_unique(K, V, space, x)",
+      "reusable_lesson": "Canonical vector negation is a function selected from unique existence, not an extra primitive field or a candidate relation.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "source_order": 6,
+      "intent": "Expose the defining equation of the selected vector inverse to downstream proofs.",
+      "dependencies": ["B005 vector_neg selection"],
+      "attempts": [],
+      "accepted_litex": "thm vector_neg_spec:\n    ? forall K, V nonempty_set, space &VectorSpace<K, V>, x V:\n        space.add(x, \\vector_neg<K, V, space>(x)) = space.zero",
+      "reusable_lesson": "The by-exist selection stores its witness equation, so the specification theorem needs no replayed proof body.",
+      "status": "materialized"
+    },
+    {
+      "id": "B007",
+      "source_order": 7,
+      "intent": "Define vector subtraction from addition and canonical negation.",
+      "dependencies": ["B002 VectorSpace<K,V>", "B005 vector_neg"],
+      "attempts": [],
+      "accepted_litex": "template<K, V nonempty_set, space &VectorSpace<K, V>>:\n    have fn vector_sub(u, v V) V = space.add(u, \\vector_neg<K, V, space>(v))",
+      "reusable_lesson": "Subtraction remains a formula-defined function family and does not enlarge the primitive VectorSpace record.",
+      "status": "materialized"
+    },
+    {
+      "id": "B008",
+      "source_order": 8,
+      "intent": "Derive left cancellation from canonical additive inverses.",
+      "dependencies": ["B002 VectorSpace laws", "B006 vector_neg_spec"],
+      "attempts": [
+        {
+          "candidate": "The LADR cancellation body ending after the two inverse-associativity endpoint calculations.",
+          "result": "failed",
+          "verifier_evidence": "verify_process: thm add_left_cancel failed: cannot prove then-clause y = z",
+          "diagnosis": "The verifier did not automatically compose the premise add(x,y)=add(x,z) with the two calculated endpoint representations.",
+          "next_change": "Add one final equality chain from y through the common left-addition context to z."
+        }
+      ],
+      "accepted_litex": "thm add_left_cancel:\n    ? forall K, V nonempty_set, space &VectorSpace<K, V>, x, y, z V:\n        space.add(x, y) = space.add(x, z)\n        =>:\n            y = z\n    by thm vector_neg_spec(K, V, space, x)\n    space.add(\\vector_neg<K, V, space>(x), x) = space.add(x, \\vector_neg<K, V, space>(x)) = space.zero\n    space.add(\\vector_neg<K, V, space>(x), space.add(x, y)) = space.add(space.add(\\vector_neg<K, V, space>(x), x), y)\n    space.add(space.add(\\vector_neg<K, V, space>(x), x), y) = space.add(space.zero, y) = y\n    space.add(\\vector_neg<K, V, space>(x), space.add(x, z)) = space.add(space.add(\\vector_neg<K, V, space>(x), x), z)\n    space.add(space.add(\\vector_neg<K, V, space>(x), x), z) = space.add(space.zero, z) = z\n    y = space.add(\\vector_neg<K, V, space>(x), space.add(x, y)) = space.add(\\vector_neg<K, V, space>(x), space.add(x, z)) = z",
+      "reusable_lesson": "After calculating both cancellation endpoints, current verification needs one explicit equality chain that transports the premise through the common left-addition context.",
+      "status": "materialized"
+    },
+    {
+      "id": "B009",
+      "source_order": 9,
+      "intent": "Prove that scalar zero sends every vector to vector zero.",
+      "dependencies": ["B001 Field laws", "B002 VectorSpace scalar distributivity", "B008 add_left_cancel"],
+      "attempts": [
+        {
+          "candidate": "Name p=smul(field.zero,x), state field.add(zero,zero)=zero, then assert smul(field.add(zero,zero),x)=p as a separate fact.",
+          "result": "failed",
+          "verifier_evidence": "verify_process failed at smul(field.add(field.zero,field.zero),x) = p",
+          "diagnosis": "The verifier did not combine inner field-add equality with the named outer smul value in one atomic step.",
+          "next_change": "Use an explicit equality chain through smul(field.zero,x), then connect the distributivity result to add(p,p)."
+        }
+      ],
+      "accepted_litex": "thm zero_scalar_times_vector:\n    ? forall K, V nonempty_set, space &VectorSpace<K, V>, x V:\n        space.smul(space.field.zero, x) = space.zero\n    have p V = space.smul(space.field.zero, x)\n    space.field.add(space.field.zero, space.field.zero) = space.field.zero\n    space.smul(space.field.add(space.field.zero, space.field.zero), x) = space.smul(space.field.zero, x) = p\n    space.smul(space.field.add(space.field.zero, space.field.zero), x) = space.add(space.smul(space.field.zero, x), space.smul(space.field.zero, x)) = space.add(p, p)\n    p = space.add(p, p)\n    space.add(p, space.zero) = space.add(space.zero, p) = p\n    space.add(p, p) = space.add(p, space.zero)\n    by thm add_left_cancel(K, V, space, p, p, space.zero) => p = space.zero",
+      "reusable_lesson": "For nested structure-field functions, materialize the inner scalar equality inside one continuous smul chain before rewriting the named outer value.",
+      "status": "materialized"
+    },
+    {
+      "id": "B010",
+      "source_order": 10,
+      "intent": "Prove that every scalar sends vector zero to vector zero.",
+      "dependencies": ["B002 VectorSpace add-distributivity", "B008 add_left_cancel"],
+      "attempts": [],
+      "accepted_litex": "thm scalar_times_zero_vector:\n    ? forall K, V nonempty_set, space &VectorSpace<K, V>, a K:\n        space.smul(a, space.zero) = space.zero\n    have q V = space.smul(a, space.zero)\n    space.add(space.zero, space.zero) = space.zero\n    space.smul(a, space.add(space.zero, space.zero)) = space.smul(a, space.zero) = q\n    space.smul(a, space.add(space.zero, space.zero)) = space.add(space.smul(a, space.zero), space.smul(a, space.zero)) = space.add(q, q)\n    q = space.add(q, q)\n    space.add(q, space.zero) = space.add(space.zero, q) = q\n    space.add(q, q) = space.add(q, space.zero)\n    by thm add_left_cancel(K, V, space, q, q, space.zero) => q = space.zero",
+      "reusable_lesson": "The same cancellation spine proves a*0=0 once the outer smul calculation is kept in one explicit equality chain.",
+      "status": "materialized"
+    },
+    {
+      "id": "B011",
+      "source_order": 11,
+      "intent": "Define a linear map between arbitrary vector spaces over one equal field value.",
+      "dependencies": ["B002 VectorSpace<K,V>", "B002 VectorSpace<K,W>"],
+      "attempts": [],
+      "accepted_litex": "prop is_linear_map(K, V, W nonempty_set, source &VectorSpace<K, V>, target &VectorSpace<K, W>, T fn(v V) W):\n    source.field = target.field\n    forall u, v V:\n        T(source.add(u, v)) = target.add(T(u), T(v))\n    forall a K, v V:\n        T(source.smul(a, v)) = target.smul(a, T(v))",
+      "reusable_lesson": "The public linear-map concept is a relation on supplied spaces and a callable function; equal field values state the shared scalar semantics.",
+      "status": "materialized"
+    },
+    {
+      "id": "B012",
+      "source_order": 12,
+      "intent": "Define the closure property of a supplied subset of an arbitrary vector space.",
+      "dependencies": ["B002 VectorSpace<K,V>", "builtin power_set and membership"],
+      "attempts": [],
+      "accepted_litex": "prop is_subspace(K, V nonempty_set, space &VectorSpace<K, V>, U power_set(V)):\n    space.zero $in U\n    forall u, v V:\n        u $in U\n        v $in U\n        =>:\n            space.add(u, v) $in U\n    forall a K, v V:\n        v $in U\n        =>:\n            space.smul(a, v) $in U",
+      "reusable_lesson": "Subspace remains a property of an existing set; nonemptiness follows from zero membership and need not be a redundant clause.",
+      "status": "materialized"
+    },
+    {
+      "id": "B013",
+      "source_order": 13,
+      "intent": "Construct the kernel as the set of source values mapped to a supplied target zero.",
+      "dependencies": ["builtin set builder", "callable T: V -> W"],
+      "attempts": [],
+      "accepted_litex": "template<V, W set, zeroW W, T fn(v V) W>:\n    have linear_kernel power_set(V) = {x V: T(x) = zeroW}",
+      "reusable_lesson": "Kernel is a set-valued construction, not merely a membership relation, because downstream theorems compare and package the set.",
+      "status": "materialized"
+    },
+    {
+      "id": "B014",
+      "source_order": 14,
+      "intent": "Construct the singleton zero subspace carrier used by the injectivity criterion.",
+      "dependencies": ["builtin singleton set", "source zero"],
+      "attempts": [],
+      "accepted_litex": "template<V set, zeroV V>:\n    have zero_subspace power_set(V) = {zeroV}",
+      "reusable_lesson": "The zero subspace is a reusable set construction parameterized only by the carrier and its distinguished zero.",
+      "status": "materialized"
+    },
+    {
+      "id": "B015",
+      "source_order": 15,
+      "intent": "Tracer: prove that every abstract linear map sends source zero to target zero.",
+      "dependencies": ["B008 add_left_cancel", "B011 is_linear_map", "source and target VectorSpace laws"],
+      "attempts": [],
+      "accepted_litex": "thm linear_map_sends_zero_to_zero:\n    ? forall K, V, W nonempty_set, source &VectorSpace<K, V>, target &VectorSpace<K, W>, T fn(v V) W:\n        $is_linear_map(K, V, W, source, target, T)\n        =>:\n            T(source.zero) = target.zero\n    source.add(source.zero, source.zero) = source.zero\n    T(source.add(source.zero, source.zero)) = target.add(T(source.zero), T(source.zero))\n    target.add(T(source.zero), T(source.zero)) = T(source.add(source.zero, source.zero)) = T(source.zero)\n    target.add(T(source.zero), target.zero) = target.add(target.zero, T(source.zero)) = T(source.zero)\n    target.add(T(source.zero), T(source.zero)) = target.add(T(source.zero), target.zero)\n    by thm add_left_cancel(K, W, target, T(source.zero), T(source.zero), target.zero) => T(source.zero) = target.zero",
+      "reusable_lesson": "Zero preservation needs only additive preservation and target cancellation; no coordinate carrier, scalar arithmetic, or field-projection bridge is involved.",
+      "status": "materialized"
+    },
+    {
+      "id": "B016",
+      "source_order": 16,
+      "intent": "Prove that an abstract linear map preserves the selected additive inverse.",
+      "dependencies": ["B006 vector_neg_spec", "B008 add_left_cancel", "B015 linear_map_sends_zero_to_zero"],
+      "attempts": [],
+      "accepted_litex": "thm linear_map_sends_neg_to_neg:\n    ? forall K, V, W nonempty_set, source &VectorSpace<K, V>, target &VectorSpace<K, W>, T fn(v V) W, x V:\n        $is_linear_map(K, V, W, source, target, T)\n        =>:\n            T(\\vector_neg<K, V, source>(x)) = \\vector_neg<K, W, target>(T(x))\n    by thm vector_neg_spec(K, V, source, x)\n    by thm vector_neg_spec(K, W, target, T(x))\n    by thm linear_map_sends_zero_to_zero(K, V, W, source, target, T)\n    T(source.add(x, \\vector_neg<K, V, source>(x))) = target.add(T(x), T(\\vector_neg<K, V, source>(x)))\n    T(source.add(x, \\vector_neg<K, V, source>(x))) = T(source.zero) = target.zero\n    target.add(T(x), T(\\vector_neg<K, V, source>(x))) = target.zero\n    target.add(T(x), \\vector_neg<K, W, target>(T(x))) = target.zero\n    target.add(T(x), T(\\vector_neg<K, V, source>(x))) = target.add(T(x), \\vector_neg<K, W, target>(T(x)))\n    by thm add_left_cancel(K, W, target, T(x), T(\\vector_neg<K, V, source>(x)), \\vector_neg<K, W, target>(T(x))) => T(\\vector_neg<K, V, source>(x)) = \\vector_neg<K, W, target>(T(x))",
+      "reusable_lesson": "Map the inverse equation to target zero, compare it with the target's canonical inverse equation, and cancel once; no coordinate negation is needed.",
+      "status": "materialized"
+    },
+    {
+      "id": "B017",
+      "source_order": 17,
+      "intent": "Prove that the kernel of an abstract linear map is a subspace of its source space.",
+      "dependencies": ["B010 scalar_times_zero_vector", "B012 is_subspace", "B013 linear_kernel", "B015 linear_map_sends_zero_to_zero"],
+      "attempts": [
+        {
+          "candidate": "Resubmit the same theorem name to recover a result whose original session output was truncated.",
+          "result": "failed as expected",
+          "verifier_evidence": "NameAlreadyUsedError: name `linear_map_kernel_is_subspace` is already used in this scope as theorem",
+          "diagnosis": "The original B017 block had already been accepted; the duplicate-name diagnostic confirms its presence in the persistent environment.",
+          "next_change": "Keep the original accepted block and continue without restarting the session."
+        }
+      ],
+      "accepted_litex": "thm linear_map_kernel_is_subspace:\n    ? forall K, V, W nonempty_set, source &VectorSpace<K, V>, target &VectorSpace<K, W>, T fn(v V) W:\n        $is_linear_map(K, V, W, source, target, T)\n        =>:\n            $is_subspace(K, V, source, \\linear_kernel<V, W, target.zero, T>)\n    by thm linear_map_sends_zero_to_zero(K, V, W, source, target, T)\n    \\linear_kernel<V, W, target.zero, T> = {x V: T(x) = target.zero}\n    by thm set_builder_member(source.zero, {x V: T(x) = target.zero}) => source.zero $in {x V: T(x) = target.zero}\n    source.zero $in \\linear_kernel<V, W, target.zero, T>\n    claim:\n        ? forall u, v V:\n            u $in \\linear_kernel<V, W, target.zero, T>\n            v $in \\linear_kernel<V, W, target.zero, T>\n            =>:\n                source.add(u, v) $in \\linear_kernel<V, W, target.zero, T>\n        u $in {x V: T(x) = target.zero}\n        T(u) = target.zero\n        v $in {x V: T(x) = target.zero}\n        T(v) = target.zero\n        T(source.add(u, v)) = target.add(T(u), T(v)) = target.add(target.zero, target.zero) = target.zero\n        by thm set_builder_member(source.add(u, v), {x V: T(x) = target.zero}) => source.add(u, v) $in {x V: T(x) = target.zero}\n        source.add(u, v) $in \\linear_kernel<V, W, target.zero, T>\n    claim:\n        ? forall a K, v V:\n            v $in \\linear_kernel<V, W, target.zero, T>\n            =>:\n                source.smul(a, v) $in \\linear_kernel<V, W, target.zero, T>\n        v $in {x V: T(x) = target.zero}\n        T(v) = target.zero\n        by thm scalar_times_zero_vector(K, W, target, a)\n        T(source.smul(a, v)) = target.smul(a, T(v)) = target.smul(a, target.zero) = target.zero\n        by thm set_builder_member(source.smul(a, v), {x V: T(x) = target.zero}) => source.smul(a, v) $in {x V: T(x) = target.zero}\n        source.smul(a, v) $in \\linear_kernel<V, W, target.zero, T>\n    by def $is_subspace(K, V, source, \\linear_kernel<V, W, target.zero, T>)",
+      "reusable_lesson": "Kernel closure is discharged directly from linearity plus the two abstract zero lemmas; the duplicate-name recovery also confirms that accepted try blocks survive output truncation in the session.",
+      "status": "materialized"
+    },
+    {
+      "id": "B018",
+      "source_order": 18,
+      "intent": "Prove that an injective abstract linear map has singleton-zero kernel.",
+      "dependencies": ["B013 linear_kernel", "B014 zero_subspace", "B015 linear_map_sends_zero_to_zero", "builtin injective"],
+      "attempts": [
+        {
+          "candidate": "Adapt the former coordinate proof directly, relying on x=source.zero to infer x membership in the singleton zero subspace.",
+          "result": "failed",
+          "verifier_evidence": "by extension failed in the forward inclusion at x $in zero_subspace after x = source.zero",
+          "diagnosis": "The generic template application did not automatically transport singleton membership through the zero_subspace definition.",
+          "next_change": "State x $in {source.zero} explicitly before rewriting to zero_subspace."
+        }
+      ],
+      "accepted_litex": "thm injective_linear_map_has_trivial_kernel:\n    ? forall K, V, W nonempty_set, source &VectorSpace<K, V>, target &VectorSpace<K, W>, T fn(v V) W:\n        $is_linear_map(K, V, W, source, target, T)\n        $injective(V, W, T)\n        =>:\n            \\linear_kernel<V, W, target.zero, T> = \\zero_subspace<V, source.zero>\n    by thm linear_map_sends_zero_to_zero(K, V, W, source, target, T)\n    by def:\n        ? $injective(V, W, T)\n    \\linear_kernel<V, W, target.zero, T> = {x V: T(x) = target.zero}\n    \\zero_subspace<V, source.zero> = {source.zero}\n    by extension:\n        ? \\linear_kernel<V, W, target.zero, T> = \\zero_subspace<V, source.zero>\n        forall x \\linear_kernel<V, W, target.zero, T>:\n            T(x) = target.zero = T(source.zero)\n            x = source.zero\n            x $in {source.zero}\n            x $in \\zero_subspace<V, source.zero>\n        forall x \\zero_subspace<V, source.zero>:\n            x = source.zero\n            T(x) = T(source.zero) = target.zero\n            x $in \\linear_kernel<V, W, target.zero, T>",
+      "reusable_lesson": "For a template-defined singleton carrier, expose membership in the literal singleton before transporting it through the template equality.",
+      "status": "materialized"
+    },
+    {
+      "id": "B019",
+      "source_order": 19,
+      "intent": "Prove that an abstract linear map with singleton-zero kernel is injective.",
+      "dependencies": ["B006 vector_neg_spec", "B007 vector_sub", "B008 add_left_cancel", "B016 linear_map_sends_neg_to_neg", "B013 linear_kernel", "B014 zero_subspace"],
+      "attempts": [],
+      "accepted_litex": "thm trivial_kernel_implies_injective:\n    ? forall K, V, W nonempty_set, source &VectorSpace<K, V>, target &VectorSpace<K, W>, T fn(v V) W:\n        $is_linear_map(K, V, W, source, target, T)\n        \\linear_kernel<V, W, target.zero, T> = \\zero_subspace<V, source.zero>\n        =>:\n            $injective(V, W, T)\n    \\linear_kernel<V, W, target.zero, T> = {x V: T(x) = target.zero}\n    \\zero_subspace<V, source.zero> = {source.zero}\n    claim:\n        ? forall u, v V:\n            T(u) = T(v)\n            =>:\n                u = v\n        by thm linear_map_sends_neg_to_neg(K, V, W, source, target, T, v)\n        by thm vector_neg_spec(K, W, target, T(v))\n        \\vector_sub<K, V, source>(u, v) = source.add(u, \\vector_neg<K, V, source>(v))\n        T(\\vector_sub<K, V, source>(u, v)) = T(source.add(u, \\vector_neg<K, V, source>(v))) = target.add(T(u), T(\\vector_neg<K, V, source>(v))) = target.add(T(u), \\vector_neg<K, W, target>(T(v))) = target.add(T(v), \\vector_neg<K, W, target>(T(v))) = target.zero\n        by thm set_builder_member(\\vector_sub<K, V, source>(u, v), {x V: T(x) = target.zero}) => \\vector_sub<K, V, source>(u, v) $in {x V: T(x) = target.zero}\n        \\vector_sub<K, V, source>(u, v) $in \\linear_kernel<V, W, target.zero, T>\n        \\vector_sub<K, V, source>(u, v) $in \\zero_subspace<V, source.zero>\n        \\vector_sub<K, V, source>(u, v) $in {source.zero}\n        \\vector_sub<K, V, source>(u, v) = source.zero\n        source.add(u, \\vector_neg<K, V, source>(v)) = source.zero\n        source.add(\\vector_neg<K, V, source>(v), u) = source.add(u, \\vector_neg<K, V, source>(v)) = source.zero\n        by thm vector_neg_spec(K, V, source, v)\n        source.add(\\vector_neg<K, V, source>(v), v) = source.add(v, \\vector_neg<K, V, source>(v)) = source.zero\n        source.add(\\vector_neg<K, V, source>(v), u) = source.add(\\vector_neg<K, V, source>(v), v)\n        by thm add_left_cancel(K, V, source, \\vector_neg<K, V, source>(v), u, v) => u = v\n    by def:\n        ? $injective(V, W, T)",
+      "reusable_lesson": "The coordinate subtraction proof becomes carrier-independent once subtraction is defined from the selected inverse and equality follows by one abstract cancellation step.",
+      "status": "materialized"
+    },
+    {
+      "id": "B020",
+      "source_order": 20,
+      "intent": "Construct the builtin real numbers as the first concrete Field instance.",
+      "dependencies": ["B001 Field<R>", "builtin real arithmetic"],
+      "attempts": [],
+      "accepted_litex": "have fn real_inv(x R) R by cases:\n    case x = 0: 0\n    case x != 0: 1 / x\n\nhave fn real_add(x, y R) R = x + y\nhave fn real_neg(x R) R = -x\nhave fn real_mul(x, y R) R = x * y\n\nclaim:\n    ? forall x R:\n        x != 0\n        =>:\n            real_mul(x, real_inv(x)) = 1\n    real_inv(x) = 1 / x\n    real_mul(x, real_inv(x)) = x * real_inv(x) = x * (1 / x) = 1\n\nclaim:\n    ? forall x, y, z R:\n        real_add(real_add(x, y), z) = real_add(x, real_add(y, z))\n        real_mul(real_mul(x, y), z) = real_mul(x, real_mul(y, z))\n        real_mul(x, real_add(y, z)) = real_add(real_mul(x, y), real_mul(x, z))\n    real_add(x, y) = x + y\n    real_add(y, z) = y + z\n    real_add(real_add(x, y), z) = real_add(x, y) + z = (x + y) + z = x + (y + z) = x + real_add(y, z) = real_add(x, real_add(y, z))\n    real_mul(x, y) = x * y\n    real_mul(x, z) = x * z\n    real_mul(y, z) = y * z\n    real_mul(real_mul(x, y), z) = real_mul(x, y) * z = (x * y) * z = x * (y * z) = x * real_mul(y, z) = real_mul(x, real_mul(y, z))\n    real_mul(x, real_add(y, z)) = x * real_add(y, z) = x * (y + z) = x * y + x * z\n    real_add(real_mul(x, y), real_mul(x, z)) = real_mul(x, y) + real_mul(x, z) = x * y + x * z\n    real_mul(x, real_add(y, z)) = real_add(real_mul(x, y), real_mul(x, z))\n\nclaim:\n    ? forall x, y R:\n        real_add(x, y) = real_add(y, x)\n        real_mul(x, y) = real_mul(y, x)\n    real_add(x, y) = x + y = y + x = real_add(y, x)\n    real_mul(x, y) = x * y = y * x = real_mul(y, x)\n\nclaim:\n    ? forall x R:\n        real_add(0, x) = x\n        real_add(x, real_neg(x)) = 0\n        real_mul(1, x) = x\n    real_add(0, x) = 0 + x = x\n    real_neg(x) = -x\n    real_add(x, real_neg(x)) = x + real_neg(x) = x + (-x) = 0\n    real_mul(1, x) = 1 * x = x\n\nby thm struct_member((0, 1, real_add, real_neg, real_mul, real_inv), &Field<R>)\nhave real_field &Field<R> = (0, 1, real_add, real_neg, real_mul, real_inv)",
+      "reusable_lesson": "The LADR scalar adapter proof ports directly from ScalarSystem to the public Field structure and discharges every field law without trust.",
+      "status": "materialized"
+    },
+    {
+      "id": "B021",
+      "source_order": 21,
+      "intent": "Show that every field is canonically a one-dimensional vector space over itself.",
+      "dependencies": ["B001 Field<K>", "B002 VectorSpace<K,K>"],
+      "attempts": [
+        {
+          "candidate": "Use a local witness named y for the additive inverse and later bind x,y in the distributivity claim.",
+          "result": "failed",
+          "verifier_evidence": "ParseError: name `y` is already active in this scope and cannot be rebound",
+          "diagnosis": "The theorem-local witness name remains active after its claim, so a later universal binder cannot reuse it.",
+          "next_change": "Rename the witness inverse_x and use u,v in the later vector distributivity claim."
+        },
+        {
+          "candidate": "Rename the witness, but leave each nested claim body at the theorem-body indentation.",
+          "result": "failed",
+          "verifier_evidence": "WellDefinedError: identifier x not defined at the first post-claim equality",
+          "diagnosis": "Inside an outer try block, nested claim proof lines need one more indentation level; the equality was parsed after the claim instead of inside its universal scope.",
+          "next_change": "Indent every nested claim body beneath its goal while keeping the final struct_member citation at theorem-body depth."
+        },
+        {
+          "candidate": "Use a single chain to commute both multiplication terms under the outer field.add call.",
+          "result": "failed",
+          "verifier_evidence": "calculation chain failed at add(mul(x,a),mul(x,b)) = add(mul(a,x),mul(b,x))",
+          "diagnosis": "The verifier did not lift both inner multiplication commutativity facts through field.add in one implicit step.",
+          "next_change": "State the two multiplication equalities and the resulting outer-add congruence explicitly before the final chain."
+        },
+        {
+          "candidate": "Supply every VectorSpace law as a nested universal claim, including the explicit right-distributivity bridge.",
+          "result": "failed",
+          "verifier_evidence": "struct_member requirement remained unknown after all individual claims verified",
+          "diagnosis": "The generic projected-field tuple is not being assembled by current struct_member inference even though its component laws verify separately.",
+          "next_change": "Keep this as a journaled generic construction gap and instantiate the real line with named real adapters whose operation values are syntactically visible."
+        }
+      ],
+      "accepted_litex": null,
+      "reusable_lesson": null,
+      "status": "failed_unmaterialized"
+    },
+    {
+      "id": "B022",
+      "source_order": 22,
+      "intent": "Construct the real line as a VectorSpace over real_field using named real adapters.",
+      "dependencies": ["B002 VectorSpace<R,R>", "B020 real_field and adapters"],
+      "attempts": [
+        {
+          "candidate": "Prove scalar associativity in one chain ending directly at real_mul(a, real_mul(b,x)).",
+          "result": "failed",
+          "verifier_evidence": "calculation chain failed at a*(b*x) = real_mul(a, real_mul(b,x))",
+          "diagnosis": "Nested named adapter applications require explicit inner and outer computation bridges.",
+          "next_change": "State real_mul(b,x)=b*x and real_mul(a,real_mul(b,x))=a*(b*x) before the associativity chain."
+        },
+        {
+          "candidate": "Add nested multiplication bridges but leave real_add nested inside scalar distributivity implicit.",
+          "result": "failed",
+          "verifier_evidence": "calculation chain failed at real_mul(a, real_add(u,v)) = a*(u+v)",
+          "diagnosis": "The same adapter-boundary rule applies to vector-add distributivity.",
+          "next_change": "Expose real_add(u,v), both scalar products, and their outer real_add before closing the distributivity chain."
+        },
+        {
+          "candidate": "Expose every named real adapter boundary and then call struct_member.",
+          "result": "failed",
+          "verifier_evidence": "all component calculations verified, but struct_member requirement remained unknown",
+          "diagnosis": "The remaining obstacle is structure-membership assembly, not any individual real vector-space law.",
+          "next_change": "Use definition expansion on the concrete membership goal so the verified component facts are matched against the structure contract directly."
+        },
+        {
+          "candidate": "Replace struct_member with by-def expansion on the structure-membership goal.",
+          "result": "failed",
+          "verifier_evidence": "by def: structure membership has no supported builtin definition",
+          "diagnosis": "Structure membership must still be introduced through struct_member.",
+          "next_change": "Move the law claims to the try block's top level, matching the already-proven real Field construction pattern, then call struct_member outside a wrapper theorem."
+        },
+        {
+          "candidate": "Move all law claims to the try block top level and retry struct_member with the named real_field value.",
+          "result": "failed",
+          "verifier_evidence": "component claims stayed verified; struct_member still could not assemble membership",
+          "diagnosis": "The gap is specifically the nested projections through the opaque named structure value, not theorem-local fact visibility.",
+          "next_change": "Construct the VectorSpace using the transparent tuple equal to real_field, so scalar projections normalize syntactically during struct_member."
+        },
+        {
+          "candidate": "Use the transparent Field tuple but reuse scalar-associativity chains written for real_field projections.",
+          "result": "failed",
+          "verifier_evidence": "chain failed at real_mul(real_mul(a,b),x) = real_mul(a*b,x)",
+          "diagnosis": "After removing the named field projection, the inner real_mul(a,b) adapter itself also needs an explicit computation bridge.",
+          "next_change": "Expose real_mul(a,b), real_add(a,b), and their enclosing real_mul applications before the arithmetic steps."
+        },
+        {
+          "candidate": "Expose every transparent adapter computation and call struct_member for the nested tuple.",
+          "result": "failed",
+          "verifier_evidence": "all exact VectorSpace law claims verified, but nested tuple membership remained unknown",
+          "diagnosis": "The likely unmatched requirement is now the first component's Field membership rather than a vector-space law.",
+          "next_change": "Re-cite Field tuple membership immediately before VectorSpace struct_member so the nested carrier fact is local and syntactically exact."
+        }
+      ],
+      "accepted_litex": null,
+      "reusable_lesson": null,
+      "status": "failed_unmaterialized"
+    },
+    {
+      "id": "B023",
+      "source_order": 23,
+      "intent": "Expose the named real Field object's builtin operation values for concrete consumers.",
+      "dependencies": ["B020 real_field"],
+      "attempts": [],
+      "accepted_litex": "thm real_field_adapter_values:\n    ? forall x, y R:\n        real_field.zero = 0\n        real_field.one = 1\n        real_field.add = real_add\n        real_field.neg = real_neg\n        real_field.mul = real_mul\n        real_field.add(x, y) = x + y\n        real_field.mul(x, y) = x * y\n    real_field = (0, 1, real_add, real_neg, real_mul, real_inv)\n    real_field.zero = 0\n    real_field.one = 1\n    real_field.add = real_add\n    real_field.neg = real_neg\n    real_field.mul = real_mul\n    real_field.add(x, y) = real_add(x, y) = x + y\n    real_field.mul(x, y) = real_mul(x, y) = x * y",
+      "reusable_lesson": "A named structure-value theorem localizes tuple projections and gives coordinate instances a stable bridge to builtin arithmetic.",
+      "status": "materialized"
+    },
+    {
+      "id": "B024",
+      "source_order": 24,
+      "intent": "Construct the real coordinate plane as a VectorSpace over real_field.",
+      "dependencies": ["B002 VectorSpace", "B023 real_field_adapter_values", "builtin cart(R,R) arithmetic"],
+      "attempts": [
+        {
+          "candidate": "Calculate nested plane_add applications directly to coordinate tuples in one chain.",
+          "result": "failed",
+          "verifier_evidence": "associativity chain failed at plane_add(plane_add(x,y),z) = coordinate tuple",
+          "diagnosis": "The verifier needs inner plane_add coordinate values and projections exposed before computing the outer application.",
+          "next_change": "Add explicit inner-vector equalities and coordinate projection facts on both sides of each nested operation."
+        }
+      ],
+      "accepted_litex": "have fn plane_add(u, v cart(R, R)) cart(R, R) = (u[1] + v[1], u[2] + v[2])\nhave fn plane_smul(a R, v cart(R, R)) cart(R, R) = (a * v[1], a * v[2])\n\nclaim:\n    ? forall x, y, z cart(R, R):\n        plane_add(plane_add(x, y), z) = plane_add(x, plane_add(y, z))\n    plane_add(x, y) = (x[1] + y[1], x[2] + y[2])\n    plane_add(x, y)[1] = x[1] + y[1]\n    plane_add(x, y)[2] = x[2] + y[2]\n    plane_add(plane_add(x, y), z) = (plane_add(x, y)[1] + z[1], plane_add(x, y)[2] + z[2]) = ((x[1] + y[1]) + z[1], (x[2] + y[2]) + z[2])\n    plane_add(y, z) = (y[1] + z[1], y[2] + z[2])\n    plane_add(y, z)[1] = y[1] + z[1]\n    plane_add(y, z)[2] = y[2] + z[2]\n    plane_add(x, plane_add(y, z)) = (x[1] + plane_add(y, z)[1], x[2] + plane_add(y, z)[2]) = (x[1] + (y[1] + z[1]), x[2] + (y[2] + z[2]))\n    plane_add(plane_add(x, y), z) = ((x[1] + y[1]) + z[1], (x[2] + y[2]) + z[2]) = (x[1] + (y[1] + z[1]), x[2] + (y[2] + z[2])) = plane_add(x, plane_add(y, z))\n\nclaim:\n    ? forall x, y cart(R, R):\n        plane_add(x, y) = plane_add(y, x)\n    plane_add(x, y) = (x[1] + y[1], x[2] + y[2]) = (y[1] + x[1], y[2] + x[2]) = plane_add(y, x)\n\nclaim:\n    ? forall x cart(R, R):\n        plane_add((0, 0), x) = x\n        exist inverse_x cart(R, R) st {plane_add(x, inverse_x) = (0, 0)}\n    x = (x[1], x[2])\n    plane_add((0, 0), x) = (x[1], x[2]) = x\n    have inverse_x cart(R, R) = (0 - x[1], 0 - x[2])\n    inverse_x[1] = 0 - x[1]\n    inverse_x[2] = 0 - x[2]\n    plane_add(x, inverse_x) = (x[1] + inverse_x[1], x[2] + inverse_x[2]) = (0, 0)\n    witness exist inverse_x2 cart(R, R) st {plane_add(x, inverse_x2) = (0, 0)} from inverse_x\n\nclaim:\n    ? forall a, b R, x cart(R, R):\n        plane_smul(real_field.mul(a, b), x) = plane_smul(a, plane_smul(b, x))\n        plane_smul(real_field.add(a, b), x) = plane_add(plane_smul(a, x), plane_smul(b, x))\n    by thm real_field_adapter_values(a, b)\n    plane_smul(b, x) = (b * x[1], b * x[2])\n    plane_smul(b, x)[1] = b * x[1]\n    plane_smul(b, x)[2] = b * x[2]\n    plane_smul(a, plane_smul(b, x)) = (a * plane_smul(b, x)[1], a * plane_smul(b, x)[2]) = (a * (b * x[1]), a * (b * x[2]))\n    plane_smul(real_field.mul(a, b), x) = ((a * b) * x[1], (a * b) * x[2]) = (a * (b * x[1]), a * (b * x[2])) = plane_smul(a, plane_smul(b, x))\n    plane_smul(a, x) = (a * x[1], a * x[2])\n    plane_smul(a, x)[1] = a * x[1]\n    plane_smul(a, x)[2] = a * x[2]\n    plane_smul(b, x) = (b * x[1], b * x[2])\n    plane_add(plane_smul(a, x), plane_smul(b, x)) = (plane_smul(a, x)[1] + plane_smul(b, x)[1], plane_smul(a, x)[2] + plane_smul(b, x)[2]) = (a * x[1] + b * x[1], a * x[2] + b * x[2])\n    plane_smul(real_field.add(a, b), x) = ((a + b) * x[1], (a + b) * x[2]) = (a * x[1] + b * x[1], a * x[2] + b * x[2]) = plane_add(plane_smul(a, x), plane_smul(b, x))\n\nclaim:\n    ? forall a R, x, y cart(R, R):\n        plane_smul(a, plane_add(x, y)) = plane_add(plane_smul(a, x), plane_smul(a, y))\n    plane_add(x, y) = (x[1] + y[1], x[2] + y[2])\n    plane_add(x, y)[1] = x[1] + y[1]\n    plane_add(x, y)[2] = x[2] + y[2]\n    plane_smul(a, plane_add(x, y)) = (a * plane_add(x, y)[1], a * plane_add(x, y)[2]) = (a * (x[1] + y[1]), a * (x[2] + y[2]))\n    plane_smul(a, x) = (a * x[1], a * x[2])\n    plane_smul(a, y) = (a * y[1], a * y[2])\n    plane_smul(a, x)[1] = a * x[1]\n    plane_smul(a, x)[2] = a * x[2]\n    plane_smul(a, y)[1] = a * y[1]\n    plane_smul(a, y)[2] = a * y[2]\n    plane_add(plane_smul(a, x), plane_smul(a, y)) = (a * x[1] + a * y[1], a * x[2] + a * y[2])\n    plane_smul(a, plane_add(x, y)) = (a * (x[1] + y[1]), a * (x[2] + y[2])) = (a * x[1] + a * y[1], a * x[2] + a * y[2]) = plane_add(plane_smul(a, x), plane_smul(a, y))\n\nclaim:\n    ? forall x cart(R, R):\n        plane_smul(real_field.one, x) = x\n    by thm real_field_adapter_values(0, 0)\n    x = (x[1], x[2])\n    plane_smul(real_field.one, x) = (x[1], x[2]) = x\n\nby thm struct_member((real_field, (0, 0), plane_add, plane_smul), &VectorSpace<R, cart(R, R)>)\nhave real_plane &VectorSpace<R, cart(R, R)> = (real_field, (0, 0), plane_add, plane_smul)",
+      "reusable_lesson": "Coordinate structures need explicit inner-operation projection bridges; once exposed, the named Field value assembles cleanly when scalar and vector carriers differ.",
+      "status": "materialized"
+    },
+    {
+      "id": "B025",
+      "source_order": 25,
+      "intent": "Consume the abstract interfaces with the real-plane x-axis projection, its kernel subspace, and its noninjectivity.",
+      "dependencies": ["B017 kernel is subspace", "B024 real_plane", "builtin injective"],
+      "attempts": [],
+      "accepted_litex": "have fn projection_x_axis(v cart(R, R)) cart(R, R) = (v[1], 0)\n\nthm projection_x_axis_is_linear:\n    ? forall:\n        $is_linear_map(R, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis)\n    real_plane.field = real_plane.field\n    claim:\n        ? forall u, v cart(R, R):\n            projection_x_axis(real_plane.add(u, v)) = real_plane.add(projection_x_axis(u), projection_x_axis(v))\n        real_plane.add = plane_add\n        plane_add(u, v) = (u[1] + v[1], u[2] + v[2])\n        plane_add(u, v)[1] = u[1] + v[1]\n        projection_x_axis(real_plane.add(u, v)) = projection_x_axis(plane_add(u, v)) = (plane_add(u, v)[1], 0) = (u[1] + v[1], 0)\n        projection_x_axis(u) = (u[1], 0)\n        projection_x_axis(v) = (v[1], 0)\n        real_plane.add(projection_x_axis(u), projection_x_axis(v)) = plane_add(projection_x_axis(u), projection_x_axis(v)) = (u[1] + v[1], 0)\n    claim:\n        ? forall a R, v cart(R, R):\n            projection_x_axis(real_plane.smul(a, v)) = real_plane.smul(a, projection_x_axis(v))\n        real_plane.smul = plane_smul\n        plane_smul(a, v) = (a * v[1], a * v[2])\n        plane_smul(a, v)[1] = a * v[1]\n        projection_x_axis(real_plane.smul(a, v)) = projection_x_axis(plane_smul(a, v)) = (plane_smul(a, v)[1], 0) = (a * v[1], 0)\n        projection_x_axis(v) = (v[1], 0)\n        plane_smul(a, projection_x_axis(v)) = (a * v[1], 0)\n        real_plane.smul(a, projection_x_axis(v)) = plane_smul(a, projection_x_axis(v)) = (a * v[1], 0)\n    by def:\n        ? $is_linear_map(R, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis)\n\nby thm projection_x_axis_is_linear() => $is_linear_map(R, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis)\nby thm linear_map_kernel_is_subspace(R, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis) => $is_subspace(R, cart(R, R), real_plane, \\linear_kernel<cart(R, R), cart(R, R), real_plane.zero, projection_x_axis>)\n\nprojection_x_axis((0, 7)) = (0, 0) = real_plane.zero\nby thm set_builder_member((0, 7), {v cart(R, R): projection_x_axis(v) = real_plane.zero}) => (0, 7) $in {v cart(R, R): projection_x_axis(v) = real_plane.zero}\n(0, 7) $in \\linear_kernel<cart(R, R), cart(R, R), real_plane.zero, projection_x_axis>\n\nthm projection_x_axis_is_not_injective:\n    ? forall:\n        not $injective(cart(R, R), cart(R, R), projection_x_axis)\n    by contra:\n        ? not $injective(cart(R, R), cart(R, R), projection_x_axis)\n        $injective(cart(R, R), cart(R, R), projection_x_axis)\n        by def:\n            ? $injective(cart(R, R), cart(R, R), projection_x_axis)\n        projection_x_axis((0, 1)) = (0, 0)\n        projection_x_axis((0, 0)) = (0, 0)\n        projection_x_axis((0, 1)) = projection_x_axis((0, 0))\n        (0, 1) = (0, 0)\n        (0, 1)[2] = (0, 0)[2]\n        1 = (0, 1)[2] = (0, 0)[2] = 0\n        impossible 1 != 0",
+      "reusable_lesson": "The concrete coordinate example now appears only after the abstract Field, VectorSpace, linear-map, subspace, kernel, and injectivity interfaces, and uses those theorems instead of reimplementing them.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B006", "B007", "B008", "B009", "B010", "B011", "B012", "B013", "B014", "B015", "B016", "B017", "B018", "B019", "B020", "B023", "B024", "B025"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+    "file_gate_result": "final Litex checkpoint: top-level ok=true, exit code 0"
+  }
+}

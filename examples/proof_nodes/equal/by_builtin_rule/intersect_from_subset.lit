@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.IntersectFromSubset
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/intersect_from_subset.lit
+
+forall A set, B set:
+    B $subset A
+    =>:
+        intersect(A, B) = B

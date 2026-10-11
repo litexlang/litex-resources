@@ -1,0 +1,7 @@
+# Imported symbols below A use their full module/export path.
+A::chap3::z = 1
+
+have answer R = 1
+
+# Boundary: unlisted exports never acquire a namespace; imports mount before
+# this module runs its explicitly ordered exports.

@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.ModDividendMinusRemainderZero
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/mod_dividend_minus_remainder_zero.lit
+
+have a Z
+have b N+
+b != 0
+(a - (a % b)) % b = 0

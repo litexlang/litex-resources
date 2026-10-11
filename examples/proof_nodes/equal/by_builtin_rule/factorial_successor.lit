@@ -1,0 +1,5 @@
+# Node: equal.ByBuiltinRule.FactorialSuccessor
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/factorial_successor.lit
+
+have n N
+(n + 1)! = (n + 1) * n!

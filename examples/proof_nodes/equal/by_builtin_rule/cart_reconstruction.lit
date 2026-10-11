@@ -1,0 +1,22 @@
+# Before: constructor-shape reconstruction (retired syntax):
+# forall A,B,K set:
+#     $is_cart(K)
+#     cart_dim(K)=2
+#     proj(K,1)=A
+#     proj(K,2)=B
+#     =>:
+#         K=cart(A,B)
+# Now: the same set equality target follows from K's COMPLETE member
+# characterization. This changes the premises to the new ordinary-set model;
+# coordinate images alone do not reconstruct a Cartesian product.
+# Evidence: current release -strict -f this file; thirteen_builtin_rules.
+# Boundary: omitting the second coordinate only supplies a larger set.
+
+
+
+claim:
+    ? forall A,B,K set:
+        K = {p finite_seq(union(A,B),2): p(1) $in A, p(2) $in B}
+        =>:
+            K=cart(A,B)
+    cart(A,B) = {p finite_seq(union(A,B),2): p(1) $in A, p(2) $in B}

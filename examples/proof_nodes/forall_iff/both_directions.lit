@@ -1,0 +1,20 @@
+# Node: forall_with_iff (then⇒iff and iff⇒then)
+# Run: litex -f examples/proof_nodes/forall_iff/both_directions.lit
+
+forall x, y R:
+    =>:
+        x = y
+    <=>:
+        y = x
+
+abstract_prop Pp(x)
+abstract_prop Qq(x)
+forall:
+    forall x R:
+        =>:
+            $Pp(x)
+        <=>:
+            $Qq(x)
+    $Pp(2)
+    =>:
+        $Qq(2)

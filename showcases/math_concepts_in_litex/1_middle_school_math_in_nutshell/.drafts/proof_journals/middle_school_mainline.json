@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/middle_school_math_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/elementary_algebra_and_inequalities/main.lit",
+  "proof_spine": [
+    "start from native arithmetic and gcd",
+    "solve representative equations",
+    "derive AM-GM from a nonnegative square",
+    "evaluate a linear function and an arithmetic sequence",
+    "calculate a 3-4-5 coordinate distance",
+    "finish with uniform probability and elementary statistics"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Open the mainline with the native gcd object instead of a custom divisibility model.",
+      "dependencies": ["builtin gcd"],
+      "attempts": [
+        {
+          "candidate": "gcd(84, 30) = 6",
+          "result": "accepted",
+          "verifier_evidence": "persistent session block B001 ok=true"
+        }
+      ],
+      "accepted_litex": "gcd(84, 30) = 6",
+      "reusable_lesson": "Use the native gcd object for a concrete arithmetic example.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Show linear isolation and factorized quadratic roots as the equation step of the mainline.",
+      "dependencies": ["real arithmetic", "zero-product cases"],
+      "attempts": [
+        {
+          "candidate": "solve_linear_equation and factored_quadratic_roots with concrete uses",
+          "result": "accepted",
+          "verifier_evidence": "persistent session block B002 ok=true"
+        }
+      ],
+      "accepted_litex": "two checked equation theorems plus the concrete roots 2 and 3 examples",
+      "reusable_lesson": "A factorized quadratic gives the classical root split without introducing a custom root predicate.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Keep AM-GM as the central inequality example and consume one explicit theorem result.",
+      "dependencies": ["builtin real order", "builtin sqrt", "nonnegative square"],
+      "attempts": [
+        {
+          "candidate": "two_variable_am_gm followed by the 9 and 16 calculation",
+          "result": "accepted",
+          "verifier_evidence": "persistent session block B003 ok=true"
+        }
+      ],
+      "accepted_litex": "AM-GM from (x-y)^2 >= 0 with the selected result at 9 and 16",
+      "reusable_lesson": "The classic nonnegative-square proof is readable and needs no custom inequality framework.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "source_order": 4,
+      "intent": "Move from a linear function to the constant-difference law of an arithmetic sequence.",
+      "dependencies": ["formula-defined functions", "real arithmetic", "N+ indices"],
+      "attempts": [
+        {
+          "candidate": "state the arithmetic-sequence difference directly after its definition",
+          "result": "failed",
+          "verifier_evidence": "persistent session B004/B004c: the outer subtraction did not replay the two stored function evaluations",
+          "diagnosis": "The current verifier needed the two applications materialized before rewriting their difference.",
+          "next_change": "State the two definition equations inside the universal fact before the difference chain."
+        },
+        {
+          "candidate": "materialize arithmetic_term at n+1 and n, then subtract",
+          "result": "accepted",
+          "verifier_evidence": "persistent session blocks B004a and B004d ok=true"
+        }
+      ],
+      "accepted_litex": "linear-function evaluations and an arithmetic_term universal with the two minimal application bridges",
+      "reusable_lesson": "Rewrite named function applications atomically before subtracting them in a compound expression.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "source_order": 5,
+      "intent": "Represent the Pythagorean 3-4-5 example through native Cartesian coordinates.",
+      "dependencies": ["cart(R, R)", "tuple coordinates", "real powers"],
+      "attempts": [
+        {
+          "candidate": "distance_sq on (0,0) and (3,4), followed by 3^2+4^2=5^2",
+          "result": "accepted",
+          "verifier_evidence": "persistent session block B005 ok=true"
+        }
+      ],
+      "accepted_litex": "a formula-defined squared distance and the 3-4-5 identity",
+      "reusable_lesson": "Use native Cartesian products for a coordinate-geometry example rather than defining a point structure.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "source_order": 6,
+      "intent": "End the mainline with a fair-die probability and the mean/range of 2,4,6.",
+      "dependencies": ["finite_set_size", "power_set", "real division"],
+      "attempts": [
+        {
+          "candidate": "uniform probability of an even die roll plus mean3 and range3",
+          "result": "accepted",
+          "verifier_evidence": "persistent session block B006 ok=true"
+        }
+      ],
+      "accepted_litex": "P(even on a fair die)=1/2, mean(2,4,6)=4, range=4",
+      "reusable_lesson": "Finite probability should count native finite sets; statistics should remain formula-defined functions.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B006"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/middle_school_math_in_nutshell/main.lit",
+    "file_gate_result": "ok=true; exit code 0",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/middle_school_math_in_nutshell",
+    "module_gate_result": "ok=true; exit code 0"
+  }
+}

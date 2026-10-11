@@ -1,0 +1,8 @@
+# Node: equal.ByBuiltinRule.NestedSameModAbsorption
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/nested_same_mod_absorption.lit
+
+have a Z
+have m N+
+m != 0
+(a % m) $in Z
+(a % m) % m = a % m

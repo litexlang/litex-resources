@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "target": "showcases",
+  "proof_spine": [
+    "Audit every canonical .lit file under showcases, excluding .draft and .drafts.",
+    "Name repeated proof-local callable specializations when direct application remains transparent.",
+    "Keep public statements and native structural boundaries such as index_union witnesses and predicate folds canonical.",
+    "Use typed have rather than let when a theorem consumes carrier evidence such as seq(R).",
+    "Replay changed sources in declaration order and run release file and registered-module gates."
+  ],
+  "inventory": {
+    "canonical_files": 18,
+    "registered_modules": 17,
+    "baseline_lines": 6855,
+    "candidate_blocks": 60,
+    "candidate_distribution": {
+      "showcases/math_concepts_in_litex/16_probability_theory/main.lit": 57,
+      "showcases/math_concepts_in_litex/5_linear_algebra/main.lit": 3,
+      "all_other_canonical_files": 0
+    }
+  },
+  "file_dispositions": {
+    "refactored_and_replayed": [
+      "showcases/math_concepts_in_litex/16_probability_theory/main.lit",
+      "showcases/math_concepts_in_litex/5_linear_algebra/main.lit"
+    ],
+    "audited_no_new_candidate": [
+      "showcases/litex_to_lean_mathlib_pipeline/main.lit",
+      "showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/3_number_theory/main.lit",
+      "showcases/math_concepts_in_litex/4_discrete_mathematics_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/5_linear_algebra/main2.lit",
+      "showcases/math_concepts_in_litex/6_abstract_algebra/main.lit",
+      "showcases/math_concepts_in_litex/7_calculus/main.lit",
+      "showcases/math_concepts_in_litex/8_probability_and_statistics_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/9_topology/main.lit",
+      "showcases/math_concepts_in_litex/10_real_analysis_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/11_multivariable_calculus_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/12_ordinary_differential_equations_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+      "showcases/math_concepts_in_litex/14_tarski_geometry_from_axioms/main.lit",
+      "showcases/math_concepts_in_litex/15_category_theory_in_set_theory/main.lit"
+    ]
+  },
+  "accepted_patterns": {
+    "direct_callable_aliases": [
+      "pushforward_probability",
+      "measurable_preimage_sequence",
+      "two_event_sequence",
+      "raw_increasing_event_increment",
+      "increasing_event_increment",
+      "complement_event_sequence",
+      "event_prefix_union",
+      "event_tail_union_after",
+      "dirac_probability",
+      "evidence_intersection_sequence",
+      "conditioned_probability_measure",
+      "finite_atomic_term",
+      "finite_atomic_probability",
+      "vector_neg",
+      "vector_sub",
+      "linear_kernel",
+      "zero_subspace"
+    ],
+    "canonical_boundary_bridge": "After proving with a local callable alias, state canonical_application = alias_application before the public conclusion when reduction is directional.",
+    "typed_carrier_binding": "Use have increment_probabilities seq(R) = fn(...) because a let alias does not supply the seq(R) carrier fact required by partial-sum theorems."
+  },
+  "rejected_theorems": {
+    "native_indexed_union_or_intersection_boundary": [
+      "two_event_sequence_countable_union",
+      "increasing_event_increment_union_covers_each_stage",
+      "increasing_event_increment_union_equals_source_union",
+      "complement_union_of_event_sequence_is_intersection",
+      "event_prefix_union_subset_source_union",
+      "event_prefix_union_countable_union_equals_source_union",
+      "index_union_evidence_intersections"
+    ],
+    "anonymous_function_property_boundary": [
+      "two_event_sequence_pairwise_disjoint",
+      "increasing_event_increments_pairwise_disjoint",
+      "complements_of_decreasing_events_are_increasing",
+      "event_prefix_union_sequence_is_increasing",
+      "event_tail_union_sequence_is_decreasing"
+    ],
+    "reason": "These aliases require pointwise-family congruence or reverse-transport adapters, which are longer and less readable than the canonical spelling."
+  },
+  "current_tree_metrics": {
+    "callable_aliases": 45,
+    "alias_uses": 467,
+    "characters_avoided_vs_expanded_spelling": 14299,
+    "probability": {
+      "aliases": 34,
+      "uses": 393,
+      "characters_avoided": 13000
+    },
+    "linear_algebra": {
+      "aliases": 11,
+      "uses": 74,
+      "characters_avoided": 1299
+    }
+  },
+  "verification": {
+    "linear_source_order_session": {
+      "blocks": 53,
+      "process_status": 0,
+      "record": "showcases/math_concepts_in_litex/5_linear_algebra/.drafts/proof_journals/transparent_let_full_replay_a2_2026_08_26.json"
+    },
+    "probability_source_order_session": {
+      "blocks": 184,
+      "process_status": 0,
+      "record": "showcases/math_concepts_in_litex/16_probability_theory/.drafts/proof_journals/transparent_let_full_replay_a5_2026_08_26.json"
+    },
+    "release_file_gates": {
+      "passed": 18,
+      "total": 18,
+      "probability_seconds": 503
+    },
+    "release_module_gates": {
+      "passed": 17,
+      "total": 17,
+      "probability_seconds": 517
+    },
+    "cargo_build_release": "passed with the existing five dead-code warning groups",
+    "git_diff_check": "passed",
+    "added_trust_lines": 0
+  },
+  "contract_deviations": [
+    "The initial assumption that transparent let would close every canonical boundary without a bridge was false; reduction is directional in several proof contexts.",
+    "No public declaration, theorem statement, source order, mathematical interface, parser, kernel, or trust change was made for this refactor."
+  ]
+}

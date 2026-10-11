@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "candidate_rule": "When a recurring nontrivial object is treated as one mathematical atom, give it a role-based lexical name; use let for pure abbreviation or typed have when its carrier is useful, keep public statements canonical, and retain only the smallest canonical-to-alias bridge. Do not alias a constructor whose surface is repeatedly consumed by a proof action.",
+  "evidence_families": [
+    {
+      "id": "linear-additive-inverse",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/local_object_naming_linear_algebra_2026_08_24.json",
+      "result": "positive with one canonical theorem-result bridge"
+    },
+    {
+      "id": "probability-outer-objects",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/local_object_naming_probability_2026_08_24.json",
+      "result": "positive for exact outer objects; negative for an inner event-sequence alias"
+    },
+    {
+      "id": "ode-analytic-atoms-held-out",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/semantic_local_names_ode_2026_08_24.json",
+      "result": "positive; clean runner; typed aliases removed two carrier echoes and reduced the theorem body from 2659 to 2358 characters"
+    },
+    {
+      "id": "newton-residuals-held-out",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/semantic_local_names_numerical_2026_08_24.json",
+      "result": "positive; clean runner; canonical endpoints remain in the public theorem calculation"
+    },
+    {
+      "id": "topology-fn-range-boundary-held-out",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/semantic_local_names_topology_2026_08_24.json",
+      "result": "negative boundary; have-by-preimage requires the explicit fn_range constructor, so the alias was not materialized"
+    }
+  ],
+  "positive_gate": "target/release/litex -compact -runner -f <changed-showcase-file>; exit 0 and top-level ok: true",
+  "negative_boundary": "A constructor-inspecting proof action must continue to receive its canonical constructor spelling; do not accumulate alias unpacking adapters.",
+  "behavior_check": "On held-out ODE, numerical-analysis, and topology proofs, the rule selected two clean proof-body improvements and rejected one counterproductive alias without statement, API, trust, or kernel changes.",
+  "promotion_target": "/Users/shenjiachen/.codex/skills/litex-proof-writer",
+  "final_evidence": {
+    "ode_runner": "exit 0; top-level ok: true",
+    "numerical_runner": "exit 0; top-level ok: true",
+    "topology_unchanged_boundary_runner": "exit 0; top-level ok: true",
+    "journal_linter": "3 files; 0 errors; 0 warnings",
+    "skill_validator": "Skill is valid!",
+    "trust_or_axiom_delta": "none"
+  }
+}

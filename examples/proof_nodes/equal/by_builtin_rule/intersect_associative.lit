@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.IntersectAssociative
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/intersect_associative.lit
+
+have A set
+have B set
+have Target set
+intersect(intersect(A, B), Target) = intersect(A, intersect(B, Target))

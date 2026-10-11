@@ -1,0 +1,16 @@
+# Infer: InFact.EqualFnSetExpand
+# Legacy source used a function-space set as a callable value:
+# let A = fn(x R) R
+# have f set = A
+# have a R = 1
+# f(a) $in R
+# New semantics require an actual member f in A.
+# Gate: target/release/litex -strict -f examples/infer/atomic/in_equal_fn_set_expand.lit
+
+let A=fn(x R) R
+
+have f A
+
+have a R=1
+
+f(a) $in R

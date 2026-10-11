@@ -1,0 +1,319 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/15_category_theory_in_set_theory/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/15_category_theory_in_set_theory/main.lit",
+  "proof_spine": [
+    "bundle the existing category data and laws in CategorySetting without changing their flat elaborated ABI",
+    "define FunctorSetting and verify identity and composite functors",
+    "define NaturalTransformationSetting and verify identity and vertical composition",
+    "reuse the terminal category as the concrete end-to-end example"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Preserve the explicit hom-set membership relation.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "existing is_morphism definition",
+          "result": "accepted",
+          "verifier_evidence": "persistent session B001 ok=true"
+        }
+      ],
+      "accepted_litex": "prop is_morphism(Obj, Mor set, Hom fn(hom_source, hom_target Obj) power_set(Mor), source, target Obj, f Mor):\n    f $in Hom(source, target)",
+      "reusable_lesson": "Keep ambient-arrow membership explicit only where a candidate is not already bound in a hom-set.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B009C", "source_order": 9,
+      "intent": "Bundle two unrelated category settings for reusable map-construction theorems.",
+      "dependencies": ["B004 CategorySetting"],
+      "attempts": [{"candidate": "CategoriesSetting from two renamed CategorySetting bundles", "result": "accepted", "verifier_evidence": "persistent session B009pre ok=true"}],
+      "accepted_litex": "setting CategoriesSetting([CategorySetting(CObj, CMor, CHom, Cidentity, Ccompose)], [CategorySetting(DObj, DMor, DHom, Didentity, Dcompose)])",
+      "reusable_lesson": "Compose independent category bundles once when a forall theorem cannot accept two adjacent setting parameters.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B010C", "source_order": 11,
+      "intent": "Provide one deterministic constructor theorem from functor preservation laws.",
+      "dependencies": ["B004 CategorySetting", "B010 is_functor"],
+      "attempts": [{"candidate": "forall with two adjacent explicit CategorySetting parameters", "result": "failed", "verifier_evidence": "ParseError at the second [CategorySetting] parameter", "diagnosis": "The forall surface accepts one setting bundle, unlike a setting declaration header that can compose multiple bundles.", "next_change": "Introduce a reusable TwoCategoriesSetting and use it in the constructor theorem and FunctorSetting."}],
+      "accepted_litex": "thm functor_from_preservation_laws:\n    ? forall [CategoriesSetting], object_map fn(functor_object CObj) DObj, arrow_map fn(functor_source, functor_target CObj, functor_arrow CHom(functor_source, functor_target)) DHom(object_map(functor_source), object_map(functor_target)):\n        forall preserved_object CObj:\n            arrow_map(preserved_object, preserved_object, Cidentity(preserved_object)) = Didentity(object_map(preserved_object))\n        forall preserved_source, preserved_middle, preserved_target CObj, first_arrow CHom(preserved_source, preserved_middle), second_arrow CHom(preserved_middle, preserved_target):\n            arrow_map(preserved_source, preserved_target, Ccompose(preserved_source, preserved_middle, preserved_target, first_arrow, second_arrow)) = Dcompose(object_map(preserved_source), object_map(preserved_middle), object_map(preserved_target), arrow_map(preserved_source, preserved_middle, first_arrow), arrow_map(preserved_middle, preserved_target, second_arrow))\n        =>:\n            $is_functor(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, object_map, arrow_map)\n    by def $is_functor(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, object_map, arrow_map)",
+      "reusable_lesson": "Centralize the expensive definition fold in one constructor theorem consumed by identity and composite functors.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Preserve the two-sided identity-morphism relation.",
+      "dependencies": ["B001 hom-family shape"],
+      "attempts": [{"candidate": "existing is_identity_morphism definition", "result": "accepted", "verifier_evidence": "persistent session B002 ok=true"}],
+      "accepted_litex": "prop is_identity_morphism(Obj, Mor set, Hom fn(hom_source, hom_target Obj) power_set(Mor), compose fn(comp_source, comp_middle, comp_target Obj, comp_first Hom(comp_source, comp_middle), comp_second Hom(comp_middle, comp_target)) Hom(comp_source, comp_target), object Obj, identity_arrow Hom(object, object)):\n    forall target Obj, f Hom(object, target):\n        compose(object, object, target, identity_arrow, f) = f\n    forall source Obj, g Hom(source, object):\n        compose(source, object, object, g, identity_arrow) = g",
+      "reusable_lesson": "Keep identity behavior independent of the selected identity function so candidate identities remain expressible.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B003", "source_order": 3,
+      "intent": "Preserve the relation between a candidate arrow and selected composition.",
+      "dependencies": ["B001 hom-family shape"],
+      "attempts": [{"candidate": "existing is_composite definition", "result": "accepted", "verifier_evidence": "persistent session B003 ok=true"}],
+      "accepted_litex": "prop is_composite(Obj, Mor set, Hom fn(hom_source, hom_target Obj) power_set(Mor), compose fn(comp_source, comp_middle, comp_target Obj, comp_first Hom(comp_source, comp_middle), comp_second Hom(comp_middle, comp_target)) Hom(comp_source, comp_target), source, middle, target Obj, f Hom(source, middle), g Hom(middle, target), h Hom(source, target)):\n    h = compose(source, middle, target, f, g)",
+      "reusable_lesson": "The dependent composition function already enforces endpoints; the predicate only records equality to its selected value.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B004", "source_order": 4,
+      "intent": "Bundle category data, unit laws, and associativity in one theorem-facing setting.",
+      "dependencies": ["B002 is_identity_morphism"],
+      "attempts": [{"candidate": "CategorySetting with dependent identity/compose carriers and existing laws", "result": "accepted", "verifier_evidence": "persistent session B004 ok=true"}],
+      "accepted_litex": "setting CategorySetting(Obj, Mor set, Hom fn(hom_source, hom_target Obj) power_set(Mor), identity fn(identity_object Obj) Hom(identity_object, identity_object), compose fn(comp_source, comp_middle, comp_target Obj, comp_first Hom(comp_source, comp_middle), comp_second Hom(comp_middle, comp_target)) Hom(comp_source, comp_target)):\n    forall object Obj:\n        $is_identity_morphism(Obj, Mor, Hom, compose, object, identity(object))\n    forall source, middle, target, far_target Obj, f Hom(source, middle), g Hom(middle, target), h Hom(target, far_target):\n        compose(source, target, far_target, compose(source, middle, target, f, g), h) = compose(source, middle, far_target, f, compose(middle, target, far_target, g, h))",
+      "reusable_lesson": "A setting can own the dependent ABI and laws while its prop projection preserves ordinary flat call sites.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B005", "source_order": 5,
+      "intent": "Project the category setting into the first-class category predicate without duplicating laws.",
+      "dependencies": ["B004 CategorySetting"],
+      "attempts": [{"candidate": "prop is_category([CategorySetting])", "result": "accepted", "verifier_evidence": "persistent session B005 ok=true; canonical output preserves the flat ABI"}],
+      "accepted_litex": "prop is_category([CategorySetting])",
+      "reusable_lesson": "The setting projection is one source of truth and remains callable through the existing expanded parameter order.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B006", "source_order": 6,
+      "intent": "Expose the selected identity law from CategorySetting.",
+      "dependencies": ["B004 CategorySetting"],
+      "attempts": [{"candidate": "theorem binder named object", "result": "failed", "verifier_evidence": "DefineParamsError: duplicate Universal free parameter object in nested scope", "diagnosis": "The setting law already uses object as its universal binder name.", "next_change": "Rename the theorem's chosen object binder."}],
+      "accepted_litex": "thm category_identity_is_identity_morphism:\n    ? forall [CategorySetting], chosen_object Obj:\n        $is_identity_morphism(Obj, Mor, Hom, compose, chosen_object, identity(chosen_object))\n    $is_identity_morphism(Obj, Mor, Hom, compose, chosen_object, identity(chosen_object))",
+      "reusable_lesson": "Use a role-qualified local binder when a setting law already owns the generic binder name object.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B007", "source_order": 7,
+      "intent": "Show that dependent composition lands in the expected hom-set.",
+      "dependencies": ["B001 is_morphism", "B004 CategorySetting"],
+      "attempts": [{"candidate": "CategorySetting theorem with role-qualified object and arrow binders", "result": "accepted", "verifier_evidence": "persistent session B007 ok=true"}],
+      "accepted_litex": "thm category_composition_is_a_morphism:\n    ? forall [CategorySetting], source_object, middle_object, target_object Obj, first_arrow Hom(source_object, middle_object), second_arrow Hom(middle_object, target_object):\n        $is_morphism(Obj, Mor, Hom, source_object, target_object, compose(source_object, middle_object, target_object, first_arrow, second_arrow))\n    compose(source_object, middle_object, target_object, first_arrow, second_arrow) $in Hom(source_object, target_object) $subset Mor\n    by def $is_morphism(Obj, Mor, Hom, source_object, target_object, compose(source_object, middle_object, target_object, first_arrow, second_arrow))",
+      "reusable_lesson": "Dependent return carriers provide closure; only the explicit morphism predicate needs folding.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B008", "source_order": 8,
+      "intent": "Show that the selected composition value satisfies the composite relation.",
+      "dependencies": ["B003 is_composite", "B004 CategorySetting"],
+      "attempts": [{"candidate": "definition fold over the selected dependent composition value", "result": "accepted", "verifier_evidence": "persistent session B008 ok=true"}],
+      "accepted_litex": "thm selected_composite_is_composite:\n    ? forall [CategorySetting], source_object, middle_object, target_object Obj, first_arrow Hom(source_object, middle_object), second_arrow Hom(middle_object, target_object):\n        $is_composite(Obj, Mor, Hom, compose, source_object, middle_object, target_object, first_arrow, second_arrow, compose(source_object, middle_object, target_object, first_arrow, second_arrow))\n    by def $is_composite(Obj, Mor, Hom, compose, source_object, middle_object, target_object, first_arrow, second_arrow, compose(source_object, middle_object, target_object, first_arrow, second_arrow))",
+      "reusable_lesson": "A source-facing relation theorem may remain even when its proof is one canonical definition fold.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B009", "source_order": 9,
+      "intent": "Bundle two categories, typed object/arrow maps, and the two functor laws.",
+      "dependencies": ["B004 CategorySetting"],
+      "attempts": [{"candidate": "FunctorSetting composed from two renamed CategorySetting bundles", "result": "accepted", "verifier_evidence": "persistent session B009 ok=true"}],
+      "accepted_litex": "setting FunctorSetting([CategorySetting(CObj, CMor, CHom, Cidentity, Ccompose)], [CategorySetting(DObj, DMor, DHom, Didentity, Dcompose)], object_map fn(functor_object CObj) DObj, arrow_map fn(functor_source, functor_target CObj, functor_arrow CHom(functor_source, functor_target)) DHom(object_map(functor_source), object_map(functor_target))):\n    forall mapped_object CObj:\n        arrow_map(mapped_object, mapped_object, Cidentity(mapped_object)) = Didentity(object_map(mapped_object))\n    forall mapped_source, mapped_middle, mapped_target CObj, first_arrow CHom(mapped_source, mapped_middle), second_arrow CHom(mapped_middle, mapped_target):\n        arrow_map(mapped_source, mapped_target, Ccompose(mapped_source, mapped_middle, mapped_target, first_arrow, second_arrow)) = Dcompose(object_map(mapped_source), object_map(mapped_middle), object_map(mapped_target), arrow_map(mapped_source, mapped_middle, first_arrow), arrow_map(mapped_middle, mapped_target, second_arrow))",
+      "reusable_lesson": "Dependent arrow_map codomains carry morphism typing, leaving only identity and composition preservation as laws.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B010", "source_order": 10,
+      "intent": "Project FunctorSetting into the first-class functor predicate.",
+      "dependencies": ["B009 FunctorSetting"],
+      "attempts": [{"candidate": "prop is_functor([FunctorSetting])", "result": "accepted", "verifier_evidence": "persistent session B010 ok=true"}],
+      "accepted_litex": "prop is_functor([FunctorSetting])",
+      "reusable_lesson": "The predicate and theorem setting share one expanded ABI and one law list.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B011", "source_order": 11,
+      "intent": "Construct the identity functor.",
+      "dependencies": ["B010 is_functor"],
+      "attempts": [{"candidate": "direct theorem with repeated anonymous identity object/arrow functions", "result": "accepted", "verifier_evidence": "persistent session B011 ok=true", "diagnosis": "Checkable but fails the readability goal because the same dependent anonymous functions dominate the proof.", "next_change": "Restart and probe an existential construction whose local function values receive role-based let names."}],
+      "accepted_litex": "thm identity_functor_exists:\n    ? forall [CategorySetting]:\n        exist identity_object_map fn(chosen_object Obj) Obj, identity_arrow_map fn(chosen_source, chosen_target Obj, chosen_arrow Hom(chosen_source, chosen_target)) Hom(identity_object_map(chosen_source), identity_object_map(chosen_target)) st {$is_functor(Obj, Mor, Hom, identity, compose, Obj, Mor, Hom, identity, compose, identity_object_map, identity_arrow_map)}\n    let identity_on_objects = fn(chosen_object Obj) Obj {chosen_object}\n    let identity_on_arrows = fn(chosen_source, chosen_target Obj, chosen_arrow Hom(chosen_source, chosen_target)) Hom(identity_on_objects(chosen_source), identity_on_objects(chosen_target)) {chosen_arrow}\n    witness exist identity_object_map fn(chosen_object Obj) Obj, identity_arrow_map fn(chosen_source, chosen_target Obj, chosen_arrow Hom(chosen_source, chosen_target)) Hom(identity_object_map(chosen_source), identity_object_map(chosen_target)) st {$is_functor(Obj, Mor, Hom, identity, compose, Obj, Mor, Hom, identity, compose, identity_object_map, identity_arrow_map)} from identity_on_objects, identity_on_arrows:\n        claim:\n            ? forall chosen_object Obj:\n                identity_on_arrows(chosen_object, chosen_object, identity(chosen_object)) = identity(identity_on_objects(chosen_object))\n            identity_on_arrows(chosen_object, chosen_object, identity(chosen_object)) = identity(chosen_object) = identity(identity_on_objects(chosen_object))\n        claim:\n            ? forall chosen_source, chosen_middle, chosen_target Obj, first_arrow Hom(chosen_source, chosen_middle), second_arrow Hom(chosen_middle, chosen_target):\n                identity_on_arrows(chosen_source, chosen_target, compose(chosen_source, chosen_middle, chosen_target, first_arrow, second_arrow)) = compose(identity_on_objects(chosen_source), identity_on_objects(chosen_middle), identity_on_objects(chosen_target), identity_on_arrows(chosen_source, chosen_middle, first_arrow), identity_on_arrows(chosen_middle, chosen_target, second_arrow))\n            identity_on_arrows(chosen_source, chosen_target, compose(chosen_source, chosen_middle, chosen_target, first_arrow, second_arrow)) = compose(chosen_source, chosen_middle, chosen_target, first_arrow, second_arrow)\n            compose(identity_on_objects(chosen_source), identity_on_objects(chosen_middle), identity_on_objects(chosen_target), identity_on_arrows(chosen_source, chosen_middle, first_arrow), identity_on_arrows(chosen_middle, chosen_target, second_arrow)) = compose(chosen_source, chosen_middle, chosen_target, first_arrow, second_arrow)\n        by def $is_functor(Obj, Mor, Hom, identity, compose, Obj, Mor, Hom, identity, compose, identity_on_objects, identity_on_arrows)",
+      "reusable_lesson": "The new transparent let can name callable local function values, including a dependent arrow map, and witness them directly; this removes repeated anonymous function heads without adding public adapters.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B012", "source_order": 12,
+      "intent": "Bundle two composable functors without repeating their category and map laws at theorem sites.",
+      "dependencies": ["B009 FunctorSetting"],
+      "attempts": [{"candidate": "ComposableFunctorsSetting from two FunctorSetting bundles sharing DObj", "result": "failed", "verifier_evidence": "ParseError: name DObj is already active in this scope and cannot be rebound", "diagnosis": "Explicit setting composition treats the shared middle category declarations as a second binding.", "next_change": "Compose the first FunctorSetting with one E CategorySetting and add only the G maps/laws against the already-bound D category."}],
+      "accepted_litex": "setting ComposableFunctorsSetting([FunctorSetting(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow)], [CategorySetting(EObj, EMor, EHom, Eidentity, Ecompose)], G_object fn(g_object DObj) EObj, G_arrow fn(g_source, g_target DObj, g_arrow DHom(g_source, g_target)) EHom(G_object(g_source), G_object(g_target))):\n    forall mapped_object DObj:\n        G_arrow(mapped_object, mapped_object, Didentity(mapped_object)) = Eidentity(G_object(mapped_object))\n    forall mapped_source, mapped_middle, mapped_target DObj, first_arrow DHom(mapped_source, mapped_middle), second_arrow DHom(mapped_middle, mapped_target):\n        G_arrow(mapped_source, mapped_target, Dcompose(mapped_source, mapped_middle, mapped_target, first_arrow, second_arrow)) = Ecompose(G_object(mapped_source), G_object(mapped_middle), G_object(mapped_target), G_arrow(mapped_source, mapped_middle, first_arrow), G_arrow(mapped_middle, mapped_target, second_arrow))",
+      "reusable_lesson": "When two composed settings share declarations, reuse the first setting's middle category and add only the third category plus the second map laws.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B013", "source_order": 13,
+      "intent": "Construct the composite of two functors and verify its laws.",
+      "dependencies": ["B012 ComposableFunctorsSetting"],
+      "attempts": [
+        {"candidate": "local let object/arrow maps followed by one large equality chain for composition preservation", "result": "failed", "verifier_evidence": "no block event after more than 100 seconds of active release proof search; frame was interrupted", "diagnosis": "The large chain released too many category and functor universals during contextual rewriting.", "next_change": "Select the F and G preservation instances explicitly and use a constructor theorem."},
+        {"candidate": "same combined existential proof ending with functor_from_preservation_laws", "result": "failed", "verifier_evidence": "still no block event after 60 seconds; frame was interrupted", "diagnosis": "The nested universal composition claim itself remains the hot broad-search region, independent of the final definition fold.", "next_change": "Prove composite identity and composition laws as two source-facing top-level theorems, then let the existence theorem only name maps, cite those laws, and call the constructor."}
+      ],
+      "accepted_litex": "thm composite_functor_preserves_composition:\n    ? forall [ComposableFunctorsSetting], chosen_source, chosen_middle, chosen_target CObj, source_arrow CHom(chosen_source, chosen_middle), target_arrow CHom(chosen_middle, chosen_target):\n        G_arrow(F_object(chosen_source), F_object(chosen_target), F_arrow(chosen_source, chosen_target, Ccompose(chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow))) = Ecompose(G_object(F_object(chosen_source)), G_object(F_object(chosen_middle)), G_object(F_object(chosen_target)), G_arrow(F_object(chosen_source), F_object(chosen_middle), F_arrow(chosen_source, chosen_middle, source_arrow)), G_arrow(F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_middle, chosen_target, target_arrow)))\n    F_arrow(chosen_source, chosen_target, Ccompose(chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow)) = Dcompose(F_object(chosen_source), F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_source, chosen_middle, source_arrow), F_arrow(chosen_middle, chosen_target, target_arrow))\n    G_arrow(F_object(chosen_source), F_object(chosen_target), Dcompose(F_object(chosen_source), F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_source, chosen_middle, source_arrow), F_arrow(chosen_middle, chosen_target, target_arrow))) = Ecompose(G_object(F_object(chosen_source)), G_object(F_object(chosen_middle)), G_object(F_object(chosen_target)), G_arrow(F_object(chosen_source), F_object(chosen_middle), F_arrow(chosen_source, chosen_middle, source_arrow)), G_arrow(F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_middle, chosen_target, target_arrow)))\n    G_arrow(F_object(chosen_source), F_object(chosen_target), F_arrow(chosen_source, chosen_target, Ccompose(chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow))) = G_arrow(F_object(chosen_source), F_object(chosen_target), Dcompose(F_object(chosen_source), F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_source, chosen_middle, source_arrow), F_arrow(chosen_middle, chosen_target, target_arrow))) = Ecompose(G_object(F_object(chosen_source)), G_object(F_object(chosen_middle)), G_object(F_object(chosen_target)), G_arrow(F_object(chosen_source), F_object(chosen_middle), F_arrow(chosen_source, chosen_middle, source_arrow)), G_arrow(F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_middle, chosen_target, target_arrow)))",
+      "reusable_lesson": "Materialize the F and G preservation instances before the one outer G_arrow rewrite chain; avoid generic binder names already owned by the setting.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B013I", "source_order": 13,
+      "intent": "Prove identity preservation for the composite object and arrow maps.",
+      "dependencies": ["B012 ComposableFunctorsSetting"],
+      "attempts": [{"candidate": "materialize F identity preservation, then one G-arrow equality chain", "result": "accepted", "verifier_evidence": "persistent session B013I ok=true"}],
+      "accepted_litex": "thm composite_functor_preserves_identity:\n    ? forall [ComposableFunctorsSetting], chosen_object CObj:\n        G_arrow(F_object(chosen_object), F_object(chosen_object), F_arrow(chosen_object, chosen_object, Cidentity(chosen_object))) = Eidentity(G_object(F_object(chosen_object)))\n    F_arrow(chosen_object, chosen_object, Cidentity(chosen_object)) = Didentity(F_object(chosen_object))\n    G_arrow(F_object(chosen_object), F_object(chosen_object), F_arrow(chosen_object, chosen_object, Cidentity(chosen_object))) = G_arrow(F_object(chosen_object), F_object(chosen_object), Didentity(F_object(chosen_object))) = Eidentity(G_object(F_object(chosen_object)))",
+      "reusable_lesson": "Expose the inner F identity equation before rewriting it under G_arrow.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B013C", "source_order": 14,
+      "intent": "Prove composition preservation for composite functor maps.",
+      "dependencies": ["B012 ComposableFunctorsSetting"],
+      "attempts": [{"candidate": "theorem arrows named first_arrow and second_arrow", "result": "failed", "verifier_evidence": "DefineParamsError: duplicate Universal free parameter first_arrow in nested scope", "diagnosis": "ComposableFunctorsSetting already owns those generic binder names in its law clauses.", "next_change": "Rename the theorem arrows to source_arrow and target_arrow."}],
+      "accepted_litex": "thm composition_of_functors_exists:\n    ? forall [ComposableFunctorsSetting]:\n        exist composite_object_map fn(chosen_object CObj) EObj, composite_arrow_map fn(chosen_source, chosen_target CObj, chosen_arrow CHom(chosen_source, chosen_target)) EHom(composite_object_map(chosen_source), composite_object_map(chosen_target)) st {$is_functor(CObj, CMor, CHom, Cidentity, Ccompose, EObj, EMor, EHom, Eidentity, Ecompose, composite_object_map, composite_arrow_map)}\n    let composite_on_objects = fn(chosen_object CObj) EObj {G_object(F_object(chosen_object))}\n    let composite_on_arrows = fn(chosen_source, chosen_target CObj, chosen_arrow CHom(chosen_source, chosen_target)) EHom(composite_on_objects(chosen_source), composite_on_objects(chosen_target)) {G_arrow(F_object(chosen_source), F_object(chosen_target), F_arrow(chosen_source, chosen_target, chosen_arrow))}\n    witness exist composite_object_map fn(chosen_object CObj) EObj, composite_arrow_map fn(chosen_source, chosen_target CObj, chosen_arrow CHom(chosen_source, chosen_target)) EHom(composite_object_map(chosen_source), composite_object_map(chosen_target)) st {$is_functor(CObj, CMor, CHom, Cidentity, Ccompose, EObj, EMor, EHom, Eidentity, Ecompose, composite_object_map, composite_arrow_map)} from composite_on_objects, composite_on_arrows:\n        claim:\n            ? forall chosen_object CObj:\n                composite_on_arrows(chosen_object, chosen_object, Cidentity(chosen_object)) = Eidentity(composite_on_objects(chosen_object))\n            by thm composite_functor_preserves_identity(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, EObj, EMor, EHom, Eidentity, Ecompose, G_object, G_arrow, chosen_object) => G_arrow(F_object(chosen_object), F_object(chosen_object), F_arrow(chosen_object, chosen_object, Cidentity(chosen_object))) = Eidentity(G_object(F_object(chosen_object)))\n            composite_on_arrows(chosen_object, chosen_object, Cidentity(chosen_object)) = G_arrow(F_object(chosen_object), F_object(chosen_object), F_arrow(chosen_object, chosen_object, Cidentity(chosen_object))) = Eidentity(G_object(F_object(chosen_object))) = Eidentity(composite_on_objects(chosen_object))\n        claim:\n            ? forall chosen_source, chosen_middle, chosen_target CObj, source_arrow CHom(chosen_source, chosen_middle), target_arrow CHom(chosen_middle, chosen_target):\n                composite_on_arrows(chosen_source, chosen_target, Ccompose(chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow)) = Ecompose(composite_on_objects(chosen_source), composite_on_objects(chosen_middle), composite_on_objects(chosen_target), composite_on_arrows(chosen_source, chosen_middle, source_arrow), composite_on_arrows(chosen_middle, chosen_target, target_arrow))\n            by thm composite_functor_preserves_composition(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, EObj, EMor, EHom, Eidentity, Ecompose, G_object, G_arrow, chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow) => G_arrow(F_object(chosen_source), F_object(chosen_target), F_arrow(chosen_source, chosen_target, Ccompose(chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow))) = Ecompose(G_object(F_object(chosen_source)), G_object(F_object(chosen_middle)), G_object(F_object(chosen_target)), G_arrow(F_object(chosen_source), F_object(chosen_middle), F_arrow(chosen_source, chosen_middle, source_arrow)), G_arrow(F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_middle, chosen_target, target_arrow)))\n            composite_on_arrows(chosen_source, chosen_target, Ccompose(chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow)) = G_arrow(F_object(chosen_source), F_object(chosen_target), F_arrow(chosen_source, chosen_target, Ccompose(chosen_source, chosen_middle, chosen_target, source_arrow, target_arrow))) = Ecompose(G_object(F_object(chosen_source)), G_object(F_object(chosen_middle)), G_object(F_object(chosen_target)), G_arrow(F_object(chosen_source), F_object(chosen_middle), F_arrow(chosen_source, chosen_middle, source_arrow)), G_arrow(F_object(chosen_middle), F_object(chosen_target), F_arrow(chosen_middle, chosen_target, target_arrow))) = Ecompose(composite_on_objects(chosen_source), composite_on_objects(chosen_middle), composite_on_objects(chosen_target), composite_on_arrows(chosen_source, chosen_middle, source_arrow), composite_on_arrows(chosen_middle, chosen_target, target_arrow))\n        by thm functor_from_preservation_laws(CObj, CMor, CHom, Cidentity, Ccompose, EObj, EMor, EHom, Eidentity, Ecompose, composite_on_objects, composite_on_arrows)",
+      "reusable_lesson": "Transparent let aliases are valid callable witnesses, but canonical theorem results need explicit by thm selection before the alias bridge; the constructor theorem then packages the two laws.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "B015", "source_order": 15,
+      "intent": "Witness the composite object and arrow maps and package their verified laws as a functor.",
+      "dependencies": ["B010C functor_from_preservation_laws", "B013I composite identity law", "B013C composite composition law"],
+      "attempts": [
+        {"candidate": "let-bound maps with alias-spelled law goals relying on automatic theorem matching", "result": "failed", "verifier_evidence": "Unknown equality for the alias-spelled identity law", "diagnosis": "Transparent aliases reduce when inspected, but the canonical theorem result is not matched backward into an alias-spelled goal.", "next_change": "Materialize each canonical preservation theorem result, then connect it to the alias-spelled constructor law by one equality chain."},
+        {"candidate": "materialize canonical theorem results by restating them directly", "result": "failed", "verifier_evidence": "The canonical identity equality remained unknown", "diagnosis": "Automatic known-forall matching did not select the large setting-expanded theorem instance.", "next_change": "Use explicit selected by thm calls for the two canonical results; retain the adjacent alias bridge as the smallest verified boundary."}
+      ],
+      "accepted_litex": "thm identity_component_is_natural:\n    ? forall [FunctorSetting(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow)], chosen_source, chosen_target CObj, chosen_arrow CHom(chosen_source, chosen_target):\n        Dcompose(F_object(chosen_source), F_object(chosen_target), F_object(chosen_target), F_arrow(chosen_source, chosen_target, chosen_arrow), Didentity(F_object(chosen_target))) = Dcompose(F_object(chosen_source), F_object(chosen_source), F_object(chosen_target), Didentity(F_object(chosen_source)), F_arrow(chosen_source, chosen_target, chosen_arrow))\n    by thm category_identity_is_identity_morphism(DObj, DMor, DHom, Didentity, Dcompose, F_object(chosen_target))\n    by thm category_identity_is_identity_morphism(DObj, DMor, DHom, Didentity, Dcompose, F_object(chosen_source))\n    Dcompose(F_object(chosen_source), F_object(chosen_target), F_object(chosen_target), F_arrow(chosen_source, chosen_target, chosen_arrow), Didentity(F_object(chosen_target))) = F_arrow(chosen_source, chosen_target, chosen_arrow) = Dcompose(F_object(chosen_source), F_object(chosen_source), F_object(chosen_target), Didentity(F_object(chosen_source)), F_arrow(chosen_source, chosen_target, chosen_arrow))",
+      "reusable_lesson": "Select the identity-morphism theorem at both mapped endpoints before using the two unit laws in one chain.",
+      "status": "accepted_unmaterialized"
+    }
+    ,{
+      "id": "B016", "source_order": 16,
+      "intent": "Bundle two parallel functors without rebinding their shared categories.",
+      "dependencies": ["B009 FunctorSetting"],
+      "attempts": [{"candidate": "first FunctorSetting plus only the second functor maps and laws", "result": "accepted", "verifier_evidence": "persistent session B016 ok=true"}],
+      "accepted_litex": "setting ParallelFunctorsSetting([FunctorSetting(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow)], G_object fn(g_object CObj) DObj, G_arrow fn(g_source, g_target CObj, g_arrow CHom(g_source, g_target)) DHom(G_object(g_source), G_object(g_target))):\n    forall mapped_object CObj:\n        G_arrow(mapped_object, mapped_object, Cidentity(mapped_object)) = Didentity(G_object(mapped_object))\n    forall mapped_source, mapped_middle, mapped_target CObj, first_arrow CHom(mapped_source, mapped_middle), second_arrow CHom(mapped_middle, mapped_target):\n        G_arrow(mapped_source, mapped_target, Ccompose(mapped_source, mapped_middle, mapped_target, first_arrow, second_arrow)) = Dcompose(G_object(mapped_source), G_object(mapped_middle), G_object(mapped_target), G_arrow(mapped_source, mapped_middle, first_arrow), G_arrow(mapped_middle, mapped_target, second_arrow))",
+      "reusable_lesson": "For shared category data, compose one existing functor setting and add only the second map laws.",
+      "status": "accepted_unmaterialized"
+    }
+    ,{
+      "id": "B017", "source_order": 17,
+      "intent": "Bundle parallel functors, typed components, and the naturality square.",
+      "dependencies": ["B016 ParallelFunctorsSetting"],
+      "attempts": [{"candidate": "NaturalTransformationSetting with dependent component hom carrier", "result": "accepted", "verifier_evidence": "persistent session B017 ok=true"}],
+      "accepted_litex": "setting NaturalTransformationSetting([ParallelFunctorsSetting], component fn(natural_object CObj) DHom(F_object(natural_object), G_object(natural_object))):\n    forall natural_source, natural_target CObj, natural_arrow CHom(natural_source, natural_target):\n        Dcompose(F_object(natural_source), F_object(natural_target), G_object(natural_target), F_arrow(natural_source, natural_target, natural_arrow), component(natural_target)) = Dcompose(F_object(natural_source), G_object(natural_source), G_object(natural_target), component(natural_source), G_arrow(natural_source, natural_target, natural_arrow))",
+      "reusable_lesson": "The component's dependent hom carrier encodes endpoints; naturality is the only new law.",
+      "status": "accepted_unmaterialized"
+    }
+    ,{
+      "id": "B018", "source_order": 18,
+      "intent": "Project the natural-transformation setting into its first-class predicate.",
+      "dependencies": ["B017 NaturalTransformationSetting"],
+      "attempts": [{"candidate": "prop is_natural_transformation([NaturalTransformationSetting])", "result": "accepted", "verifier_evidence": "persistent session B018 ok=true"}],
+      "accepted_litex": "prop is_natural_transformation([NaturalTransformationSetting])",
+      "reusable_lesson": "The setting projection preserves one law source and the expanded public ABI.",
+      "status": "accepted_unmaterialized"
+    }
+    ,{
+      "id": "B019", "source_order": 19,
+      "intent": "Provide the constructor rule from a typed component family and naturality.",
+      "dependencies": ["B016 ParallelFunctorsSetting", "B018 is_natural_transformation"],
+      "attempts": [{"candidate": "one definition fold from the supplied naturality universal", "result": "accepted", "verifier_evidence": "persistent session B019 ok=true"}],
+      "accepted_litex": "thm natural_transformation_from_naturality:\n    ? forall [ParallelFunctorsSetting], component fn(natural_object CObj) DHom(F_object(natural_object), G_object(natural_object)):\n        forall natural_source, natural_target CObj, natural_arrow CHom(natural_source, natural_target):\n            Dcompose(F_object(natural_source), F_object(natural_target), G_object(natural_target), F_arrow(natural_source, natural_target, natural_arrow), component(natural_target)) = Dcompose(F_object(natural_source), G_object(natural_source), G_object(natural_target), component(natural_source), G_arrow(natural_source, natural_target, natural_arrow))\n        =>:\n            $is_natural_transformation(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, G_object, G_arrow, component)\n    by def $is_natural_transformation(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, G_object, G_arrow, component)",
+      "reusable_lesson": "Centralize the natural-transformation definition fold for identity and vertical-composition consumers.",
+      "status": "accepted_unmaterialized"
+    }
+    ,{
+      "id": "B020", "source_order": 20,
+      "intent": "Prove that target-category identity arrows form a natural component family for any functor.",
+      "dependencies": ["B009 FunctorSetting"],
+      "attempts": [
+        {"candidate": "generic [FunctorSetting] binder followed by references to F_object and F_arrow", "result": "failed", "verifier_evidence": "the elaborated setting parameters remained object_map and arrow_map; the intended renamed map variables were not bound by the generic surface", "diagnosis": "The theorem must explicitly rename the FunctorSetting parameters when its body uses F_object and F_arrow.", "next_change": "Use [FunctorSetting(CObj, ..., F_object, F_arrow)] and retry the two unit-law chain."},
+        {"candidate": "explicitly renamed FunctorSetting and direct two-unit-law chain", "result": "failed", "verifier_evidence": "first right-unit chain step remained unknown", "diagnosis": "The CategorySetting stores the identity-morphism predicate, but this caller did not automatically expose its quantified unit clauses.", "next_change": "Cite category_identity_is_identity_morphism at the source and target mapped objects before the chain."}
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "",
+      "status": "failed_pending_retry"
+    }
+    ,{
+      "id": "B021", "source_order": 21,
+      "intent": "Construct the identity natural transformation on an arbitrary functor.",
+      "dependencies": ["B019 natural_transformation_from_naturality", "B020 identity_component_is_natural"],
+      "attempts": [{"candidate": "let-bound identity component, selected unit-law theorem, alias bridge, and constructor theorem", "result": "accepted", "verifier_evidence": "persistent session B021 ok=true"}],
+      "accepted_litex": "thm identity_natural_transformation_exists:\n    ? forall [FunctorSetting(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow)]:\n        exist identity_component fn(chosen_object CObj) DHom(F_object(chosen_object), F_object(chosen_object)) st {$is_natural_transformation(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, F_object, F_arrow, identity_component)}\n    let identity_on_components = fn(chosen_object CObj) DHom(F_object(chosen_object), F_object(chosen_object)) {Didentity(F_object(chosen_object))}\n    witness exist identity_component fn(chosen_object CObj) DHom(F_object(chosen_object), F_object(chosen_object)) st {$is_natural_transformation(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, F_object, F_arrow, identity_component)} from identity_on_components:\n        claim:\n            ? forall chosen_source, chosen_target CObj, chosen_arrow CHom(chosen_source, chosen_target):\n                Dcompose(F_object(chosen_source), F_object(chosen_target), F_object(chosen_target), F_arrow(chosen_source, chosen_target, chosen_arrow), identity_on_components(chosen_target)) = Dcompose(F_object(chosen_source), F_object(chosen_source), F_object(chosen_target), identity_on_components(chosen_source), F_arrow(chosen_source, chosen_target, chosen_arrow))\n            by thm identity_component_is_natural(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, chosen_source, chosen_target, chosen_arrow) => Dcompose(F_object(chosen_source), F_object(chosen_target), F_object(chosen_target), F_arrow(chosen_source, chosen_target, chosen_arrow), Didentity(F_object(chosen_target))) = Dcompose(F_object(chosen_source), F_object(chosen_source), F_object(chosen_target), Didentity(F_object(chosen_source)), F_arrow(chosen_source, chosen_target, chosen_arrow))\n            Dcompose(F_object(chosen_source), F_object(chosen_target), F_object(chosen_target), F_arrow(chosen_source, chosen_target, chosen_arrow), identity_on_components(chosen_target)) = Dcompose(F_object(chosen_source), F_object(chosen_target), F_object(chosen_target), F_arrow(chosen_source, chosen_target, chosen_arrow), Didentity(F_object(chosen_target))) = Dcompose(F_object(chosen_source), F_object(chosen_source), F_object(chosen_target), Didentity(F_object(chosen_source)), F_arrow(chosen_source, chosen_target, chosen_arrow)) = Dcompose(F_object(chosen_source), F_object(chosen_source), F_object(chosen_target), identity_on_components(chosen_source), F_arrow(chosen_source, chosen_target, chosen_arrow))\n        by thm natural_transformation_from_naturality(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, F_object, F_arrow, identity_on_components)",
+      "reusable_lesson": "A callable component alias works as an existential witness; select the canonical naturality theorem before bridging to the alias-spelled goal.",
+      "status": "accepted_unmaterialized"
+    }
+    ,{
+      "id": "B022", "source_order": 22,
+      "intent": "Bundle two vertically composable natural transformations while sharing their categories and middle functor.",
+      "dependencies": ["B017 NaturalTransformationSetting"],
+      "attempts": [{"candidate": "first natural-transformation setting plus H functor and beta naturality", "result": "accepted", "verifier_evidence": "persistent session B022 ok=true"}],
+      "accepted_litex": "setting ComposableNaturalTransformationsSetting([NaturalTransformationSetting(CObj, CMor, CHom, Cidentity, Ccompose, DObj, DMor, DHom, Didentity, Dcompose, F_object, F_arrow, G_object, G_arrow, alpha)], H_object fn(h_object CObj) DObj, H_arrow fn(h_source, h_target CObj, h_arrow CHom(h_source, h_target)) DHom(H_object(h_source), H_object(h_target)), beta fn(component_object CObj) DHom(G_object(component_object), H_object(component_object))):\n    forall mapped_object CObj:\n        H_arrow(mapped_object, mapped_object, Cidentity(mapped_object)) = Didentity(H_object(mapped_object))\n    forall mapped_source, mapped_middle, mapped_target CObj, first_arrow CHom(mapped_source, mapped_middle), second_arrow CHom(mapped_middle, mapped_target):\n        H_arrow(mapped_source, mapped_target, Ccompose(mapped_source, mapped_middle, mapped_target, first_arrow, second_arrow)) = Dcompose(H_object(mapped_source), H_object(mapped_middle), H_object(mapped_target), H_arrow(mapped_source, mapped_middle, first_arrow), H_arrow(mapped_middle, mapped_target, second_arrow))\n    forall natural_source, natural_target CObj, natural_arrow CHom(natural_source, natural_target):\n        Dcompose(G_object(natural_source), G_object(natural_target), H_object(natural_target), G_arrow(natural_source, natural_target, natural_arrow), beta(natural_target)) = Dcompose(G_object(natural_source), H_object(natural_source), H_object(natural_target), beta(natural_source), H_arrow(natural_source, natural_target, natural_arrow))",
+      "reusable_lesson": "Extend one natural-transformation setting with only the third functor and second component family to avoid rebinding shared data.",
+      "status": "accepted_unmaterialized"
+    }
+    ,{
+      "id": "B023", "source_order": 23,
+      "intent": "Prove naturality of the vertically composed component family.",
+      "dependencies": ["B022 ComposableNaturalTransformationsSetting"],
+      "attempts": [{"candidate": "materialize alpha/beta naturality and three associativity instances, then one five-edge equality chain", "result": "failed", "verifier_evidence": "no block event after 90 seconds; frame was interrupted", "diagnosis": "The generic associativity instances were not selected through a named theorem, leaving broad contextual proof search across the large setting.", "next_change": "Expose category associativity as a source-facing theorem and select its three concrete instances explicitly before the short naturality chain."}],
+      "accepted_litex": "",
+      "reusable_lesson": "",
+      "status": "failed_pending_retry"
+    }
+    ,{
+      "id": "B024", "source_order": 24,
+      "intent": "Give associativity and naturality exact predicate shapes for diagram proofs.",
+      "dependencies": ["B004 CategorySetting", "B017 NaturalTransformationSetting"],
+      "attempts": [
+        {"candidate": "Restate the raw associativity equality as a theorem conclusion", "result": "liveness_limit", "verifier_evidence": "persistent framed block produced no event after bounded waits", "diagnosis": "raw equality lookup searched too broadly", "next_change": "Store composition_is_associative_at in CategorySetting"},
+        {"candidate": "Store composition_is_associative_at and naturality_square_commutes as setting facts", "result": "accepted", "verifier_evidence": "release file runner top-level ok=true"}
+      ],
+      "accepted_litex": "main.lit lines 29-41 and 153-160: composition_is_associative_at, CategorySetting use, naturality_square_commutes, and NaturalTransformationSetting use",
+      "reusable_lesson": "Name the mathematical instance shape before unfolding it to an equality; this bounds matching without adding a proof-only wrapper.",
+      "status": "accepted_materialized"
+    }
+    ,{
+      "id": "B025", "source_order": 25,
+      "intent": "Prove naturality of vertical component composition with transparent local names.",
+      "dependencies": ["B022", "B024"],
+      "attempts": [
+        {"candidate": "One unbroken fully expanded equality chain", "result": "failed", "verifier_evidence": "the PTY rejected characters after the interactive line exceeded its line-length limit", "diagnosis": "the source line, not the mathematics, was too long for the interactive terminal", "next_change": "Use let aliases and split the chain into separate edges"},
+        {"candidate": "Thirteen let aliases plus selected naturality/associativity instances and short equality edges", "result": "failed", "verifier_evidence": "release runner proved every body edge but could not connect alias spelling to the expanded theorem conclusion", "diagnosis": "transparent local names still needed explicit boundary bridges at the theorem conclusion", "next_change": "Add expanded-to-alias and alias-to-expanded endpoint equalities"},
+        {"candidate": "Let-based proof with explicit endpoint bridges", "result": "accepted", "verifier_evidence": "release file runner top-level ok=true"}
+      ],
+      "accepted_litex": "main.lit lines 204-237: theorem vertical_composite_component_is_natural",
+      "reusable_lesson": "Use let for the diagram interior, but keep explicit bridges where a public canonical statement meets alias-spelled calculations.",
+      "status": "accepted_materialized"
+    }
+    ,{
+      "id": "B026", "source_order": 26,
+      "intent": "Package the vertical components as a natural transformation.",
+      "dependencies": ["B019", "B025"],
+      "attempts": [
+        {"candidate": "Persistent try with let-bound vertical_components and a constructor theorem", "result": "liveness_limit", "verifier_evidence": "no framed block event after 60 seconds; the identical source passed the release file runner"},
+        {"candidate": "Source-owned release file gate", "result": "accepted", "verifier_evidence": "top-level ok=true, exit 0"}
+      ],
+      "accepted_litex": "main.lit lines 239-258: theorem vertical_composition_of_natural_transformations_exists",
+      "reusable_lesson": "A callable let alias is an effective existential witness once its naturality property is proved in canonical spelling.",
+      "status": "accepted_materialized"
+    }
+    ,{
+      "id": "B027", "source_order": 27,
+      "intent": "Consume the generic identity-functor theorem on the terminal category.",
+      "dependencies": ["B012 identity_functor_exists", "terminal_data_forms_a_category"],
+      "attempts": [
+        {"candidate": "Unfold the checked terminal category and cite identity_functor_exists", "result": "accepted", "verifier_evidence": "release file runner top-level ok=true"}
+      ],
+      "accepted_litex": "main.lit lines 299-306: theorem terminal_identity_functor_exists",
+      "reusable_lesson": "A concrete consumer should call the generic construction rather than repeat its maps and preservation proof.",
+      "status": "accepted_materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B007", "B009", "B012", "B014", "B016", "B018", "B019", "B021", "B022", "B024", "B025", "B026", "B027"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/15_category_theory_in_set_theory/main.lit",
+    "file_gate_result": "top-level ok=true, exit 0",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/15_category_theory_in_set_theory",
+    "module_gate_result": "top-level ok=true, exit 0"
+  }
+}

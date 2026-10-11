@@ -1,0 +1,6 @@
+# Node: equal.ByBuiltinRule.GcdDividesArgument
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/gcd_divides_argument.lit
+
+have a Z*
+have b Z
+a % gcd(a, b) = 0

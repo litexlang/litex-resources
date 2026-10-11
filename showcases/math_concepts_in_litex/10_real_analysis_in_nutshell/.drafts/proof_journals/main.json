@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/10_real_analysis_in_nutshell/main.lit",
+  "proof_spine": ["epsilon tails", "constant sequence", "limit uniqueness", "unique limit selection"],
+  "blocks": [
+    {"id": "FILE", "status": "accepted", "classification": "proof", "note": "Release runner succeeded."},
+    {"id": "A203", "intent": "Deletion-probe a shorter uniqueness estimate.", "result": "failed", "verifier_evidence": "The bridge 2*abs(L1-L2) < 3*abs(L1-L2) was needed before division by 3."},
+    {"id": "A203c", "intent": "Retain the smallest verified inequality bridge in the uniqueness proof.", "accepted_litex": "thm sequence_limit_unique: ...", "status": "accepted_materialized"},
+    {"id": "A204b", "intent": "Select the unique limit only after convergence and uniqueness are available.", "accepted_litex": "have fn lim by exist!: ? forall a seq(R): $is_convergent_sequence(a) => exist! L R st {$has_limit(a, L)}", "status": "accepted_materialized"},
+    {"id": "A205b", "intent": "Consume the selected limit immediately.", "accepted_litex": "forall a seq(R): $is_convergent_sequence(a) =>: $has_limit(a, lim(a))", "status": "accepted_materialized"}
+  ],
+  "materialization": {"block_ids": ["FILE", "A203c", "A204b", "A205b"], "file_gate_result": "file and module release runners passed; full 14-module collection gate passed"}
+}

@@ -1,0 +1,21 @@
+# Callable aliases consume exact published properties.
+# Before: let g=f and g(4)=5 used equivalent-object discovery.
+# Now: the author publishes the defining anonymous function on g and h.
+have fn f(x R) R = x + 1
+let g = f
+g = fn(x R) R {x + 1}
+g(4) = 5
+let h = g
+h = fn(x R) R {x + 1}
+h(4) = 5
+forall callable set:
+    callable $in fn(x R) R
+    =>:
+        callable(4) $in R
+forall other fn(x R) R:
+    f = other
+    =>:
+        other = fn(x R) R {x + 1}
+        other(4) = 5
+# Membership alone supplies no body. Transitive function discovery rejects.
+# Gate: target/release/litex -strict -f examples/proof_nodes/equal/by_object_definition/by_fn_application/callable_alias_special_property.lit

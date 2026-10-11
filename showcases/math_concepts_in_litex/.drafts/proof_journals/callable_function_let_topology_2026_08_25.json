@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/9_topology/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/9_topology/main.lit",
+  "proof_spine": [
+    "Name the continuous map restricted to K as one callable object.",
+    "Keep fn_range explicit so preimage extraction can inspect the constructor."
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Exercise a transparent function alias inside fn_range and have-by-preimage.",
+      "dependencies": ["is_compact_subset", "have by preimage"],
+      "attempts": [
+        {
+          "candidate": "let image_map = fn(source K) Y {f(source)}; use image_map under explicit fn_range constructors",
+          "result": "accepted",
+          "verifier_evidence": "source-order persistent session accepted main_candidate_file_replacing_289",
+          "diagnosis": "Transparent reduction preserves callability and can resolve the inner function while have-by-preimage still sees the explicit outer fn_range constructor.",
+          "next_change": "Materialize the accepted theorem and run the clean registered-file gate."
+        }
+      ],
+      "accepted_litex": "thm continuous_image_of_compact_is_compact:\n    ? forall [ContinuousMapSetting], K power_set(X):\n        $is_compact_subset(X, open_sets_X, K)\n        =>:\n            $is_compact_subset(Y, open_sets_Y, fn_range(fn(x K) Y {f(x)}))\n    let image_map = fn(source K) Y {f(source)}\n    claim:\n        ? forall Index set, cover fn(index Index) open_sets_Y:\n            fn_range(fn(x K) Y {f(x)}) $subset family_union(fn_range(cover))\n            =>:\n                exist J power_set(Index) st {$is_finite_set(J), fn_range(fn(x K) Y {f(x)}) $subset family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))}\n        have fn pullback_cover(index Index) open_sets_X = {x X: f(x) $in cover(index)}\n        claim:\n            ? K $subset family_union(fn_range(pullback_cover))\n            claim:\n                ? forall point K:\n                    point $in family_union(fn_range(pullback_cover))\n                image_map(point) $in fn_range(image_map)\n                image_map(point) = f(point)\n                f(point) $in fn_range(image_map)\n                f(point) $in family_union(fn_range(cover))\n                obtain target_open from exist target_open fn_range(cover) st {f(point) $in target_open}\n                have by preimage selected_index from target_open $in fn_range(cover)\n                target_open = cover(selected_index)\n                f(point) $in cover(selected_index)\n                by thm set_builder_member(point, {x X: f(x) $in cover(selected_index)}) => point $in {x X: f(x) $in cover(selected_index)}\n                point $in pullback_cover(selected_index)\n                pullback_cover(selected_index) $in fn_range(pullback_cover)\n                point $in family_union(fn_range(pullback_cover))\n            by def:\n                ? K $subset family_union(fn_range(pullback_cover))\n        exist J power_set(Index) st {$is_finite_set(J), K $subset family_union(fn_range(fn(index J) open_sets_X {pullback_cover(index)}))}\n        obtain J from exist J power_set(Index) st {$is_finite_set(J), K $subset family_union(fn_range(fn(index J) open_sets_X {pullback_cover(index)}))}\n        witness exist finite_indices power_set(Index) st {$is_finite_set(finite_indices), fn_range(fn(x K) Y {f(x)}) $subset family_union(fn_range(fn(index finite_indices) open_sets_Y {cover(index)}))} from J:\n            $is_finite_set(J)\n            claim:\n                ? fn_range(image_map) $subset family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n                claim:\n                    ? forall image_point fn_range(image_map):\n                        image_point $in family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n                    have by preimage source_point from image_point $in fn_range(image_map)\n                    source_point $in K\n                    image_point = image_map(source_point)\n                    image_map(source_point) = f(source_point)\n                    source_point $in family_union(fn_range(fn(index J) open_sets_X {pullback_cover(index)}))\n                    obtain source_open from exist source_open fn_range(fn(index J) open_sets_X {pullback_cover(index)}) st {source_point $in source_open}\n                    have by preimage selected_index from source_open $in fn_range(fn(index J) open_sets_X {pullback_cover(index)})\n                    selected_index $in J\n                    source_open = fn(index J) open_sets_X {pullback_cover(index)}(selected_index)\n                    fn(index J) open_sets_X {pullback_cover(index)}(selected_index) = pullback_cover(selected_index)\n                    source_point $in pullback_cover(selected_index)\n                    pullback_cover(selected_index) = {x X: f(x) $in cover(selected_index)}\n                    f(source_point) $in cover(selected_index)\n                    fn(index J) open_sets_Y {cover(index)}(selected_index) $in fn_range(fn(index J) open_sets_Y {cover(index)})\n                    fn(index J) open_sets_Y {cover(index)}(selected_index) = cover(selected_index)\n                    cover(selected_index) $in fn_range(fn(index J) open_sets_Y {cover(index)})\n                    image_point = f(source_point)\n                    image_point $in cover(selected_index)\n                    witness exist target_open fn_range(fn(index J) open_sets_Y {cover(index)}) st {image_point $in target_open} from cover(selected_index):\n                        image_point $in cover(selected_index)\n                    image_point $in family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n                by def:\n                    ? fn_range(image_map) $subset family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n    by def $is_compact_subset(Y, open_sets_Y, fn_range(fn(x K) Y {f(x)}))\n",
+      "reusable_lesson": "Alias the callable inside a constructor-sensitive expression, but leave fn_range itself explicit for have-by-preimage.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/9_topology/main.lit",
+    "file_gate_result": "exit 0; top-level ok: true",
+    "latest_current_source_retry": "After later concurrent local-builtin-catalog edits and a successful rebuild, the runner fails before this target: canonical local-rule matching does not yet support fixed FnSet nodes."
+  }
+}

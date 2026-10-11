@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+  "proof_spine": [
+    "Replay the unchanged group and homomorphism interfaces in source order.",
+    "Select the one atomic fact consumed after every theorem application.",
+    "Use the selected inverse and membership facts to prove kernel closure and normality."
+  ],
+  "blocks": [
+    {
+      "id": "R001",
+      "source_order": 1,
+      "intent": "Replay the ambient group setting.",
+      "dependencies": [],
+      "attempts": [{"candidate": "existing GroupSetting declaration", "result": "accepted", "verifier_evidence": "session R001: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Replay is_group."}],
+      "accepted_litex": "setting GroupSetting(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A):\n    forall u, v, w A:\n        mul(mul(u, v), w) = mul(u, mul(v, w))\n    forall u A:\n        mul(one, u) = u\n        mul(u, one) = u\n        mul(inv(u), u) = one\n        mul(u, inv(u)) = one",
+      "reusable_lesson": "Named settings carry the group laws into theorem contexts.",
+      "status": "materialized"
+    },
+    {
+      "id": "R002",
+      "source_order": 2,
+      "intent": "Replay the group predicate elaborated from the setting.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "prop is_group([GroupSetting])", "result": "accepted", "verifier_evidence": "session R002: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Replay cancellation."}],
+      "accepted_litex": "prop is_group([GroupSetting])",
+      "reusable_lesson": "A concrete prop can reuse a named setting bundle.",
+      "status": "materialized"
+    },
+    {
+      "id": "R003",
+      "source_order": 3,
+      "intent": "Replay left cancellation.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing group_left_cancel theorem", "result": "accepted", "verifier_evidence": "session R003: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Replay identity uniqueness."}],
+      "accepted_litex": "thm group_left_cancel:\n    ? forall [GroupSetting], a, b, c A:\n        mul(a, b) = mul(a, c)\n        =>:\n            b = c\n    mul(inv(a), a) = one\n    b = mul(one, b) = mul(mul(inv(a), a), b) = mul(inv(a), mul(a, b)) = mul(inv(a), mul(a, c)) = mul(mul(inv(a), a), c) = mul(one, c) = c",
+      "reusable_lesson": "Cancellation provides the exact identity-preservation conclusion later selected by by thm.",
+      "status": "materialized"
+    },
+    {
+      "id": "R004",
+      "source_order": 4,
+      "intent": "Replay identity uniqueness.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing group_identity_unique theorem", "result": "accepted", "verifier_evidence": "session R004: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Replay inverse uniqueness."}],
+      "accepted_litex": "thm group_identity_unique:\n    ? forall [GroupSetting], identity A:\n        forall a A:\n            mul(identity, a) = a\n            mul(a, identity) = a\n        =>:\n            identity = one\n    identity = mul(one, identity) = one",
+      "reusable_lesson": "Identity uniqueness stays unchanged by the proof-call readability migration.",
+      "status": "materialized"
+    },
+    {
+      "id": "R005",
+      "source_order": 5,
+      "intent": "Replay inverse uniqueness.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing group_inverse_unique theorem", "result": "accepted", "verifier_evidence": "session R005: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Replay the homomorphism interfaces."}],
+      "accepted_litex": "thm group_inverse_unique:\n    ? forall [GroupSetting], a, b A:\n        mul(b, a) = one\n        =>:\n            b = inv(a)\n    mul(a, inv(a)) = one\n    b = mul(b, one) = mul(b, mul(a, inv(a))) = mul(mul(b, a), inv(a)) = mul(one, inv(a)) = inv(a)",
+      "reusable_lesson": "The selected-fact form may choose the symmetric equality inferred from this theorem result.",
+      "status": "materialized"
+    },
+    {
+      "id": "R006",
+      "source_order": 6,
+      "intent": "Replay the homomorphism predicate.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing is_group_homomorphism prop", "result": "accepted", "verifier_evidence": "session R006: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Replay GroupHomomorphismSetting."}],
+      "accepted_litex": "prop is_group_homomorphism([GroupSetting(A, mul_A, one_A, inv_A)], [GroupSetting(B, mul_B, one_B, inv_B)], f fn(x A) B):\n    forall x, y A:\n        f(mul_A(x, y)) = mul_B(f(x), f(y))",
+      "reusable_lesson": "The homomorphism predicate remains a setting-first relation.",
+      "status": "materialized"
+    },
+    {
+      "id": "R007",
+      "source_order": 7,
+      "intent": "Replay the theorem-facing homomorphism setting.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing GroupHomomorphismSetting declaration", "result": "accepted", "verifier_evidence": "session R007: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Test selected facts in homomorphism preservation proofs."}],
+      "accepted_litex": "setting GroupHomomorphismSetting([GroupSetting(A, mul_A, one_A, inv_A)], [GroupSetting(B, mul_B, one_B, inv_B)], f fn(x A) B):\n    forall x, y A:\n        f(mul_A(x, y)) = mul_B(f(x), f(y))",
+      "reusable_lesson": "The setting provides both ambient group laws and multiplication preservation.",
+      "status": "materialized"
+    },
+    {
+      "id": "S001",
+      "source_order": 8,
+      "intent": "Make the cancellation theorem's contribution explicit.",
+      "dependencies": ["R003: group_left_cancel", "R007: GroupHomomorphismSetting"],
+      "attempts": [{"candidate": "by thm group_left_cancel(...) => f(one_A) = one_B", "result": "accepted", "verifier_evidence": "session S001: ok=true", "diagnosis": "The selected atomic fact is exactly the theorem conclusion consumed by the proof.", "next_change": "Select identity and inverse facts in homomorphism_maps_inverse."}],
+      "accepted_litex": "thm homomorphism_maps_identity:\n    ? forall [GroupHomomorphismSetting]:\n        f(one_A) = one_B\n    mul_A(one_A, one_A) = one_A\n    mul_B(f(one_A), f(one_A)) = f(mul_A(one_A, one_A)) = f(one_A) = mul_B(f(one_A), one_B)\n    by thm group_left_cancel(B, mul_B, one_B, inv_B, f(one_A), f(one_A), one_B) => f(one_A) = one_B",
+      "reusable_lesson": "Use selected-fact by thm when one atomic consequence is the visible mathematical handoff.",
+      "status": "materialized"
+    },
+    {
+      "id": "S002",
+      "source_order": 9,
+      "intent": "Expose the identity and inverse facts supplied by theorem calls.",
+      "dependencies": ["S001: homomorphism_maps_identity", "R005: group_inverse_unique"],
+      "attempts": [{"candidate": "selected identity and mapped-inverse equalities", "result": "accepted", "verifier_evidence": "session S002: ok=true", "diagnosis": "Both calls can commit only their reader-facing atomic results.", "next_change": "Replay subgroup predicates, then migrate the kernel proof."}],
+      "accepted_litex": "thm homomorphism_maps_inverse:\n    ? forall [GroupHomomorphismSetting], a A:\n        f(inv_A(a)) = inv_B(f(a))\n    by thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f) => f(one_A) = one_B\n    mul_A(inv_A(a), a) = one_A\n    mul_B(f(inv_A(a)), f(a)) = f(mul_A(inv_A(a), a)) = f(one_A) = one_B\n    by thm group_inverse_unique(B, mul_B, one_B, inv_B, f(a), f(inv_A(a))) => f(inv_A(a)) = inv_B(f(a))",
+      "reusable_lesson": "An arrow makes each theorem application's local dataflow visible and limits its stored result.",
+      "status": "materialized"
+    },
+    {
+      "id": "R010",
+      "source_order": 10,
+      "intent": "Replay the subgroup predicate.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing is_subgroup prop", "result": "accepted", "verifier_evidence": "session R010: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Replay normal-subgroup predicate."}],
+      "accepted_litex": "prop is_subgroup([GroupSetting], H power_set(A)):\n    one $in H\n    forall x, y H:\n        mul(x, y) $in H\n    forall x H:\n        inv(x) $in H",
+      "reusable_lesson": "Subgroup closure clauses are unchanged.",
+      "status": "materialized"
+    },
+    {
+      "id": "R011",
+      "source_order": 11,
+      "intent": "Replay the normal-subgroup predicate.",
+      "dependencies": ["R001: GroupSetting", "R010: is_subgroup"],
+      "attempts": [{"candidate": "existing is_normal_subgroup prop", "result": "accepted", "verifier_evidence": "session R011: ok=true", "diagnosis": "Baseline replay accepted.", "next_change": "Test the fully explicit kernel proof."}],
+      "accepted_litex": "prop is_normal_subgroup([GroupSetting], H power_set(A)):\n    $is_subgroup(A, mul, one, inv, H)\n    forall a A, h H:\n        mul(mul(a, h), inv(a)) $in H",
+      "reusable_lesson": "Normality remains subgroup closure plus conjugation closure.",
+      "status": "materialized"
+    },
+    {
+      "id": "S003",
+      "source_order": 12,
+      "intent": "Make every theorem-to-fact handoff explicit in the kernel normality proof.",
+      "dependencies": ["S001: homomorphism_maps_identity", "S002: homomorphism_maps_inverse", "R005: group_inverse_unique", "R010: is_subgroup", "R011: is_normal_subgroup"],
+      "attempts": [{"candidate": "kernel proof with eight selected atomic theorem consequences", "result": "accepted", "verifier_evidence": "session S003: ok=true", "diagnosis": "Each arrow-selected fact is well-defined, verified in the theorem call's temporary context, and sufficient for its next consumer.", "next_change": "Materialize and run clean gates."}],
+      "accepted_litex": "thm kernel_is_normal_subgroup:\n    ? forall [GroupHomomorphismSetting]:\n        $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n        by thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f) => f(one_A) = one_B\n        by thm set_builder_member(one_A, {candidate A: f(candidate) = one_B}) => one_A $in {candidate A: f(candidate) = one_B}\n        claim:\n            ? forall kernel_x, kernel_y {candidate A: f(candidate) = one_B}:\n                mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}\n            f(mul_A(kernel_x, kernel_y)) = mul_B(f(kernel_x), f(kernel_y)) = mul_B(one_B, one_B) = one_B\n            by thm set_builder_member(mul_A(kernel_x, kernel_y), {candidate A: f(candidate) = one_B}) => mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}\n        claim:\n            ? forall kernel_x {candidate A: f(candidate) = one_B}:\n                inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}\n            by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, kernel_x) => f(inv_A(kernel_x)) = inv_B(f(kernel_x))\n            by thm group_inverse_unique(B, mul_B, one_B, inv_B, one_B, one_B) => inv_B(one_B) = one_B\n            f(inv_A(kernel_x)) = inv_B(f(kernel_x)) = inv_B(one_B) = one_B\n            by thm set_builder_member(inv_A(kernel_x), {candidate A: f(candidate) = one_B}) => inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}\n        by def $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? forall conjugator A, kernel_h {candidate A: f(candidate) = one_B}:\n            mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}\n        f(mul_A(conjugator, kernel_h)) = mul_B(f(conjugator), f(kernel_h))\n        by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, conjugator) => f(inv_A(conjugator)) = inv_B(f(conjugator))\n        mul_B(f(conjugator), one_B) = f(conjugator)\n        f(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator))) = mul_B(f(mul_A(conjugator, kernel_h)), f(inv_A(conjugator))) = mul_B(mul_B(f(conjugator), f(kernel_h)), inv_B(f(conjugator))) = mul_B(mul_B(f(conjugator), one_B), inv_B(f(conjugator))) = mul_B(f(conjugator), inv_B(f(conjugator))) = one_B\n        by thm set_builder_member(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)), {candidate A: f(candidate) = one_B}) => mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}\n    by def $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})",
+      "reusable_lesson": "Select the exact atomic fact consumed next; this documents proof dataflow and avoids releasing unrelated theorem conclusions.",
+      "status": "materialized"
+    }
+  ],
+  "liveness_audit": [
+    {
+      "id": "L001",
+      "candidate": "Remove both explicit theorem-result selections from kernel inverse closure.",
+      "result": "failed",
+      "verifier_evidence": "session L001: calculation chain failed at step 1, f(inv_A(kernel_x)) = inv_B(f(kernel_x))",
+      "diagnosis": "The mapped-inverse selection is a live verifier bridge, not a result echo.",
+      "next_change": "Restore the mapped-inverse fact and test inverse-of-identity separately."
+    },
+    {
+      "id": "L002",
+      "candidate": "Keep the mapped-inverse selection but remove inv_B(one_B) = one_B.",
+      "result": "failed",
+      "verifier_evidence": "session L002: calculation chain failed at step 3, inv_B(one_B) = one_B",
+      "diagnosis": "The selected symmetric inverse-uniqueness consequence is independently live.",
+      "next_change": "Restore the exact selected fact; retain both explicit bridges."
+    },
+    {
+      "id": "S003R",
+      "candidate": "Restore both exact selected atomic facts.",
+      "result": "accepted",
+      "verifier_evidence": "session S003R: ok=true",
+      "diagnosis": "The tracer proof is at the current verifier's practical floor for those two theorem-backed chain steps.",
+      "next_change": "Materialize the accepted proof."
+    }
+  ],
+  "materialization": {
+    "block_ids": ["R001", "R002", "R003", "R004", "R005", "R006", "R007", "S001", "S002", "R010", "R011", "S003"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+    "file_gate_result": "exit=0; top-level ok=true; result=success",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/abstract_algebra",
+    "module_gate_result": "exit=0; top-level ok=true; result=success"
+  }
+}

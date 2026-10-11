@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.MaxLeftWhenLessEqual
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/max_left_when_less_equal.lit
+
+forall a R, b R:
+    b <= a
+    =>:
+        max(a, b) = a

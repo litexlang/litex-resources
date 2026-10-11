@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "targets": [
+    "showcases/math_concepts_in_litex/16_probability_theory/main.lit",
+    "showcases/math_concepts_in_litex/14_tarski_geometry_from_axioms/main.lit"
+  ],
+  "session_command": "not applicable: exact held-out deletion sweep, followed by clean registered-file release gates",
+  "proof_spine": [
+    "Detect only a theorem whose sole body statement is textually identical to its then-clause",
+    "Delete that statement and let theorem conclusion verification discharge it from premises or ordinary rules",
+    "Reject the whole materialization if either clean registered-file gate fails"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Deletion-probe every remaining exact sole-line theorem conclusion echo in the math showcases.",
+      "dependencies": [
+        "ordinary equality, order, and function congruence verifier rules",
+        "TarskiEuclidean2DSetting.euclid_intersection_witness_exists"
+      ],
+      "attempts": [
+        {
+          "candidate": "Remove seven exact echoes from probability theory and one exact setting-law echo from Tarski geometry.",
+          "result": "accepted",
+          "verifier_evidence": "both registered-file release runners exited 0 with top-level ok:true; the post-edit structural scan reports exact_echo_count=0",
+          "diagnosis": "each deleted line was syntactic padding; the independent then-clause verification closed the same target without storing an echoed body fact",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "Bodyless forms for equal_arguments_have_equal_function_values, equal_binary_arguments_have_equal_function_values, equalities_compose, one_minus_one_minus, add_left_preserves_strict_order, add_left_preserves_order, reciprocal_left_mul_equals_division, and euclid_postulate_supplies_intersections.",
+      "reusable_lesson": "An exact sole-line theorem conclusion echo is a high-confidence liveness candidate, but the registered-file gate remains mandatory because proof-step and conclusion-check states can differ.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": [
+      "B001"
+    ],
+    "file_gate_commands": [
+      "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/16_probability_theory/main.lit",
+      "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/14_tarski_geometry_from_axioms/main.lit"
+    ],
+    "file_gate_results": "both exit 0 with top-level ok:true",
+    "post_edit_exact_echo_count": 0,
+    "scope_boundary": "A read-only repository-wide scan found 101 legacy exact echoes outside math_concepts_in_litex, including generated datasets, publication mirrors, probes, and drafts. They were not blindly rewritten because their owning source and publication boundaries differ.",
+    "trust_delta": "none",
+    "statement_delta": "none; eight sole body statements removed"
+  }
+}

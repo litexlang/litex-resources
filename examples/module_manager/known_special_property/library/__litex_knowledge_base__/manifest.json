@@ -1,0 +1,31 @@
+{
+  "kind": "litex_kb_manifest",
+  "abi": "9",
+  "fingerprint": "f7e11e57dfdf74be",
+  "self_mod_id": 0,
+  "mod_id_to_path": [
+    [
+      0,
+      "/Users/shenjiachen/主要文件夹/GeekGems/litex/golitex/examples/module_manager/known_special_property/library"
+    ]
+  ],
+  "exports": [
+    {
+      "export_file_id": 0,
+      "name": "base",
+      "relative_path": "base.lit",
+      "global_ids_at_enter": {
+        "next_fact_id": 1,
+        "next_well_definedness_id": 1,
+        "next_prop_rewrite_property_id": 1,
+        "next_identifier_id": 1
+      },
+      "global_ids_at_leave": {
+        "next_fact_id": 23,
+        "next_well_definedness_id": 5,
+        "next_prop_rewrite_property_id": 1,
+        "next_identifier_id": 3
+      }
+    }
+  ]
+}

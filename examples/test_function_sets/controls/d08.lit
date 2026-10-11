@@ -1,0 +1,15 @@
+# D08: Template-selected struct containing a named function
+# Supported explicit proof; original direct source in capability_probes/d08.lit.
+
+struct Box:
+    op fn(x R) R
+    tag N
+have fn step(x R) R = x + 1
+template<a R>:
+    have box &Box = (step, 0)
+\box<2> = (step, 0)
+have selected &Box = \box<2>
+selected = (step, 0)
+selected.op = step
+selected.op $in fn(x R) R
+selected.op(3) = step(3) = 4

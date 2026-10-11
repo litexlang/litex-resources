@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/8_probability_and_statistics_in_nutshell/main.lit",
+  "proof_spine": ["two-point distribution", "expectation and variance", "three-point least-squares center", "conditional probability", "Bayes rule"],
+  "blocks": [
+    {"id": "FILE", "status": "accepted", "classification": "proof", "note": "Release runner succeeded."},
+    {"id": "P205", "intent": "Test expectation linearity with a probability-vector premise.", "result": "rejected_from_materialization", "diagnosis": "The premise is mathematically unused and would be interface tax."},
+    {"id": "P205b", "intent": "Prove affine linearity of expectation without an unused probability premise.", "accepted_litex": "thm expectation2_affine: ? forall X, Y finite_seq(R, 2), probs finite_seq(R, 2), a, b R: expectation2(affine_combine2(X, Y, a, b), probs) = a * expectation2(X, probs) + b * expectation2(Y, probs)", "status": "accepted_materialized"},
+    {"id": "P210", "intent": "Use one coherent Bayes example with prior 1/3, likelihood 3/4, evidence 1/2, and joint 1/4.", "accepted_litex": "by thm bayes_rule(1 / 3, 3 / 4, 1 / 2, 1 / 4) => conditional_probability(1 / 4, 1 / 2) = bayes_posterior(1 / 3, 3 / 4, 1 / 2)", "status": "accepted_materialized"},
+    {"id": "LS001", "intent": "Introduce the requested relation: a center is least-squares when it beats every real candidate.", "accepted_litex": "prop is_least_squares_center(center, a, b, c R): forall candidate R: (a-center)^2 + (b-center)^2 + (c-center)^2 <= (a-candidate)^2 + (b-candidate)^2 + (c-candidate)^2", "status": "accepted_session"},
+    {"id": "LS002", "intent": "Try to prove the mean theorem while leaving mean3 applications inside the final identity.", "status": "rejected_session", "diagnosis": "The arithmetic normalizer did not rewrite mean3 under the outer squared-error sum from a separate mean3 = (a+b+c)/3 fact; the final identity was unknown."},
+    {"id": "LS003", "intent": "Try a conditional decomposition with premise 3*center = a+b+c.", "status": "rejected_session", "diagnosis": "The conditional premise was not consumed automatically by rational normalization; the direct expanded identity is the smallest stable interface."},
+    {"id": "LS004", "intent": "Expose the algebraic decomposition for three observations.", "accepted_litex": "thm three_point_sse_decomposition: forall a,b,c,candidate R, S(mean)+3*(candidate-mean)^2=S(candidate)", "status": "accepted_session"},
+    {"id": "LS005", "intent": "Use nonnegativity of the square plus the decomposition to prove the formula center minimizes every candidate.", "accepted_litex": "thm mean_formula_is_least_squares_center", "status": "accepted_session"},
+    {"id": "LS006", "intent": "Expose the callable mean3 interface and transport the formula theorem through its defining equality.", "accepted_litex": "have fn mean3(a, b, c R) R = (a + b + c) / 3; thm mean3_is_least_squares_center", "status": "accepted_session"},
+    {"id": "LS007", "intent": "Concrete tracer a=1,b=2,c=5: mean 8/3 gives 26/3, while candidate 2 gives 10 and the gap is 4/3.", "accepted_litex": "mean3(1, 2, 5) = 8 / 3; 26 / 3 <= 10; 3 * (2 - mean3(1, 2, 5))^2 = 4 / 3", "status": "accepted_session"}
+  ],
+  "materialization": {
+    "block_ids": ["FILE", "P205b", "P210", "LS001", "LS004", "LS005", "LS006", "LS007"],
+    "file_gate_command": "target/release/litex -f showcases/math_concepts_in_litex/8_probability_and_statistics_in_nutshell/main.lit",
+    "module_gate_command": "target/release/litex -r showcases/math_concepts_in_litex/8_probability_and_statistics_in_nutshell",
+    "file_gate_result": "file and module release runners exited 0 with top-level ok=true"
+  },
+  "session_command": "target/release/litex -isolated -session",
+  "session_note": "The current CLI accepts -session/-f but does not implement the repository-policy -compact or -before flags; the isolated release session was used for the source-order probes, followed by the clean file runner gate."
+}

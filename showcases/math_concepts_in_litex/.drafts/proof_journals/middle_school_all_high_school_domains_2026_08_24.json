@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "date": "2026-08-24",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "accepted_source": "showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "proof_spine": [
+    "Map every mathematical direction in the high-school Introduction to one standalone showcase section.",
+    "Use native carriers and formula-defined functions or relations rather than source-specific wrapper types.",
+    "Keep the showcase trust-free while exposing concrete calculations for every direction."
+  ],
+  "blocks": [
+    {
+      "id": "foundations",
+      "source_lines": "8-15",
+      "status": "accepted",
+      "evidence": "session block foundations returned ok=true",
+      "summary": "Checked gcd, finite-set membership, subset, and cardinality."
+    },
+    {
+      "id": "algebra",
+      "source_lines": "16-73",
+      "status": "accepted",
+      "evidence": "session block algebra returned ok=true",
+      "summary": "Replayed the linear equation, zero-product roots, and two-variable AM-GM proof."
+    },
+    {
+      "id": "powers_logs",
+      "source_lines": "74-84",
+      "status": "accepted",
+      "evidence": "session block powers_logs returned ok=true",
+      "summary": "Checked powers, logarithm evaluations, the exponent addition law, and a product-log calculation."
+    },
+    {
+      "id": "functions",
+      "source_lines": "85-96",
+      "status": "accepted",
+      "evidence": "session block functions returned ok=true",
+      "summary": "Defined and evaluated linear and square functions and checked square-function parity."
+    },
+    {
+      "id": "trigonometry",
+      "source_lines": "97-111",
+      "status": "accepted",
+      "evidence": "session block trigonometry returned ok=true",
+      "summary": "Defined degree conversion and the cosine-law expression, then checked the Pythagorean identity and right-triangle example."
+    },
+    {
+      "id": "plane_geometry",
+      "source_lines": "112-131",
+      "status": "accepted",
+      "evidence": "session block plane_geometry returned ok=true",
+      "summary": "Defined plane-vector operations, perpendicularity, circles, and ellipses with concrete uses."
+    },
+    {
+      "id": "complex_numbers",
+      "source_lines": "132-149",
+      "status": "accepted_after_retry",
+      "attempts": [
+        {
+          "result": "failed",
+          "candidate": "Jump directly from C_abs(3 + 4*i) to sqrt(3^2 + 4^2).",
+          "verifier_evidence": "complex_numbers returned ok=false; the first chain step was atomic fact unknown."
+        },
+        {
+          "result": "accepted",
+          "candidate": "Expose real and imaginary coordinates before simplifying the modulus, and replay the conjugate coordinate equations.",
+          "verifier_evidence": "complex_numbers_retry returned ok=true."
+        }
+      ],
+      "summary": "Kept the native complex carrier and the smallest explicit coordinate bridge needed by modulus and conjugation."
+    },
+    {
+      "id": "solid_geometry",
+      "source_lines": "150-167",
+      "status": "accepted",
+      "evidence": "session block solid_geometry returned ok=true",
+      "summary": "Defined the three-dimensional dot product, a coordinate plane, point incidence, prism volume, and cube surface area."
+    },
+    {
+      "id": "probability",
+      "source_lines": "168-181",
+      "status": "accepted",
+      "evidence": "session block probability returned ok=true",
+      "summary": "Defined uniform, conditional, and Bayes probability formulas with finite examples."
+    },
+    {
+      "id": "statistics",
+      "source_lines": "182-198",
+      "status": "accepted_after_retry",
+      "attempts": [
+        {
+          "result": "failed",
+          "candidate": "State variance3(1,2,3)=2/3 and covariance3(...)=4/3 as compressed endpoints.",
+          "verifier_evidence": "statistics returned ok=false at variance3(1, 2, 3) = 2 / 3."
+        },
+        {
+          "result": "accepted",
+          "candidate": "Evaluate both means, then rewrite variance and covariance through those stored values before evaluating the regression slope.",
+          "verifier_evidence": "statistics_retry returned ok=true."
+        }
+      ],
+      "summary": "The final chain exposes mean, variance, covariance, and three-point regression without proof-only wrappers."
+    },
+    {
+      "id": "discrete_math",
+      "source_lines": "199-226",
+      "status": "accepted_after_retry",
+      "attempts": [
+        {
+          "result": "failed",
+          "candidate": "Write the binomial-square identity with undeclared free identifiers a and b.",
+          "verifier_evidence": "discrete_math returned ok=false during well-definedness because identifier a was not defined."
+        },
+        {
+          "result": "accepted",
+          "candidate": "Quantify a and b over R, then keep the sequence, factorial count, and induction blocks unchanged.",
+          "verifier_evidence": "discrete_math_retry returned ok=true."
+        }
+      ],
+      "summary": "Checked arithmetic and geometric sequences, permutation counting, the binomial square, and an induction inequality."
+    },
+    {
+      "id": "calculus",
+      "source_lines": "227-245",
+      "status": "accepted_after_retry",
+      "attempts": [
+        {
+          "result": "failed",
+          "candidate": "Simplify the circumference difference quotient directly to 2*pi after naming the two circumference values.",
+          "verifier_evidence": "calculus returned ok=false at the second calculation-chain step."
+        },
+        {
+          "result": "accepted",
+          "candidate": "Insert the substituted numerator (2*pi*(a+h)-2*pi*a)/h before normalization.",
+          "verifier_evidence": "calculus_retry returned ok=true."
+        }
+      ],
+      "summary": "Defined average rate of change and checked a stationary point for a named derivative formula."
+    }
+  ],
+  "trust_delta": 0,
+  "final_gate": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit and target/release/litex -compact -runner -r showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell both returned exit code 0 with top-level ok=true"
+}

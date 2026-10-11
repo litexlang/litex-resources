@@ -1,0 +1,64 @@
+# Write mathematically correct code with Litex: Newton's method for sqrt(2).
+#
+# Why this showcase matters: Litex verifies mathematical facts about an
+# algorithm, checks its executable algo, and extracts that checked boundary as
+# ordinary Python or C. The generated function can then run inside existing
+# scripts, scientific-computing pipelines, services, and other host systems;
+# the surrounding application does not have to be rewritten in Litex.
+#
+# Source-only shape (no kernel change) for the current verifier:
+# - keep one extractable `algo … by cases` as the shared definition
+# - prove the concrete n = 2 residual bound by exact unrolling of two steps
+# - do not use `have fn … R by induc` (stack overflow / hang today)
+# - do not nest `by induc n` under `thm`/`claim` `forall n` (parse binder reuse)
+#
+# Exact trajectory from 1:
+#   x0 = 1,  x1 = 3/2,  x2 = 17/12
+#   |x1^2 - 2| = 1/4,  |x2^2 - 2| = 1/144 <= 1/64
+#
+# Boundary: this Litex proof uses exact real arithmetic. The generated Python
+# and C code uses target-language numeric semantics, including floating point,
+# which this proof does not verify.
+
+have fn square_root_two_residual(x R) R = x^2 - 2
+
+# One `algo … by cases` defines the mathematical fn and the extractable cases.
+# The explicit x = 0 restart totalizes the step on R for extraction; the proved
+# trajectory starts at 1 and stays above 1, so it never takes that branch.
+# [-extract]
+algo newton_sqrt_two_step(x R) R by cases:
+    case x = 0: 1
+    case x != 0: (x + 2 / x) / 2
+# [end of -extract]
+
+# Trajectory start x0 = 1, then two exact Newton steps.
+# Split long equality chains: the verifier searches one link at a time.
+newton_sqrt_two_step(1) = (1 + 2 / 1) / 2 = 3 / 2
+(3 / 2)^2 = 9 / 4
+9 / 4 - 2 = 1 / 4
+square_root_two_residual(3 / 2) = 1 / 4
+square_root_two_residual(newton_sqrt_two_step(1)) = square_root_two_residual(3 / 2) = 1 / 4
+|square_root_two_residual(newton_sqrt_two_step(1))| = |1 / 4| = 1 / 4
+
+newton_sqrt_two_step(3 / 2) = ((3 / 2) + 2 / (3 / 2)) / 2
+2 / (3 / 2) = 4 / 3
+(3 / 2) + 4 / 3 = 17 / 6
+((3 / 2) + 4 / 3) / 2 = (17 / 6) / 2 = 17 / 12
+newton_sqrt_two_step(3 / 2) = 17 / 12
+(17 / 12)^2 = 289 / 144
+289 / 144 - 288 / 144 = 1 / 144
+square_root_two_residual(17 / 12) = 1 / 144
+square_root_two_residual(newton_sqrt_two_step(3 / 2)) = square_root_two_residual(17 / 12) = 1 / 144
+# abs at the second step: residual is positive 1/144, compare residual directly.
+square_root_two_residual(newton_sqrt_two_step(3 / 2)) > 0
+1 / 144 > 0
+
+# Compare with the double-exponential comparison value at n = 2:
+# 4 * (1/4)^(2^2) = 4 * (1/4)^4 = 1/64.
+80 / 9216 > 0
+1 / 144 + 80 / 9216 > 1 / 144
+1 / 64 = 1 / 144 + 80 / 9216
+1 / 64 > 1 / 144
+1 / 144 < 1 / 64
+1 / 144 <= 1 / 64
+square_root_two_residual(newton_sqrt_two_step(3 / 2)) = 1 / 144 <= 1 / 64

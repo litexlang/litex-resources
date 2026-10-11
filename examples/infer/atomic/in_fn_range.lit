@@ -1,0 +1,8 @@
+# Infer: InFact.FnRange
+# When: store `z $in fn_range(g)` with g registered in FnSet.
+# Infers: `z $in` codomain of g.
+# Run: litex -f examples/infer/atomic/in_fn_range.lit
+
+have fn g(t R) R = t
+forall z fn_range(g):
+    z $in R

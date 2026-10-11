@@ -1,0 +1,4 @@
+claim:
+    ? 1 = 1
+    obtain k from exist k R st {k = 0}
+have k R

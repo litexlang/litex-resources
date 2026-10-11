@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+  "date": "2026-08-17",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+  "proof_spine": [
+    "state candidate group laws and expose them through a named setting",
+    "derive cancellation, right identity, and right inverse",
+    "state a multiplication-preserving map between two groups",
+    "prove the map preserves identity",
+    "cancel a common image factor to prove preservation of inverse"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Define the minimal group interface from associative multiplication, a left identity, and left inverses.",
+      "dependencies": ["builtin nonempty_set", "builtin fn"],
+      "attempts": [
+        {
+          "candidate": "prop is_group(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A):\n    forall u, v, w A:\n        mul(mul(u, v), w) = mul(u, mul(v, w))\n    forall u A:\n        mul(one, u) = u\n    forall u A:\n        mul(inv(u), u) = one",
+          "result": "accepted",
+          "verifier_evidence": "session block B001: ok=true",
+          "diagnosis": "The direct proposition declaration is well-formed.",
+          "next_change": "Expose the proposition through a setting."
+        }
+      ],
+      "accepted_litex": "prop is_group(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A):\n    forall u, v, w A:\n        mul(mul(u, v), w) = mul(u, mul(v, w))\n    forall u A:\n        mul(one, u) = u\n    forall u A:\n        mul(inv(u), u) = one",
+      "reusable_lesson": "A named proposition can document the interface while a setting elaborates it for theorem headers.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Expose the group interface as the default theorem-writing context.",
+      "dependencies": ["B001: is_group"],
+      "attempts": [
+        {
+          "candidate": "setting GroupSetting:\n    A nonempty_set\n    mul fn(x, y A) A\n    one A\n    inv fn(x A) A\n    $is_group(A, mul, one, inv)",
+          "result": "accepted",
+          "verifier_evidence": "session block B002: ok=true",
+          "diagnosis": "The setting elaborates the named group proposition.",
+          "next_change": "Derive the standard right-hand group laws."
+        }
+      ],
+      "accepted_litex": "setting GroupSetting:\n    A nonempty_set\n    mul fn(x, y A) A\n    one A\n    inv fn(x A) A\n    $is_group(A, mul, one, inv)",
+      "reusable_lesson": "The declaration parses, but this form cannot currently be used in theorem headers because elaboration emits an unparsable qualified proposition call.",
+      "status": "superseded_after_use_failure"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Derive left cancellation in the group setting.",
+      "dependencies": ["B002: GroupSetting"],
+      "attempts": [
+        {
+          "candidate": "thm group_left_cancel:\n    ? forall [GroupSetting], a, b, c A:\n        mul(a, b) = mul(a, c)\n        =>:\n            b = c\n    mul(inv(a), a) = one\n    b = mul(one, b) = mul(mul(inv(a), a), b) = mul(inv(a), mul(a, b)) = mul(inv(a), mul(a, c)) = mul(mul(inv(a), a), c) = mul(one, c) = c",
+          "result": "failed",
+          "verifier_evidence": "session block B003: ParseError at expanded theorem header: name first character cannot be a number or symbol, Got: '$'",
+          "diagnosis": "A setting law written as $is_group(...) is accepted at declaration time but elaborates to an unparsable qualified proposition call when the setting is used.",
+          "next_change": "Restart the session and define GroupSetting with the group laws written directly."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Until setting proposition-call elaboration is repaired, theorem-facing settings must carry their laws directly.",
+      "status": "failed_requires_restart"
+    },
+    {
+      "id": "B002R",
+      "source_order": 2,
+      "intent": "Expose group laws through a theorem-facing setting using the currently supported direct-law form.",
+      "dependencies": ["builtin nonempty_set", "builtin fn"],
+      "attempts": [
+        {
+          "candidate": "setting GroupSetting:\n    A nonempty_set\n    mul fn(x, y A) A\n    one A\n    inv fn(x A) A\n    forall u, v, w A:\n        mul(mul(u, v), w) = mul(u, mul(v, w))\n    forall u A:\n        mul(one, u) = u\n        mul(inv(u), u) = one",
+          "result": "accepted",
+          "verifier_evidence": "restarted session block B002R: ok=true",
+          "diagnosis": "Direct setting laws elaborate correctly in theorem headers.",
+          "next_change": "Retry left cancellation."
+        }
+      ],
+      "accepted_litex": "setting GroupSetting:\n    A nonempty_set\n    mul fn(x, y A) A\n    one A\n    inv fn(x A) A\n    forall u, v, w A:\n        mul(mul(u, v), w) = mul(u, mul(v, w))\n    forall u A:\n        mul(one, u) = u\n        mul(inv(u), u) = one",
+      "reusable_lesson": "Keep the setting as the theorem-facing form; duplicate the compact named proposition only where a first-class group predicate is useful.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003R",
+      "source_order": 3,
+      "intent": "Derive left cancellation from the group laws.",
+      "dependencies": ["B002R: GroupSetting"],
+      "attempts": [
+        {
+          "candidate": "thm group_left_cancel:\n    ? forall [GroupSetting], a, b, c A:\n        mul(a, b) = mul(a, c)\n        =>:\n            b = c\n    mul(inv(a), a) = one\n    b = mul(one, b) = mul(mul(inv(a), a), b) = mul(inv(a), mul(a, b)) = mul(inv(a), mul(a, c)) = mul(mul(inv(a), a), c) = mul(one, c) = c",
+          "result": "accepted",
+          "verifier_evidence": "restarted session block B003R: ok=true",
+          "diagnosis": "The standard inverse-and-associativity chain verifies.",
+          "next_change": "Use cancellation to derive right identity."
+        }
+      ],
+      "accepted_litex": "thm group_left_cancel:\n    ? forall [GroupSetting], a, b, c A:\n        mul(a, b) = mul(a, c)\n        =>:\n            b = c\n    mul(inv(a), a) = one\n    b = mul(one, b) = mul(mul(inv(a), a), b) = mul(inv(a), mul(a, b)) = mul(inv(a), mul(a, c)) = mul(mul(inv(a), a), c) = mul(one, c) = c",
+      "reusable_lesson": "Left cancellation is the bridge used for derived right-hand group laws and homomorphism facts.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "source_order": 4,
+      "intent": "Derive the right identity law.",
+      "dependencies": ["B002R: GroupSetting", "B003R: group_left_cancel"],
+      "attempts": [
+        {
+          "candidate": "thm group_mul_one:\n    ? forall [GroupSetting], a A:\n        mul(a, one) = a\n    mul(inv(a), a) = one\n    mul(inv(a), mul(a, one)) = mul(mul(inv(a), a), one) = mul(one, one) = one = mul(inv(a), a)\n    by thm group_left_cancel(A, mul, one, inv, inv(a), mul(a, one), a)",
+          "result": "accepted",
+          "verifier_evidence": "session block B004: ok=true",
+          "diagnosis": "Left cancellation closes the derived right-identity proof.",
+          "next_change": "Derive right inverse."
+        }
+      ],
+      "accepted_litex": "thm group_mul_one:\n    ? forall [GroupSetting], a A:\n        mul(a, one) = a\n    mul(inv(a), a) = one\n    mul(inv(a), mul(a, one)) = mul(mul(inv(a), a), one) = mul(one, one) = one = mul(inv(a), a)\n    by thm group_left_cancel(A, mul, one, inv, inv(a), mul(a, one), a)",
+      "reusable_lesson": "Derive right identity once and reuse it instead of strengthening the primitive group assumptions.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "source_order": 5,
+      "intent": "Derive the right inverse law.",
+      "dependencies": ["B002R: GroupSetting", "B003R: group_left_cancel", "B004: group_mul_one"],
+      "attempts": [
+        {
+          "candidate": "thm group_mul_inv:\n    ? forall [GroupSetting], a A:\n        mul(a, inv(a)) = one\n    mul(inv(a), a) = one\n    by thm group_mul_one(A, mul, one, inv, inv(a))\n    mul(inv(a), mul(a, inv(a))) = mul(mul(inv(a), a), inv(a)) = mul(one, inv(a)) = inv(a) = mul(inv(a), one)\n    by thm group_left_cancel(A, mul, one, inv, inv(a), mul(a, inv(a)), one)",
+          "result": "accepted",
+          "verifier_evidence": "session block B005: ok=true",
+          "diagnosis": "The proof combines the primitive left inverse with derived right identity and cancellation.",
+          "next_change": "Define the group-homomorphism setting."
+        }
+      ],
+      "accepted_litex": "thm group_mul_inv:\n    ? forall [GroupSetting], a A:\n        mul(a, inv(a)) = one\n    mul(inv(a), a) = one\n    by thm group_mul_one(A, mul, one, inv, inv(a))\n    mul(inv(a), mul(a, inv(a))) = mul(mul(inv(a), a), inv(a)) = mul(one, inv(a)) = inv(a) = mul(inv(a), one)\n    by thm group_left_cancel(A, mul, one, inv, inv(a), mul(a, inv(a)), one)",
+      "reusable_lesson": "Primitive left-sided axioms suffice; right-sided laws should be derived in the showcase.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "source_order": 6,
+      "intent": "Define a first-class predicate for multiplication-preserving maps between groups.",
+      "dependencies": ["B001: is_group"],
+      "attempts": [
+        {
+          "candidate": "prop is_group_homomorphism(\n    A, B nonempty_set,\n    mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A,\n    mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B,\n    f fn(x A) B\n): ...",
+          "result": "failed",
+          "verifier_evidence": "session block B006: ParseError, unexpected indent at line 3",
+          "diagnosis": "Litex proposition headers cannot be split across physical lines in this form.",
+          "next_change": "Keep the full typed parameter list on one line."
+        },
+        {
+          "candidate": "prop is_group_homomorphism(A, B nonempty_set, mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A, mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B, f fn(x A) B):\n    $is_group(A, mul_A, one_A, inv_A)\n    $is_group(B, mul_B, one_B, inv_B)\n    forall x, y A:\n        f(mul_A(x, y)) = mul_B(f(x), f(y))",
+          "result": "accepted",
+          "verifier_evidence": "session block B006R: ok=true",
+          "diagnosis": "The single-line typed header parses and the predicate body verifies.",
+          "next_change": "Create the theorem-facing homomorphism setting with direct group laws."
+        }
+      ],
+      "accepted_litex": "prop is_group_homomorphism(A, B nonempty_set, mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A, mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B, f fn(x A) B):\n    $is_group(A, mul_A, one_A, inv_A)\n    $is_group(B, mul_B, one_B, inv_B)\n    forall x, y A:\n        f(mul_A(x, y)) = mul_B(f(x), f(y))",
+      "reusable_lesson": "Long declaration headers currently need to remain on one physical line.",
+      "status": "materialized"
+    },
+    {
+      "id": "B007",
+      "source_order": 7,
+      "intent": "Create the setting-first context for a homomorphism between two groups.",
+      "dependencies": ["builtin nonempty_set", "builtin fn", "B006R documents the corresponding first-class predicate"],
+      "attempts": [
+        {
+          "candidate": "setting GroupHomomorphismSetting with two direct copies of the group laws and the multiplication-preservation law",
+          "result": "accepted",
+          "verifier_evidence": "session block B007: ok=true",
+          "diagnosis": "The setting elaborates both group contexts and the map law successfully.",
+          "next_change": "Prove preservation of identity."
+        }
+      ],
+      "accepted_litex": "setting GroupHomomorphismSetting:\n    A, B nonempty_set\n    mul_A fn(x, y A) A\n    one_A A\n    inv_A fn(x A) A\n    mul_B fn(x, y B) B\n    one_B B\n    inv_B fn(x B) B\n    f fn(x A) B\n    forall u, v, w A:\n        mul_A(mul_A(u, v), w) = mul_A(u, mul_A(v, w))\n    forall u A:\n        mul_A(one_A, u) = u\n        mul_A(inv_A(u), u) = one_A\n    forall u, v, w B:\n        mul_B(mul_B(u, v), w) = mul_B(u, mul_B(v, w))\n    forall u B:\n        mul_B(one_B, u) = u\n        mul_B(inv_B(u), u) = one_B\n    forall x, y A:\n        f(mul_A(x, y)) = mul_B(f(x), f(y))",
+      "reusable_lesson": "Settings are ideal for ambient theorem parameters even though the current elaborator forces direct-law repetition.",
+      "status": "materialized"
+    },
+    {
+      "id": "B008",
+      "source_order": 8,
+      "intent": "Prove that a group homomorphism preserves the identity.",
+      "dependencies": ["B003R: group_left_cancel", "B004: group_mul_one", "B007: GroupHomomorphismSetting"],
+      "attempts": [
+        {
+          "candidate": "thm homomorphism_maps_identity using f(one_A * one_A), target right identity, and left cancellation",
+          "result": "accepted",
+          "verifier_evidence": "session block B008: ok=true",
+          "diagnosis": "Multiplication preservation turns idempotence of the source identity into a cancellable equality in the target.",
+          "next_change": "Prove preservation of inverse."
+        }
+      ],
+      "accepted_litex": "thm homomorphism_maps_identity:\n    ? forall [GroupHomomorphismSetting]:\n        f(one_A) = one_B\n    mul_A(one_A, one_A) = one_A\n    f(mul_A(one_A, one_A)) = mul_B(f(one_A), f(one_A))\n    by thm group_mul_one(B, mul_B, one_B, inv_B, f(one_A))\n    mul_B(f(one_A), f(one_A)) = f(mul_A(one_A, one_A)) = f(one_A) = mul_B(f(one_A), one_B)\n    by thm group_left_cancel(B, mul_B, one_B, inv_B, f(one_A), f(one_A), one_B)",
+      "reusable_lesson": "Identity preservation needs only multiplication preservation plus target-group cancellation.",
+      "status": "materialized"
+    },
+    {
+      "id": "B009",
+      "source_order": 9,
+      "intent": "Prove the tracer theorem that a group homomorphism preserves inverses.",
+      "dependencies": ["B004: group_mul_one", "B005: group_mul_inv", "B008: homomorphism_maps_identity"],
+      "attempts": [
+        {
+          "candidate": "thm homomorphism_maps_inverse by turning f(inv_A(a)) into f(inv_A(a)) * (f(a) * inv_B(f(a))) and reassociating",
+          "result": "accepted",
+          "verifier_evidence": "session block B009: ok=true",
+          "diagnosis": "The source left-inverse law maps to a target left inverse; target right identity and right inverse identify it with inv_B(f(a)).",
+          "next_change": "Materialize the accepted source prefix and run the file gate."
+        }
+      ],
+      "accepted_litex": "thm homomorphism_maps_inverse:\n    ? forall [GroupHomomorphismSetting], a A:\n        f(inv_A(a)) = inv_B(f(a))\n    by thm homomorphism_maps_identity(A, B, mul_A, one_A, inv_A, mul_B, one_B, inv_B, f)\n    mul_A(inv_A(a), a) = one_A\n    f(mul_A(inv_A(a), a)) = mul_B(f(inv_A(a)), f(a))\n    mul_B(f(inv_A(a)), f(a)) = f(mul_A(inv_A(a), a)) = f(one_A) = one_B\n    by thm group_mul_one(B, mul_B, one_B, inv_B, f(inv_A(a)))\n    by thm group_mul_inv(B, mul_B, one_B, inv_B, f(a))\n    f(inv_A(a)) = mul_B(f(inv_A(a)), one_B) = mul_B(f(inv_A(a)), mul_B(f(a), inv_B(f(a)))) = mul_B(mul_B(f(inv_A(a)), f(a)), inv_B(f(a))) = mul_B(one_B, inv_B(f(a))) = inv_B(f(a))",
+      "reusable_lesson": "Inverse preservation is clearest as a uniqueness-of-inverse calculation; no custom inverse predicate is needed.",
+      "status": "materialized"
+    }
+  ],
+  "lesson": "Settings are the right theorem-facing form here, but their laws must currently be written directly; proposition calls inside settings fail when elaborated into theorem headers.",
+  "materialization": {
+    "block_ids": ["B001", "B002R", "B003R", "B004", "B005", "B006", "B007", "B008", "B009"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+    "file_gate_result": "exit 0; top-level ok=true"
+  },
+  "final_gate": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/abstract_algebra: exit 0; top-level ok=true"
+}

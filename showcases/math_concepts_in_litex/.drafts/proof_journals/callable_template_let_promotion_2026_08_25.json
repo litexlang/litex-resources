@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "candidate_rule": "When a proof repeatedly applies one fixed template specialization, alias the callable specialization itself with let and call the alias normally. Keep exported and canonical matching boundaries in canonical spelling, and keep any constructor inspected by a proof action explicit.",
+  "evidence_families": [
+    {
+      "id": "ladr-vector-neg-callable",
+      "journal": "scripts/linear_algebra_done_right/proof_journals/callable_template_let_chap1b_2026_08_25.json",
+      "result": "positive across function-head, theorem-selection, equality, and downstream chapter replay"
+    },
+    {
+      "id": "linear-showcase-callable-held-out",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/callable_template_let_linear_2026_08_25.json",
+      "result": "positive replacement of a result-only alias by a reusable callable specialization alias"
+    },
+    {
+      "id": "topology-function-under-fn-range-held-out",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/callable_function_let_topology_2026_08_25.json",
+      "result": "positive inside explicit fn_range, including have-by-preimage"
+    },
+    {
+      "id": "ladr-canonical-structural-fold-boundary",
+      "journal": "scripts/linear_algebra_done_right/proof_journals/callable_template_let_chap1c_2026_08_25.json",
+      "result": "negative: alias-spelled structural clauses did not discharge a canonical exported predicate fold without duplicate bridges"
+    },
+    {
+      "id": "prior-semantic-local-name-evidence",
+      "journal": "showcases/math_concepts_in_litex/.drafts/proof_journals/semantic_local_names_promotion_2026_08_24.json",
+      "result": "independent prior evidence for semantic names, typed-have choice, and constructor-sensitive rejection"
+    }
+  ],
+  "positive_examples": [
+    "let neg = \\vector_neg<K, field, V, space>; neg(x)",
+    "let image_map = fn(source K) Y {f(source)}; have by preimage source from image $in fn_range(image_map)"
+  ],
+  "negative_boundaries": [
+    "Do not store all structural clauses under an alias when a later exported canonical by-def fold needs the canonical clauses.",
+    "Do not alias away fn_range or another constructor that the next proof action must inspect."
+  ],
+  "behavior_check": "Held-out LADR and topology work selected two readable callable aliases, preserved theorem statements and trust counts, and rejected one alias that would have introduced a canonical adapter stack.",
+  "focused_gates": [
+    "target/release/litex -compact -runner -f scripts/linear_algebra_done_right/textbook/chap1b.lit",
+    "target/release/litex -compact -runner -f scripts/linear_algebra_done_right/textbook/chap1c.lit",
+    "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+    "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/9_topology/main.lit"
+  ],
+  "focused_gate_result": "all exit 0 with top-level ok: true",
+  "final_evidence": {
+    "current_source_build": "cargo build --release exited 0 before the green gates and again after later concurrent edits",
+    "proof_journal_linter": "4 files; 0 errors; 0 warnings",
+    "skill_validator": "Skill is valid!",
+    "declaration_count_delta": "none",
+    "trust_or_axiom_delta": "none",
+    "latest_current_source_retry": "The final rebuilt binary is globally blocked before these targets by concurrent local-builtin-catalog work: canonical local-rule matching does not yet support fixed FnSet nodes."
+  },
+  "promotion_target": "/Users/shenjiachen/.codex/skills/litex-proof-writer"
+}

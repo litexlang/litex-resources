@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+  "date": "2026-08-17",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+  "proof_spine": [
+    "define subgroup and normal-subgroup properties over the existing group setting",
+    "show the native kernel set builder contains the identity and is closed under multiplication and inverse",
+    "show every conjugate of a kernel element maps to the target identity",
+    "fold the normal-subgroup definition"
+  ],
+  "blocks": [
+    {
+      "id": "R001",
+      "source_order": 1,
+      "intent": "Replay the existing group setting in the target-file session.",
+      "dependencies": ["builtin nonempty_set", "builtin fn"],
+      "attempts": [{"candidate": "existing GroupSetting declaration", "result": "accepted", "verifier_evidence": "session block R001: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay is_group."}],
+      "accepted_litex": "setting GroupSetting(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A):\n    forall u, v, w A:\n        mul(mul(u, v), w) = mul(u, mul(v, w))\n    forall u A:\n        mul(one, u) = u\n        mul(u, one) = u\n        mul(inv(u), u) = one\n        mul(u, inv(u)) = one",
+      "reusable_lesson": "The parameterized setting is the single reusable group-law bundle.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R002", "source_order": 2,
+      "intent": "Replay the existing definition-facing group predicate.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "prop is_group([GroupSetting])", "result": "accepted", "verifier_evidence": "session block R002: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay the established group toolkit."}],
+      "accepted_litex": "prop is_group([GroupSetting])",
+      "reusable_lesson": "The proposition reuses the same setting bundle without duplicating laws.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R003", "source_order": 3,
+      "intent": "Replay left cancellation.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing group_left_cancel theorem", "result": "accepted", "verifier_evidence": "session block R003: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay uniqueness theorems."}],
+      "accepted_litex": "thm group_left_cancel:\n    ? forall [GroupSetting], a, b, c A:\n        mul(a, b) = mul(a, c)\n        =>:\n            b = c\n    mul(inv(a), a) = one\n    b = mul(one, b) = mul(mul(inv(a), a), b) = mul(inv(a), mul(a, b)) = mul(inv(a), mul(a, c)) = mul(mul(inv(a), a), c) = mul(one, c) = c",
+      "reusable_lesson": "Cancellation remains available to the homomorphism toolkit.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R004", "source_order": 4,
+      "intent": "Replay uniqueness of the group identity.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing group_identity_unique theorem", "result": "accepted", "verifier_evidence": "session block R004: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay inverse uniqueness."}],
+      "accepted_litex": "thm group_identity_unique:\n    ? forall [GroupSetting], identity A:\n        forall a A:\n            mul(identity, a) = a\n            mul(a, identity) = a\n        =>:\n            identity = one\n    identity = mul(one, identity) = one",
+      "reusable_lesson": "Identity uniqueness is part of the established group toolkit.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R005", "source_order": 5,
+      "intent": "Replay uniqueness of inverses.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing group_inverse_unique theorem", "result": "accepted", "verifier_evidence": "session block R005: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay the homomorphism interfaces."}],
+      "accepted_litex": "thm group_inverse_unique:\n    ? forall [GroupSetting], a, b A:\n        mul(b, a) = one\n        =>:\n            b = inv(a)\n    mul(a, inv(a)) = one\n    b = mul(b, one) = mul(b, mul(a, inv(a))) = mul(mul(b, a), inv(a)) = mul(one, inv(a)) = inv(a)",
+      "reusable_lesson": "Inverse uniqueness later identifies the inverse of the target identity.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R006", "source_order": 6,
+      "intent": "Replay the group-homomorphism predicate.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing is_group_homomorphism declaration", "result": "accepted", "verifier_evidence": "session block R006: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay GroupHomomorphismSetting."}],
+      "accepted_litex": "prop is_group_homomorphism([GroupSetting(A, mul_A, one_A, inv_A)], [GroupSetting(B, mul_B, one_B, inv_B)], f fn(x A) B):\n    forall x, y A:\n        f(mul_A(x, y)) = mul_B(f(x), f(y))",
+      "reusable_lesson": "The homomorphism predicate composes two existing group bundles.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R007", "source_order": 7,
+      "intent": "Replay the theorem-facing homomorphism setting.",
+      "dependencies": ["R001: GroupSetting"],
+      "attempts": [{"candidate": "existing GroupHomomorphismSetting declaration", "result": "accepted", "verifier_evidence": "session block R007: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay preservation theorems."}],
+      "accepted_litex": "setting GroupHomomorphismSetting([GroupSetting(A, mul_A, one_A, inv_A)], [GroupSetting(B, mul_B, one_B, inv_B)], f fn(x A) B):\n    forall x, y A:\n        f(mul_A(x, y)) = mul_B(f(x), f(y))",
+      "reusable_lesson": "The flagship theorem can quantify over this single composed setting.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R008", "source_order": 8,
+      "intent": "Replay preservation of the identity.",
+      "dependencies": ["R003: group_left_cancel", "R007: GroupHomomorphismSetting"],
+      "attempts": [{"candidate": "existing homomorphism_maps_identity theorem", "result": "accepted", "verifier_evidence": "session block R008: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Replay preservation of inverse."}],
+      "accepted_litex": "thm homomorphism_maps_identity:\n    ? forall [GroupHomomorphismSetting]:\n        f(one_A) = one_B\n    mul_A(one_A, one_A) = one_A\n    mul_B(f(one_A), f(one_A)) = f(mul_A(one_A, one_A)) = f(one_A) = mul_B(f(one_A), one_B)\n    by thm group_left_cancel(B, mul_B, one_B, inv_B, f(one_A), f(one_A), one_B)",
+      "reusable_lesson": "Identity preservation proves the kernel contains the source identity.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "R009", "source_order": 9,
+      "intent": "Replay preservation of inverse.",
+      "dependencies": ["R005: group_inverse_unique", "R008: homomorphism_maps_identity"],
+      "attempts": [{"candidate": "existing homomorphism_maps_inverse theorem", "result": "accepted", "verifier_evidence": "session block R009: ok=true", "diagnosis": "Clean baseline replay.", "next_change": "Declare subgroup and normal-subgroup predicates."}],
+      "accepted_litex": "thm homomorphism_maps_inverse:\n    ? forall [GroupHomomorphismSetting], a A:\n        f(inv_A(a)) = inv_B(f(a))\n    by thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)\n    mul_A(inv_A(a), a) = one_A\n    mul_B(f(inv_A(a)), f(a)) = f(mul_A(inv_A(a), a)) = f(one_A) = one_B\n    by thm group_inverse_unique(B, mul_B, one_B, inv_B, f(a), f(inv_A(a)))",
+      "reusable_lesson": "Inverse preservation proves kernel closure under source inverses.",
+      "status": "baseline_replayed"
+    },
+    {
+      "id": "K001", "source_order": 10,
+      "intent": "Define the standard subgroup property over the existing group setting.",
+      "dependencies": ["R001: GroupSetting", "builtin power_set"],
+      "attempts": [{"candidate": "prop is_subgroup([GroupSetting], H power_set(A)) with identity, multiplication, and inverse closure", "result": "accepted", "verifier_evidence": "session block K001: ok=true", "diagnosis": "The settings-first subgroup predicate is well formed.", "next_change": "Define normality by subgroup and conjugation closure."}],
+      "accepted_litex": "prop is_subgroup([GroupSetting], H power_set(A)):\n    one $in H\n    forall x, y H:\n        mul(x, y) $in H\n    forall x H:\n        inv(x) $in H",
+      "reusable_lesson": "Membership-typed binders keep subgroup closure statements compact.",
+      "status": "materialized"
+    },
+    {
+      "id": "K002", "source_order": 11,
+      "intent": "Define normality as subgroup structure plus conjugation closure.",
+      "dependencies": ["K001: is_subgroup"],
+      "attempts": [{"candidate": "prop is_normal_subgroup([GroupSetting], H power_set(A)) using is_subgroup and conjugation closure", "result": "accepted", "verifier_evidence": "session block K002: ok=true", "diagnosis": "The standard normal-subgroup predicate is well formed.", "next_change": "Prove kernel normality."}],
+      "accepted_litex": "prop is_normal_subgroup([GroupSetting], H power_set(A)):\n    $is_subgroup(A, mul, one, inv, H)\n    forall a A, h H:\n        mul(mul(a, h), inv(a)) $in H",
+      "reusable_lesson": "Normality adds exactly the conjugation consumer to the subgroup interface.",
+      "status": "materialized"
+    },
+    {
+      "id": "K003", "source_order": 12,
+      "intent": "Prove that the native kernel set builder is a normal subgroup.",
+      "dependencies": ["K001: is_subgroup", "K002: is_normal_subgroup", "R008: homomorphism_maps_identity", "R009: homomorphism_maps_inverse"],
+      "attempts": [
+        {
+          "candidate": "Prove subgroup closure, then calculate the image of a conjugate in one equality chain.",
+          "result": "failed",
+          "verifier_evidence": "session block K003 failed at chain step mul_B(mul_B(f(conjugator), one_B), inv_B(f(conjugator))) = mul_B(f(conjugator), inv_B(f(conjugator)))",
+          "diagnosis": "The verifier did not transport the known inner right-identity equality through the outer multiplication.",
+          "next_change": "Materialize mul_B(f(conjugator), one_B) = f(conjugator) immediately before the conjugation chain."
+        },
+        {
+          "candidate": "thm kernel_is_normal_subgroup:\n    ? forall [GroupHomomorphismSetting]:\n        $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n        by thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)\n        by thm set_builder_member(one_A, {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x, kernel_y {candidate A: f(candidate) = one_B}:\n                mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}\n            f(kernel_x) = one_B\n            f(kernel_y) = one_B\n            f(mul_A(kernel_x, kernel_y)) = mul_B(f(kernel_x), f(kernel_y)) = mul_B(one_B, one_B) = one_B\n            by thm set_builder_member(mul_A(kernel_x, kernel_y), {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x {candidate A: f(candidate) = one_B}:\n                inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}\n            f(kernel_x) = one_B\n            by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, kernel_x)\n            by thm group_inverse_unique(B, mul_B, one_B, inv_B, one_B, one_B)\n            f(inv_A(kernel_x)) = inv_B(f(kernel_x)) = inv_B(one_B) = one_B\n            by thm set_builder_member(inv_A(kernel_x), {candidate A: f(candidate) = one_B})\n        by def $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? forall conjugator A, kernel_h {candidate A: f(candidate) = one_B}:\n            mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}\n        f(kernel_h) = one_B\n        f(mul_A(conjugator, kernel_h)) = mul_B(f(conjugator), f(kernel_h))\n        by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, conjugator)\n        mul_B(f(conjugator), one_B) = f(conjugator)\n        f(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator))) = mul_B(f(mul_A(conjugator, kernel_h)), f(inv_A(conjugator))) = mul_B(mul_B(f(conjugator), f(kernel_h)), inv_B(f(conjugator))) = mul_B(mul_B(f(conjugator), one_B), inv_B(f(conjugator))) = mul_B(f(conjugator), inv_B(f(conjugator))) = one_B\n        by thm set_builder_member(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)), {candidate A: f(candidate) = one_B})\n    by def $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})",
+          "result": "accepted",
+          "verifier_evidence": "session block K003R: ok=true",
+          "diagnosis": "One explicit inner right-identity equality is the only extra verifier bridge needed by the mathematical proof.",
+          "next_change": "Run the mandatory liveness audit and remove binder/result echoes if the compact proof remains checkable."
+        }
+      ],
+      "accepted_litex": "thm kernel_is_normal_subgroup:\n    ? forall [GroupHomomorphismSetting]:\n        $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n        by thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)\n        by thm set_builder_member(one_A, {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x, kernel_y {candidate A: f(candidate) = one_B}:\n                mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}\n            f(kernel_x) = one_B\n            f(kernel_y) = one_B\n            f(mul_A(kernel_x, kernel_y)) = mul_B(f(kernel_x), f(kernel_y)) = mul_B(one_B, one_B) = one_B\n            by thm set_builder_member(mul_A(kernel_x, kernel_y), {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x {candidate A: f(candidate) = one_B}:\n                inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}\n            f(kernel_x) = one_B\n            by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, kernel_x)\n            by thm group_inverse_unique(B, mul_B, one_B, inv_B, one_B, one_B)\n            f(inv_A(kernel_x)) = inv_B(f(kernel_x)) = inv_B(one_B) = one_B\n            by thm set_builder_member(inv_A(kernel_x), {candidate A: f(candidate) = one_B})\n        by def $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? forall conjugator A, kernel_h {candidate A: f(candidate) = one_B}:\n            mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}\n        f(kernel_h) = one_B\n        f(mul_A(conjugator, kernel_h)) = mul_B(f(conjugator), f(kernel_h))\n        by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, conjugator)\n        mul_B(f(conjugator), one_B) = f(conjugator)\n        f(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator))) = mul_B(f(mul_A(conjugator, kernel_h)), f(inv_A(conjugator))) = mul_B(mul_B(f(conjugator), f(kernel_h)), inv_B(f(conjugator))) = mul_B(mul_B(f(conjugator), one_B), inv_B(f(conjugator))) = mul_B(f(conjugator), inv_B(f(conjugator))) = one_B\n        by thm set_builder_member(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)), {candidate A: f(candidate) = one_B})\n    by def $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})",
+      "reusable_lesson": "Kernel normality uses native set-builder membership plus one explicit inner-congruence bridge.",
+      "status": "superseded_by_compact_liveness_proof"
+    },
+    {
+      "id": "K004", "source_order": 13,
+      "intent": "Audit proof liveness by deleting binder-derived equalities and an intermediate homomorphism equality.",
+      "dependencies": ["K003R accepted proof"],
+      "attempts": [{"candidate": "Compact probe deleting f(kernel_x)=one_B, f(kernel_y)=one_B, f(kernel_h)=one_B, and f(mul_A(conjugator,kernel_h))=...", "result": "failed", "verifier_evidence": "session block K004 failed at transporting the two inner homomorphism equalities into the outer target multiplication", "diagnosis": "Binder-derived kernel equalities appear available, but the explicit equality for f(mul_A(conjugator,kernel_h)) is a live representation bridge.", "next_change": "Restore only the intermediate multiplication-preservation equality and keep the binder echoes removed."}],
+      "accepted_litex": "",
+      "reusable_lesson": "Liveness audit identified one required representation bridge.",
+      "status": "failed_liveness_probe"
+    },
+    {
+      "id": "K005", "source_order": 14,
+      "intent": "Verify the compact flagship proof after restoring only the live intermediate homomorphism equality.",
+      "dependencies": ["K003R accepted proof", "K004 liveness evidence"],
+      "attempts": [{"candidate": "thm kernel_is_normal_subgroup:\n    ? forall [GroupHomomorphismSetting]:\n        $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n        by thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)\n        by thm set_builder_member(one_A, {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x, kernel_y {candidate A: f(candidate) = one_B}:\n                mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}\n            f(mul_A(kernel_x, kernel_y)) = mul_B(f(kernel_x), f(kernel_y)) = mul_B(one_B, one_B) = one_B\n            by thm set_builder_member(mul_A(kernel_x, kernel_y), {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x {candidate A: f(candidate) = one_B}:\n                inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}\n            by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, kernel_x)\n            by thm group_inverse_unique(B, mul_B, one_B, inv_B, one_B, one_B)\n            f(inv_A(kernel_x)) = inv_B(f(kernel_x)) = inv_B(one_B) = one_B\n            by thm set_builder_member(inv_A(kernel_x), {candidate A: f(candidate) = one_B})\n        by def $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? forall conjugator A, kernel_h {candidate A: f(candidate) = one_B}:\n            mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}\n        f(mul_A(conjugator, kernel_h)) = mul_B(f(conjugator), f(kernel_h))\n        by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, conjugator)\n        mul_B(f(conjugator), one_B) = f(conjugator)\n        f(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator))) = mul_B(f(mul_A(conjugator, kernel_h)), f(inv_A(conjugator))) = mul_B(mul_B(f(conjugator), f(kernel_h)), inv_B(f(conjugator))) = mul_B(mul_B(f(conjugator), one_B), inv_B(f(conjugator))) = mul_B(f(conjugator), inv_B(f(conjugator))) = one_B\n        by thm set_builder_member(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)), {candidate A: f(candidate) = one_B})\n    by def $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})", "result": "accepted", "verifier_evidence": "session block K005: ok=true", "diagnosis": "All binder-derived kernel equalities were removable; the inner multiplication-preservation equality and target right-identity equality remain necessary representation bridges.", "next_change": "Materialize K001, K002, and this compact theorem."}],
+      "accepted_litex": "thm kernel_is_normal_subgroup:\n    ? forall [GroupHomomorphismSetting]:\n        $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n        by thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)\n        by thm set_builder_member(one_A, {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x, kernel_y {candidate A: f(candidate) = one_B}:\n                mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}\n            f(mul_A(kernel_x, kernel_y)) = mul_B(f(kernel_x), f(kernel_y)) = mul_B(one_B, one_B) = one_B\n            by thm set_builder_member(mul_A(kernel_x, kernel_y), {candidate A: f(candidate) = one_B})\n        claim:\n            ? forall kernel_x {candidate A: f(candidate) = one_B}:\n                inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}\n            by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, kernel_x)\n            by thm group_inverse_unique(B, mul_B, one_B, inv_B, one_B, one_B)\n            f(inv_A(kernel_x)) = inv_B(f(kernel_x)) = inv_B(one_B) = one_B\n            by thm set_builder_member(inv_A(kernel_x), {candidate A: f(candidate) = one_B})\n        by def $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})\n    claim:\n        ? forall conjugator A, kernel_h {candidate A: f(candidate) = one_B}:\n            mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}\n        f(mul_A(conjugator, kernel_h)) = mul_B(f(conjugator), f(kernel_h))\n        by thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, conjugator)\n        mul_B(f(conjugator), one_B) = f(conjugator)\n        f(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator))) = mul_B(f(mul_A(conjugator, kernel_h)), f(inv_A(conjugator))) = mul_B(mul_B(f(conjugator), f(kernel_h)), inv_B(f(conjugator))) = mul_B(mul_B(f(conjugator), one_B), inv_B(f(conjugator))) = mul_B(f(conjugator), inv_B(f(conjugator))) = one_B\n        by thm set_builder_member(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)), {candidate A: f(candidate) = one_B})\n    by def $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})",
+      "reusable_lesson": "Use set-builder binder elimination directly; retain only the two explicit equalities needed for nested rewriting.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["K001", "K002", "K005"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/abstract_algebra/main.lit",
+    "file_gate_result": "exit 0; top-level ok=true"
+  },
+  "module_gate": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/abstract_algebra: exit 0; top-level ok=true"
+}

@@ -1,0 +1,8 @@
+# Node: equal.ByBuiltinRule.EqualityFromTwoSidedWeakOrder
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/equality_from_two_sided_weak_order.lit
+
+forall a R, b R:
+    a <= b
+    b <= a
+    =>:
+        a = b

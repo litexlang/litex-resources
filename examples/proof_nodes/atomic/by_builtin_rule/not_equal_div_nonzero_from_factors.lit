@@ -1,0 +1,8 @@
+# Node: atomic.ByBuiltinRule.DivNonzeroFromFactors
+# Run: litex -f examples/proof_nodes/atomic/by_builtin_rule/not_equal_div_nonzero_from_factors.lit
+
+forall a R, b R:
+    a != 0
+    b != 0
+    =>:
+        a / b != 0

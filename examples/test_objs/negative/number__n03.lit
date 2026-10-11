@@ -1,0 +1,2 @@
+# N03: equal normalized decimal spellings must reject inequality.
+2.400 != 2.4

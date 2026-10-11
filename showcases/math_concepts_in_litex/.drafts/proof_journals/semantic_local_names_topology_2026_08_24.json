@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/9_topology/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/9_topology/main.lit",
+  "proof_spine": [
+    "Name the image f(K) once and pull an arbitrary open cover back along f.",
+    "Use compactness of K to obtain a finite pullback subcover.",
+    "Push the same finite indices forward to cover the named image."
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Use image_of_K as the canonical local spelling of the repeated image set.",
+      "dependencies": ["ContinuousMapSetting", "is_compact_subset"],
+      "attempts": [
+        {
+          "id": "B001-A1",
+          "candidate_is_literal": true,
+          "candidate": "thm continuous_image_of_compact_is_compact:\n    ? forall [ContinuousMapSetting], K power_set(X):\n        $is_compact_subset(X, open_sets_X, K)\n        =>:\n            $is_compact_subset(Y, open_sets_Y, fn_range(fn(x K) Y {f(x)}))\n    have image_of_K power_set(Y) = fn_range(fn(x K) Y {f(x)})\n    claim:\n        ? forall Index set, cover fn(index Index) open_sets_Y:\n            image_of_K $subset family_union(fn_range(cover))\n            =>:\n                exist J power_set(Index) st {$is_finite_set(J), image_of_K $subset family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))}\n        have fn pullback_cover(index Index) open_sets_X = {x X: f(x) $in cover(index)}\n        claim:\n            ? K $subset family_union(fn_range(pullback_cover))\n            claim:\n                ? forall point K:\n                    point $in family_union(fn_range(pullback_cover))\n                fn(x K) Y {f(x)}(point) $in image_of_K\n                fn(x K) Y {f(x)}(point) = f(point)\n                f(point) $in image_of_K\n                f(point) $in family_union(fn_range(cover))\n                obtain target_open from exist target_open fn_range(cover) st {f(point) $in target_open}\n                have by preimage selected_index from target_open $in fn_range(cover)\n                target_open = cover(selected_index)\n                f(point) $in cover(selected_index)\n                by thm set_builder_member(point, {x X: f(x) $in cover(selected_index)}) => point $in {x X: f(x) $in cover(selected_index)}\n                point $in pullback_cover(selected_index)\n                pullback_cover(selected_index) $in fn_range(pullback_cover)\n                point $in family_union(fn_range(pullback_cover))\n            by def:\n                ? K $subset family_union(fn_range(pullback_cover))\n        exist J power_set(Index) st {$is_finite_set(J), K $subset family_union(fn_range(fn(index J) open_sets_X {pullback_cover(index)}))}\n        obtain J from exist J power_set(Index) st {$is_finite_set(J), K $subset family_union(fn_range(fn(index J) open_sets_X {pullback_cover(index)}))}\n        witness exist finite_indices power_set(Index) st {$is_finite_set(finite_indices), image_of_K $subset family_union(fn_range(fn(index finite_indices) open_sets_Y {cover(index)}))} from J:\n            $is_finite_set(J)\n            claim:\n                ? image_of_K $subset family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n                claim:\n                    ? forall image_point image_of_K:\n                        image_point $in family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n                    have by preimage source_point from image_point $in image_of_K\n                    source_point $in K\n                    image_point = fn(x K) Y {f(x)}(source_point)\n                    fn(x K) Y {f(x)}(source_point) = f(source_point)\n                    source_point $in family_union(fn_range(fn(index J) open_sets_X {pullback_cover(index)}))\n                    obtain source_open from exist source_open fn_range(fn(index J) open_sets_X {pullback_cover(index)}) st {source_point $in source_open}\n                    have by preimage selected_index from source_open $in fn_range(fn(index J) open_sets_X {pullback_cover(index)})\n                    selected_index $in J\n                    source_open = fn(index J) open_sets_X {pullback_cover(index)}(selected_index)\n                    fn(index J) open_sets_X {pullback_cover(index)}(selected_index) = pullback_cover(selected_index)\n                    source_point $in pullback_cover(selected_index)\n                    pullback_cover(selected_index) = {x X: f(x) $in cover(selected_index)}\n                    f(source_point) $in cover(selected_index)\n                    fn(index J) open_sets_Y {cover(index)}(selected_index) $in fn_range(fn(index J) open_sets_Y {cover(index)})\n                    fn(index J) open_sets_Y {cover(index)}(selected_index) = cover(selected_index)\n                    cover(selected_index) $in fn_range(fn(index J) open_sets_Y {cover(index)})\n                    image_point = f(source_point)\n                    image_point $in cover(selected_index)\n                    witness exist target_open fn_range(fn(index J) open_sets_Y {cover(index)}) st {image_point $in target_open} from cover(selected_index):\n                        image_point $in cover(selected_index)\n                    image_point $in family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n                by def:\n                    ? image_of_K $subset family_union(fn_range(fn(index J) open_sets_Y {cover(index)}))\n    by def $is_compact_subset(Y, open_sets_Y, fn_range(fn(x K) Y {f(x)}))",
+          "result": "failed",
+          "failed_phase": "proof",
+          "verifier_evidence": "`fn(x K) Y {f(x)}(point) $in image_of_K` remained unknown although `image_of_K` equals the function range",
+          "diagnosis": "Function-range introduction consumes the canonical `fn_range` construction; the set alias does not expose that constructor automatically.",
+          "next_change": "Keep the canonical range-membership fact once, then test one explicit bridge into the local set name."
+        },
+        {
+          "id": "B001-A2",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "                fn(x K) Y {f(x)}(point) $in image_of_K\n",
+              "new": "                fn(x K) Y {f(x)}(point) $in fn_range(fn(x K) Y {f(x)})\n                fn(x K) Y {f(x)}(point) $in image_of_K\n"
+            }
+          ],
+          "result": "failed",
+          "failed_phase": "proof",
+          "verifier_evidence": "after one range-membership bridge, `have by preimage ... from image_point $in image_of_K` rejected the alias because it requires an explicit `fn_range` or `replacement` source",
+          "diagnosis": "The proof repeatedly consumes the image's constructor identity, so the alias would require a growing unpack/repack adapter stack.",
+          "next_change": "Do not materialize this alias; keep the canonical `fn_range` spelling in this constructor-driven proof."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Do not name an object merely because its spelling is long when downstream proof actions repeatedly inspect its constructor shape.",
+      "status": "blocked"
+    }
+  ],
+  "materialization": {
+    "block_ids": [],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/9_topology/main.lit",
+    "file_gate_result": "unchanged target; baseline exit 0 with top-level ok: true"
+  }
+}

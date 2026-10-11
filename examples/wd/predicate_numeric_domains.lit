@@ -1,0 +1,25 @@
+# Migration tracer: `forall x R: $prime(x) => $prime(x)` wrongly passed
+# before the builtin predicate domain WD gate was restored.
+# Original failure to reject:
+# forall x R:
+#     $prime(x)
+#     =>:
+#         $prime(x)
+# Run: target/release/litex -strict -f examples/wd/predicate_numeric_domains.lit
+forall x N:
+    $prime(x)
+    =>:
+        $prime(x)
+forall x, y N:
+    $coprime(x, y)
+    =>:
+        $coprime(x, y)
+forall x Z, y Z*:
+    $dvd(x, y)
+    =>:
+        $dvd(x, y)
+forall x, y R:
+    x < y
+    =>:
+        x < y
+

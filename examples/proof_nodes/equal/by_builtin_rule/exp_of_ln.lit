@@ -1,0 +1,6 @@
+# Node: equal.ByBuiltinRule.ExpOfLn
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/exp_of_ln.lit
+
+have x R+
+0 < x
+exp(ln(x)) = x

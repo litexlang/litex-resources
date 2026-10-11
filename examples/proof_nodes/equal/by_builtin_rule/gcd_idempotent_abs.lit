@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.GcdIdempotentAbs
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/gcd_idempotent_abs.lit
+
+forall a Z:
+    a != 0
+    =>:
+        gcd(a, a) = |a|

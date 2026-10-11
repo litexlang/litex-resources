@@ -1,0 +1,16 @@
+# Concept Inventory
+
+| Concept | Litex form | Why it is here |
+| --- | --- | --- |
+| tail closeness | `prop` | names the epsilon-tail obligation |
+| sequence limit | `prop` | keeps existence relational |
+| convergence | existential `prop` | does not select a limit prematurely |
+| uniqueness | `thm` | flagship epsilon argument |
+| canonical limit | `have fn by exist!` | selects only after existence and uniqueness are proved |
+
+The first version stops before Cauchy completeness, continuity, series,
+uniform convergence, and measure theory.
+
+At collection level, elementary real analysis may later meet the calculus
+slice at Rolle/MVT. Integration and functional analysis still require their
+own vertical-slice decisions and do not extend this module's completion line.

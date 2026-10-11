@@ -1,0 +1,7 @@
+# Node: atomic.ByBuiltinRule.NotInFact.NonMembershipOfSetMinusFromRight
+# Run: litex -f examples/proof_nodes/atomic/by_builtin_rule/not_in_set_minus_from_right.lit
+
+forall A set, B set, x set:
+    x $in B
+    =>:
+        not x $in set_minus(A, B)

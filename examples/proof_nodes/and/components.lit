@@ -1,0 +1,12 @@
+# Node: and (per-component verify)
+# Run: litex -f examples/proof_nodes/and/components.lit
+
+1 < 2 and 2 < 3
+
+abstract_prop Pp(x)
+abstract_prop Qq(x)
+forall a R:
+    forall x R:
+        $Pp(x) and $Qq(x)
+    =>:
+        $Pp(a) and $Qq(a)

@@ -1,0 +1,7 @@
+# Infer: InFact.SeqExpand
+# When: store `s $in seq(R)`.
+# Infers: `s $in fn(i N+) R` (callable).
+# Run: litex -f examples/infer/atomic/in_seq_expand.lit
+
+forall seq_s seq(R):
+    seq_s(1) $in R

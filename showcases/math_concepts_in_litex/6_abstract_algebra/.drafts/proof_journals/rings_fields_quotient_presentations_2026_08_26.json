@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/6_abstract_algebra/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/6_abstract_algebra/zz_ring_probe.lit",
+  "proof_spine": [
+    "retain the checked group and normal-kernel slice",
+    "add commutative rings, ring homomorphisms, ideals, domains, and fields",
+    "prove a ring-homomorphism kernel is an ideal",
+    "model a quotient by a surjective ring homomorphism with exact kernel",
+    "prove both directions of prime ideal iff quotient presentation is an integral domain",
+    "finish with the ordinary integer ring as a concrete consumer"
+  ],
+  "blocks": [
+    {
+      "id": "R001",
+      "source_order": 1,
+      "intent": "Introduce the ring, homomorphism, ideal, domain, field, and quotient-presentation interfaces.",
+      "dependencies": ["existing builtin sets and functions"],
+      "attempts": [
+        {
+          "candidate": "Submit CommutativeRingSetting and is_commutative_ring in the persistent release session.",
+          "result": "liveness_limit",
+          "verifier_evidence": "No framed block event after 30 seconds; the session was interrupted. The same exact declarations completed in the release file runner.",
+          "diagnosis": "Deep setting expansion in the interactive trace is much slower than file execution.",
+          "next_change": "Use bounded persistent attempts, then the release file gate as the fallback for this source-owned target."
+        }
+      ],
+      "accepted_litex": "main.lit lines 122-200: CommutativeRingSetting, RingHomomorphismSetting, is_ideal, is_prime_ideal, is_integral_domain, is_field, and QuotientRingPresentationSetting",
+      "reusable_lesson": "A quotient theorem needs only a surjective homomorphism and exact-kernel facts; it does not require a local equivalence-class implementation.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R002",
+      "source_order": 2,
+      "intent": "Connect ring homomorphisms to ideal theory through their native set-builder kernels.",
+      "dependencies": ["R001", "set_builder_member"],
+      "attempts": [
+        {
+          "candidate": "Store neg(zero)=zero inside a forall x ring-law block.",
+          "result": "failed",
+          "verifier_evidence": "The release runner could not select neg_B(zero_B)=zero_B because the quantified binder did not occur in that clause.",
+          "diagnosis": "A constant operational law should be stored as an atomic setting fact, not under an irrelevant binder.",
+          "next_change": "Move neg(zero)=zero outside the forall x block."
+        },
+        {
+          "candidate": "Atomic neg(zero) law plus four set-builder closure claims.",
+          "result": "accepted",
+          "verifier_evidence": "Release file runner returned top-level ok=true."
+        }
+      ],
+      "accepted_litex": "main.lit lines 202-224: theorem ring_homomorphism_kernel_is_ideal",
+      "reusable_lesson": "Store constant derived operational laws at atomic setting scope when downstream proofs need exact matching.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R003",
+      "source_order": 3,
+      "intent": "Prove that a prime exact kernel makes the quotient target an integral domain.",
+      "dependencies": ["R001", "surjectivity", "ring-map multiplication preservation"],
+      "attempts": [
+        {
+          "candidate": "Persistent try block with representative witnesses and the prime-product case split.",
+          "result": "liveness_limit",
+          "verifier_evidence": "No framed block event after 30 seconds; the release file runner accepted the identical theorem in about one second."
+        }
+      ],
+      "accepted_litex": "main.lit lines 233-265: theorem prime_ideal_gives_integral_domain_quotient",
+      "reusable_lesson": "Surjectivity supplies representatives; exact kernel and primality transport the zero-product law to the quotient.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R004",
+      "source_order": 4,
+      "intent": "Recover primality of the exact kernel from an integral-domain quotient target.",
+      "dependencies": ["R001", "target zero-product law", "exact kernel"],
+      "attempts": [
+        {
+          "candidate": "Unfold the target domain, prove properness by one!=zero, then transport a product in the kernel.",
+          "result": "accepted",
+          "verifier_evidence": "Release file runner returned top-level ok=true."
+        }
+      ],
+      "accepted_litex": "main.lit lines 267-295: theorem integral_domain_quotient_gives_prime_ideal",
+      "reusable_lesson": "The reverse direction needs neither quotient representatives nor choice; homomorphism preservation and the exact-kernel converse suffice.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R005",
+      "source_order": 5,
+      "intent": "Provide a concrete commutative-ring consumer.",
+      "dependencies": ["R001", "builtin integer arithmetic"],
+      "attempts": [
+        {
+          "candidate": "Named integer addition, negation, and multiplication with explicit ring-law chains.",
+          "result": "accepted",
+          "verifier_evidence": "Release file runner returned top-level ok=true."
+        }
+      ],
+      "accepted_litex": "main.lit lines 297-345: integer_ring_add, integer_ring_neg, integer_ring_mul, and integers_form_a_commutative_ring",
+      "reusable_lesson": "Concrete consumers should instantiate the generic setting rather than introduce a second integer-ring ontology.",
+      "status": "accepted_materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["R001", "R002", "R003", "R004", "R005"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/6_abstract_algebra/main.lit",
+    "file_gate_result": "top-level ok=true, exit 0",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/6_abstract_algebra",
+    "module_gate_result": "top-level ok=true, exit 0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/4_discrete_mathematics_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/4_discrete_mathematics_in_nutshell/main.lit",
+  "proof_spine": ["native finite-set counting", "Pascal recurrence", "Pascal identity"],
+  "blocks": [
+    {"id": "B001", "status": "rejected", "classification": "proof", "note": "Direct finite-set intersection equality was not inferred."},
+    {"id": "B001e", "status": "accepted", "classification": "proof", "note": "Native finite_set_size concrete counting passed."},
+    {"id": "FILE", "status": "accepted", "classification": "proof", "note": "Recursive choose_fn and Pascal identity passed the release runner."},
+    {"id": "D204", "source_order": 4, "intent": "State Pascal's identity directly instead of wrapping the theorem result in a predicate.", "attempts": [], "accepted_litex": "thm pascal_identity: ? forall n, r N+: r < n; r > 1 => choose_fn(n, r) = choose_fn(n - 1, r) + choose_fn(n - 1, r - 1)", "reusable_lesson": "A named equality theorem does not need a one-consumer prop facade.", "status": "accepted_materialized"}
+  ],
+  "materialization": {"block_ids": ["B001e", "FILE", "D204"], "file_gate_result": "file and module release runners passed; full 14-module collection gate passed"}
+}

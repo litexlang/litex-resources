@@ -1,0 +1,36 @@
+# AST: Obj::FunctionSpace::FnSet
+# Run: target/release/litex -f examples/test_objs/fn_set.lit
+# Cases use discarded sketch scopes; no cross-case facts.
+
+# P01: $is_set(F)
+sketch:
+    let F = fn(x R) R
+    $is_set(F)
+
+# P02: $is_set(F)
+sketch:
+    let F = fn(x R: x > 0) R
+    $is_set(F)
+
+# P03: $is_set(F)
+sketch:
+    let F = fn(x R) fn(y R) R
+    $is_set(F)
+
+# P04: A template parameter selects a fixed function-space carrier.
+# Former invalid positive: let F = fn(x R) x
+# Its rejection is tested in ../test_function_sets/diagnostics/n27.lit.
+# This is the supported family interface, not dependent function signatures.
+sketch:
+    template<S nonempty_set>:
+        have maps set = fn(x S) S
+    $is_set(\maps<R>)
+    \maps<R> = fn(x R) R
+
+# P05: fn(x R) R {x} $in fn(y R) R
+sketch:
+    fn(x R) R {x} $in fn(y R) R
+
+# P06: fn(x, y R) R {x + y} $in fn(a, b R) R
+sketch:
+    fn(x, y R) R {x + y} $in fn(a, b R) R

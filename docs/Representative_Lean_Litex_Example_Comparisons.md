@@ -1,0 +1,913 @@
+# Representative Lean–Litex Example Comparisons
+
+Created and maintained by Jiachen Shen.
+
+Try the examples in browser:
+https://litexlang.com/doc/Representative_Lean_Litex_Example_Comparisons
+
+Markdown source:
+https://github.com/litexlang/golitex/blob/main/docs/Representative_Lean_Litex_Example_Comparisons.md
+
+> **Litex is an experimental hobby project still in beta. Expect rough edges.**
+
+This page presents a small set of representative examples rather than a
+complete language comparison. Lean and Litex both make mathematics
+machine-checkable, but expose different default interfaces:
+
+- Lean provides dependent type theory, proof terms, tactics, Mathlib, mature
+  tooling, and a large community.
+- Litex provides a fact-oriented, set-theoretic surface in which users usually
+  write the next mathematical fact and the checker searches for its support.
+
+These are differences of emphasis, not absolute capability boundaries. Lean
+can support concise automation and forward reasoning; Litex also has explicit
+goals, named theorems, case splits, induction, and other structured proof
+forms. The Lean proofs below are intentionally explicit enough to expose the
+comparison, not claims about the shortest Lean proof.
+
+Unskipped Litex blocks are self-contained and checked by the repository
+documentation test. Blocks explicitly labeled as migration examples retain
+unresolved current-kernel boundaries; they are not passing examples. The Lean blocks use Mathlib directly and do not
+depend on the *Mathematics in Lean* book package. Syntax and automation in
+either project may continue to evolve.
+
+For the larger design argument, see the [Litex
+Blueprint](https://litexlang.com/doc/Litex_Blueprint). For language details,
+see the [Manual](Manual.md) and [CLI reference](cli.md). The current
+preview `-lean -f` output mode replays a restricted set of typed results.
+The [semantic interface](../lean/Litex.lean) and
+[generated example pairs](../lean/examples/) illustrate supported routes.
+Use the [compiler guide](Litex_To_Lean_Compiler_Guide.md) for maintained
+source/generated walkthroughs. Historical emitters and design targets in the
+semantic discussion below do not certify current compiler coverage.
+
+The complete `Group` comparison is kept in the Blueprint rather than repeated
+here. This page concentrates on examples that add distinct evidence.
+After the examples, [Section 8](#8-a-design-perspective-what-the-author-states-what-the-checker-reconstructs)
+connects them into a proposal about formal-language design: which decisions
+belong in the mathematical source, and which work the checker should reconstruct.
+
+## A Semantic Difference Behind the Syntax: `Eq` and `Same`
+
+One of the most important differences is not visible from surface proof
+length. Lean's propositional equality is homogeneous:
+
+```lean
+Eq : {α : Sort u} → α → α → Prop
+```
+
+Thus `x = y` requires both terms to inhabit the same Lean type. It says that
+they are the same value in that carrier and supports substitution, rewriting,
+and dependent transport.
+
+The retained Lean ABI represents Litex source equality with `Litex.Same`, a heterogeneous semantic
+equality across representations. For example:
+
+```lean
+n       : ℕ
+(n : ℤ) : ℤ
+(n : ℂ) : ℂ
+```
+
+These are not endpoints of one Lean `Eq`, because their carriers differ. With
+the reviewed numeric representation bridges, however, they can be shown to
+represent the same Litex mathematical value. `Same` is also not merely Lean's
+`HEq`: `HEq` belongs to dependent type theory's account of term identity,
+whereas `Same` deliberately records mathematical identification between
+approved representations.
+
+The precise design description is **membership-oriented,
+representation-independent semantics**. This does not mean generated Lean is
+untyped. It means that Litex does not permanently encode an object's complete
+mathematical classification in one unique source type. Facts such as
+`x $in N`, `x $in Z`, and `x $in R` may accumulate without retyping or
+replacing `x`. `Litex.In x S` records that the semantic value represented by
+`x` has a `Same` representative in the exact carrier of `S`.
+
+A useful conceptual picture is:
+
+```text
+(α, x)      (β, y)      (γ, z)
+    \          |          /
+          Litex.Same
+               |
+    one Litex mathematical value
+```
+
+This resembles taking an equivalence class of host representations. The
+actual Lean wrapper does not construct a quotient; it preserves concrete
+representatives and proof evidence so the kernel can check every bridge.
+
+The global relation is deliberately asymmetric:
+
+```text
+Lean Eq ⊆ Litex.Same
+```
+
+Lean equality always yields `Same` through `Same.ofEq`. The inclusion is
+strict in general: even when both endpoints have the same Lean type, `Same`
+does not automatically yield `Eq`. Two `Litex.Set` values, for example, can
+represent the same extension while packaging different exact carriers.
+Recovering native Lean equality therefore requires both endpoints to reach a
+canonical carrier through a reviewed faithful/injective observation. Thus
+`Same.complexNativeEq` may turn `Same x y` into `x = y` for `x y : ℂ`, while
+no global conversion from heterogeneous `Same` to Lean `Eq` exists.
+
+This is a difference in default semantic interface, not a claim that Lean
+cannot express set-oriented mathematics or heterogeneous relations. The
+Litex wrapper is itself defined and checked in Lean. The design choice is to
+make membership and cross-representation identity explicit source-semantic
+obligations, then recover native Lean equality only at audited specialization
+boundaries.
+
+---
+
+## 1. Direct Facts, Short Estimates, and Typed Domains
+
+### Direct local consequences
+
+Suppose a real number is known to equal `2`. In Litex, that fact enters the
+local context and the desired consequences are stated directly:
+
+```litex
+forall x R:
+    x = 2
+    =>:
+        x + 1 = 3
+        x^2 = 4
+```
+
+An explicit Lean proof can name the assumption and direct the two rewrites:
+
+```lean
+import Mathlib.Tactic
+
+example (x : ℝ) (h : x = 2) : x + 1 = 3 ∧ x ^ 2 = 4 := by
+  have h_add : x + 1 = 3 := by
+    rw [h]
+    norm_num
+  have h_square : x ^ 2 = 4 := by
+    rw [h]
+    norm_num
+  exact ⟨h_add, h_square⟩
+```
+
+The mathematical content is the same. The Litex source foregrounds the two
+results; its checker supplies substitution and arithmetic support. The Lean
+source foregrounds a route for constructing the conjunction, while the
+kernel ultimately checks the resulting proof term.
+
+<a id="ai-lowers-generation-cost-not-automatically-understanding-cost"></a>
+
+### Keep the mathematical estimate visible
+
+Suppose `0 < epsilon <= 1`, `|x| < epsilon`, and `|y| < epsilon`. The
+reason that `|x * y| < epsilon` is the short estimate
+
+\[
+|xy| = |x||y| < \varepsilon^2 \leq \varepsilon.
+\]
+
+Here is an explicit Lean calculation:
+
+```lean
+import Mathlib
+
+example (x y epsilon : ℝ)
+    (epsilon_pos : 0 < epsilon)
+    (epsilon_le_one : epsilon ≤ 1)
+    (hx : |x| < epsilon)
+    (hy : |y| < epsilon) :
+    |x * y| < epsilon := by
+  rw [abs_mul]
+  calc
+    |x| * |y| < epsilon * epsilon := by
+      nlinarith [abs_nonneg x, abs_nonneg y]
+    _ ≤ epsilon * 1 := by
+      exact mul_le_mul_of_nonneg_left epsilon_le_one (le_of_lt epsilon_pos)
+    _ = epsilon := mul_one epsilon
+```
+
+The corresponding Litex tracer keeps one general product-monotonicity premise
+in the context and leaves the durable argument as the recognizable estimate:
+
+```litex
+claim:
+    ? forall x, y, epsilon R:
+        forall a, b, c, d R:
+            0 <= a < c
+            0 <= b < d
+            =>:
+                a * b < c * d
+        0 < epsilon
+        epsilon <= 1
+        |x| < epsilon
+        |y| < epsilon
+        =>:
+            |x * y| < epsilon
+    0 <= |x| < epsilon
+    0 <= |y| < epsilon
+    |x * y| = |x| * |y| < epsilon * epsilon <= epsilon * 1 = epsilon
+```
+
+AI can generate either proof cheaply. The interface question is what remains
+easy for a mathematician to inspect and edit afterward. Litex aims to keep the
+mathematical spine in source while its output records whether each step came
+from a known fact, a universal instance, a definition, a builtin rule, a named
+theorem, or an explicit assumption.
+
+### Domains carried by mathematical objects
+
+Litex can place a condition directly in an object's definition domain and then
+use that condition when the object is passed to a function:
+
+```litex
+forall x {y R: y > 0}:
+    x > 0
+
+have fn positive_successor(x R: x > 0) R = x + 1
+
+positive_successor(1) = 2
+```
+
+One natural Lean representation packages the real value and proof as a
+subtype:
+
+```lean
+import Mathlib
+
+example (x : {y : ℝ // y > 0}) : (x : ℝ) > 0 := by
+  exact x.property
+
+def positiveSuccessor (x : {y : ℝ // y > 0}) : ℝ := x.val + 1
+
+example : positiveSuccessor ⟨1, by norm_num⟩ = 2 := by
+  norm_num [positiveSuccessor]
+```
+
+Litex keeps the condition where a mathematician normally writes the domain.
+Lean's subtype makes the dependency precise inside its type-theoretic object
+language. Neither system eliminates the obligation that the argument satisfy
+the condition; the obligation appears at a different surface layer.
+
+---
+
+## 2. Scalar Multiplication Preserves Convergence
+
+Suppose a real sequence `s` converges to `a`. Multiplying every term by a real
+constant `c` should produce a sequence converging to `c * a`.
+
+The Lean proof below uses the usual epsilon definition. It splits on `c = 0`;
+in the nonzero case it applies convergence at `epsilon / |c|` and uses the
+absolute-value product law.
+
+```lean
+import Mathlib
+
+def ConvergesTo (s : ℕ → ℝ) (a : ℝ) :=
+  ∀ ε > 0, ∃ N, ∀ n ≥ N, |s n - a| < ε
+
+theorem convergesTo_const (a : ℝ) : ConvergesTo (fun _x : ℕ ↦ a) a := by
+  intro ε εpos
+  use 0
+  intro n nge
+  rw [sub_self, abs_zero]
+  apply εpos
+
+theorem convergesTo_mul_const {s : ℕ → ℝ} {a : ℝ} (c : ℝ)
+    (cs : ConvergesTo s a) :
+    ConvergesTo (fun n ↦ c * s n) (c * a) := by
+  by_cases h : c = 0
+  · convert convergesTo_const 0
+    · rw [h]
+      ring
+    rw [h]
+    ring
+  have acpos : 0 < |c| := abs_pos.mpr h
+  intro ε εpos
+  dsimp
+  have εcpos : 0 < ε / |c| := by
+    exact div_pos εpos acpos
+  rcases cs (ε / |c|) εcpos with ⟨Ns, hs⟩
+  use Ns
+  intro n ngt
+  calc
+    |c * s n - c * a| = |c| * |s n - a| := by
+      rw [← abs_mul, mul_sub]
+    _ < |c| * (ε / |c|) :=
+      mul_lt_mul_of_pos_left (hs n ngt) acpos
+    _ = ε := mul_div_cancel₀ _ (ne_of_lt acpos).symm
+```
+
+The Litex proof chooses `epsilon / (|c| + 1)`. Since the denominator is
+always positive, one estimate covers both `c = 0` and `c != 0`.
+
+```litex
+prop is_eventually_close(s fn(n N) R, a R, epsilon R+, N0 N):
+    forall n N:
+        n >= N0
+        =>:
+            |s(n) - a| < epsilon
+
+prop converges_to(s fn(n N) R, a R):
+    forall epsilon R+:
+        exist N0 N st {$is_eventually_close(s, a, epsilon, N0)}
+
+thm converges_to_mul_const:
+    ? forall s, scaled fn(n N) R, a, c R:
+        $converges_to(s, a)
+        forall n N:
+            scaled(n) = c * s(n)
+        =>:
+            $converges_to(scaled, c * a)
+    claim:
+        ? forall epsilon R+:
+            exist N0 N st {$is_eventually_close(scaled, c * a, epsilon, N0)}
+        |c| >= 0
+        |c| + 1 > 0
+        have scale R+ = |c| + 1
+        epsilon / scale > 0
+        epsilon / scale $in R+
+        |c| <= scale
+        obtain N0 from exist K N st {$is_eventually_close(s, a, epsilon / scale, K)}
+        witness exist K N st {$is_eventually_close(scaled, c * a, epsilon, K)} from N0:
+            claim:
+                ? forall n N:
+                    n >= N0
+                    =>:
+                        |scaled(n) - c * a| < epsilon
+                scaled(n) = c * s(n)
+                |s(n) - a| < epsilon / scale
+                |s(n) - a| >= 0
+                scaled(n) - c * a = c * s(n) - c * a = c * (s(n) - a)
+                |scaled(n) - c * a| = |c * (s(n) - a)| = |c| * |s(n) - a|
+                |c| * |s(n) - a| <= scale * |s(n) - a|
+                scale * |s(n) - a| < scale * (epsilon / scale) = epsilon
+                |scaled(n) - c * a| = |c| * |s(n) - a| <= scale * |s(n) - a| < epsilon
+            by def $is_eventually_close(scaled, c * a, epsilon, N0)
+    by def $converges_to(scaled, c * a)
+```
+
+Both proofs use the same core idea: obtain a tail bound for a smaller positive
+tolerance, reuse the same cutoff, and estimate the scaled absolute difference.
+The Lean proof exposes a case split, named hypotheses, rewriting, and library
+lemmas. The Litex proof exposes nested convergence facts, a witness, and the
+inequality chain, while the checker supplies routine arithmetic and definition
+folding.
+
+This does not claim that Lean requires this proof shape or cannot use the
+uniform `|c| + 1` argument. It compares two natural ways of organizing the
+same elementary analysis proof.
+
+---
+
+## 3. Calculation Chains
+
+Litex treats a chain as one factual statement. For a two-equation system, the
+intermediate expressions can be written in the same order as a handwritten
+calculation:
+
+```litex
+forall x, y R:
+    2 * x + 3 * y = 10
+    4 * x + 5 * y = 14
+    =>:
+        y = 2 * (2 * x + 3 * y) - (4 * x + 5 * y) = 6
+        x = ((2 * x + 3 * y) - 3 * y) / 2 = (-4)
+```
+
+An explicit Lean proof can present the same calculations inside two named
+subproofs:
+
+```lean
+import Mathlib
+
+example (x y : ℝ)
+    (h1 : 2 * x + 3 * y = 10)
+    (h2 : 4 * x + 5 * y = 14) :
+    y = 6 ∧ x = -4 := by
+  have hy : y = 6 := by
+    calc
+      y = 2 * (2 * x + 3 * y) - (4 * x + 5 * y) := by linarith
+      _ = 2 * 10 - 14 := by rw [h1, h2]
+      _ = 6 := by norm_num
+  have hx : x = -4 := by
+    calc
+      x = ((2 * x + 3 * y) - 3 * y) / 2 := by ring
+      _ = (10 - 3 * 6) / 2 := by rw [h1, hy]
+      _ = -4 := by norm_num
+  exact ⟨hy, hx⟩
+```
+
+The visible difference is not whether either system can express a calculation
+chain. It is which parts the user normally directs: Litex asks for meaningful
+intermediate equalities and searches for their support; this Lean proof names
+the subresults and specifies tactics and rewrites that build them.
+
+---
+
+## 4. Witnesses, Contradiction, and Counterexamples
+
+### A concrete witness
+
+Litex places the witness values directly next to the existential statement:
+
+```litex
+witness exist a, b, c, d N+ st {a ^ 4 + b ^ 4 + c ^ 4 = d ^ 4} from 95800, 217519, 414560, 422481
+```
+
+Lean packages the same values and remaining obligation through the
+existential constructors:
+
+```lean
+import Mathlib
+
+example : ∃ a b c d : ℕ,
+    a > 0 ∧ b > 0 ∧ c > 0 ∧ d > 0 ∧
+    a ^ 4 + b ^ 4 + c ^ 4 = d ^ 4 := by
+  refine ⟨95800, 217519, 414560, 422481, ?_⟩
+  norm_num
+```
+
+The proof burden is not removed: Litex still checks that the supplied objects
+belong to `N+` and satisfy the substituted equation.
+
+### Contraposition by contradiction
+
+The next example uses abstract predicates so that only the logical shape is
+at issue:
+
+```litex
+abstract_prop p0(x, y)
+abstract_prop q0(x, y)
+
+claim:
+    ? forall:
+        forall a, b R:
+            $p0(a, b)
+            =>:
+                $q0(a, b)
+        not $q0(1, 2)
+        =>:
+            not $p0(1, 2)
+    by contra:
+        ? not $p0(1, 2)
+        impossible $q0(1, 2)
+```
+
+```lean
+import Mathlib
+
+example (p q : ℝ → ℝ → Prop)
+    (h : ∀ a b, p a b → q a b)
+    (hnq : ¬ q 1 2) :
+    ¬ p 1 2 := by
+  intro hp
+  exact hnq (h 1 2 hp)
+```
+
+Litex exposes the familiar move “assume the negated target fails and derive an
+impossible fact.” Lean expresses the proof as a function from the temporary
+assumption to a contradiction. Both are rigorous representations of the same
+logical argument.
+
+### A set counterexample
+
+To show that the multiples of `4` are not the even natural numbers, `2` is the
+decisive counterexample:
+
+```litex
+have multiples_of_four power_set(N) = {a N: a % 4 = 0}
+have multiples_of_two power_set(N) = {a N: a % 2 = 0}
+by contra:
+    ? multiples_of_four != multiples_of_two
+    2 $in multiples_of_two
+    2 $in multiples_of_four
+    impossible 2 % 4 = 0
+```
+
+```lean
+import Mathlib
+
+example : ({a : ℕ | a % 4 = 0} : Set ℕ) ≠
+    {a : ℕ | a % 2 = 0} := by
+  intro h
+  have h2 : (2 : ℕ) ∈ ({a : ℕ | a % 2 = 0} : Set ℕ) := by
+    norm_num
+  have h4 : (2 : ℕ) ∈ ({a : ℕ | a % 4 = 0} : Set ℕ) := by
+    rw [h]
+    exact h2
+  norm_num at h4
+```
+
+The Litex proof states the counterexample and resulting contradiction. The
+Lean proof names the set equality and memberships, rewrites with the assumed
+equality, and discharges the false modular fact.
+
+---
+
+## 5. Set-Theoretic Objects at the Surface
+
+Before comparing surface proofs, one Litex distinction is essential:
+
+```text
+forall x S    means  x $in S
+forall A set  means  $is_set(A)
+```
+
+Here `set` is a parameter kind, not a universal set object. The second form
+does not introduce a source set of all objects. The current semantic interface
+keeps a generic carrier and wraps its value with WD evidence in `Litex.Obj`.
+An illustrative general-set binder interface is:
+
+```lean
+∀ {αA : Type v} [Litex.Representation M αA]
+  (A : Litex.Obj (M := M) αA) (hA : Litex.IsSet A), ...
+```
+
+`Litex.In x A` is an ordinary proposition about the two certified objects;
+it does not change the host type of `x`. General set binders and set constructors
+remain outside the initial compiler slice. The actual generated examples
+currently cover numeric facts, R/C binders and certified arithmetic objects;
+the earlier exact-carrier emitter is historical.
+
+Nested sets, power-set membership, and subset transport can all be written as
+ordinary mathematical facts in Litex:
+
+```litex
+{1, 2} $in {{}, {1, 2}}
+
+{1, 2} $subset {1, 2, 3}
+{1, 2} $in power_set({1, 2, 3})
+
+forall A, B set, x A:
+    A $subset B
+    =>:
+        x $in B
+```
+
+Lean expresses the same mathematics while making the relevant ambient types
+and set representation explicit:
+
+```lean
+import Mathlib
+
+example : ({1, 2} : Set ℕ) ∈ ({∅, {1, 2}} : Set (Set ℕ)) := by
+  simp
+
+example : ({1, 2} : Set ℕ) ⊆ ({1, 2, 3} : Set ℕ) := by
+  simp
+
+example {α : Type} {A B : Set α}
+    (hAB : A ⊆ B) {x : α} (hx : x ∈ A) :
+    x ∈ B := by
+  exact hAB hx
+```
+
+Litex's surface begins with sets, objects, membership, and functions between
+definition domains. Lean's surface begins with typed terms, so the examples say
+`Set ℕ`, `Set (Set ℕ)`, and a general ambient type `α`. Lean's representation
+is more general and deeply integrated with dependent type theory; Litex's is
+intended to put the set-theoretic reading first.
+
+### Intersections preserve inclusion
+
+Here is an explicit unfolding proof from the sets chapter of *Mathematics in
+Lean*. If `s` is a subset of `t`, intersecting both sets with the same set `u`
+preserves that inclusion:
+
+```lean
+import Mathlib.Data.Set.Lattice
+
+open Set
+
+example {alpha : Type*} (s t u : Set alpha) (h : s ⊆ t) :
+    s ∩ u ⊆ t ∩ u := by
+  rw [subset_def, inter_def, inter_def]
+  rw [subset_def] at h
+  simp only [mem_setOf]
+  rintro x ⟨xs, xu⟩
+  exact ⟨h _ xs, xu⟩
+```
+
+The corresponding Litex fact is the mathematical statement itself:
+
+```litex
+forall s, t, u set:
+    s $subset t
+    =>:
+        intersect(s, u) $subset intersect(t, u)
+```
+
+The mathematical argument is simply that a member of `intersect(s, u)` lies
+in both `s` and `u`; subset transport puts it in `t`, hence in
+`intersect(t, u)`. In Litex's default interface, a learner does not need to
+remember unfolding names and proof commands such as `subset_def`, `inter_def`,
+`rw`, or `simp only [mem_setOf]` just to expose that argument. This lowers the
+initial learning burden and keeps this routine proof at the level of sets and
+membership.
+
+This is not a claim that Lean requires the explicit script above: Lean also
+supports a shorter elementwise proof and stronger automation. It illustrates
+a difference in the default division of labor. Litex's checker performs the
+routine unfolding and membership transport, which also places those rules
+inside Litex's implementation and audit surface; Lean lets a proof author
+expose or control those steps through terms and tactics.
+
+Structures over a carrier set are illustrated by the complete group-identity
+example in the [Litex
+Blueprint](https://litexlang.com/doc/Litex_Blueprint#a-small-but-complete-comparison-uniqueness-of-the-identity-in-a-group).
+
+---
+
+## 6. Case Study: Infinitely Many Primes
+
+Both systems can express Euclid's argument in the following form:
+
+1. Start with a positive bound `a`.
+2. Form `1 * 2 * ... * a + 1`.
+3. Choose a prime divisor `k` of that number.
+4. If `k <= a`, then `k` divides the product, while the product plus one has
+   remainder `1` modulo `k`, a contradiction.
+5. Therefore `k > a`.
+
+The Litex claim places the background lemmas in its premise and keeps the main
+argument as a direct proof spine:
+
+```litex
+have fn factorial_factor(x N+) N+ = x
+
+# `$prime(a)` is native. Its symbolic contract is `2 <= a` together with
+# `a % b != 0` for every `b` in `range(2, a)`.
+
+claim:
+    ? forall a N+:
+        forall n, d N+:
+            d <= n
+            =>:
+                product(1, n, factorial_factor) % d = 0
+        forall n N+:
+            2 <= n
+            =>:
+                exist k N+ st {$prime(k), n % k = 0}
+        forall n N+:
+            n <= product(1, n, factorial_factor)
+        2 <= a
+        =>:
+            exist k N+ st {k > a, $prime(k)}
+    product(1, a, factorial_factor) $in N+
+    product(1, a, factorial_factor) $in R
+    2 <= a <= product(1, a, factorial_factor) <= product(1, a, factorial_factor) + 1
+    product(1, a, factorial_factor) + 1 $in N+
+    2 <= product(1, a, factorial_factor) + 1
+    obtain k from exist k N+ st {$prime(k), (product(1, a, factorial_factor) + 1) % k = 0}
+    by cases:
+        ? k > a
+        case k <= a:
+            product(1, a, factorial_factor) % k = 0
+            2 <= k
+            (product(1, a, factorial_factor) + 1) % k = (product(1, a, factorial_factor) % k + 1 % k) % k
+            1 % k = 1
+            (0 + 1) % k = 1 % k = 1
+            (product(1, a, factorial_factor) + 1) % k = (product(1, a, factorial_factor) % k + 1 % k) % k = (0 + 1) % k = 1
+            (product(1, a, factorial_factor) + 1) % k != 0
+            impossible (product(1, a, factorial_factor) + 1) % k = 0
+        case k > a
+    witness exist prime_larger N+ st {prime_larger > a, $prime(prime_larger)} from k
+```
+
+A Lean proof can use Mathlib's factorial and prime-divisor interfaces:
+
+```lean
+import Mathlib
+
+example (N : ℕ) : ∃ p ≥ N, Nat.Prime p := by
+  have hN0 : 0 < Nat.factorial N := Nat.factorial_pos N
+  have hN_ne_one : Nat.factorial N + 1 ≠ 1 := by omega
+  obtain ⟨p, hp, hpN⟩ :
+      ∃ p : ℕ, Nat.Prime p ∧ p ∣ Nat.factorial N + 1 :=
+    Nat.exists_prime_and_dvd hN_ne_one
+  use p
+  constructor
+  · by_contra hlt
+    have hp_le_N : p ≤ N := by omega
+    have hp_dvd_factorial : p ∣ Nat.factorial N :=
+      (Nat.Prime.dvd_factorial hp).2 hp_le_N
+    have hp_dvd_one : p ∣ 1 := by
+      have hp_dvd_sum : p ∣ (Nat.factorial N + 1) - Nat.factorial N :=
+        Nat.dvd_sub hpN hp_dvd_factorial
+      simpa using hp_dvd_sum
+    exact Nat.Prime.not_dvd_one hp hp_dvd_one
+  · exact hp
+```
+
+Litex makes the assumed background mathematics visible at the front of the
+claim, then shows `obtain`, a case split, the modular calculation, and the
+witness. Lean draws on a mature theorem library and constructs the result
+through named divisibility facts. The two examples do not have identical
+library boundaries, so line count is not a meaningful score; the comparison
+is about the shape of the remaining proof text.
+
+---
+
+## 7. A Technical Boundary: Facts Are Not First-Class Objects
+
+Lean propositions and proofs inhabit its type-theoretic term language. Lean
+can quantify over `P : Prop`, pass theorem proofs as arguments, and recursively
+compose propositions. Litex deliberately separates mathematical objects from
+facts: a `prop` definition creates a fact interface, and a call to that
+predicate is a fact rather than an ordinary object.
+
+For example, Lean can directly place a universal proposition inside a
+disjunction:
+
+```lean
+example (α : Type) (P : α → Prop) (Q R : Prop) (h : ∀ x, P x) :
+    (∀ x, P x) ∨ (Q ∧ R) :=
+  Or.inl h
+```
+
+Litex uses a smaller canonical surface grammar. A flat `and` contains atomic
+facts, and an outer `or` accepts atomic, chain, or completed flat-`and`
+branches; a `forall` is not directly one of those branch shapes. Therefore
+this anonymous recursive form is not Litex syntax:
+
+```text
+(forall x R: x = x) or (1 = 1 and 2 = 2)
+```
+
+A closed compound fact can instead receive a predicate name. Its call is
+atomic and can occupy the outer branch position:
+
+The current parser requires a nonempty `prop` parameter list. The closed,
+zero-argument predicate below is retained as an intended interface, not
+working syntax. Use a predicate with real mathematical parameters in current code.
+
+```litex
+prop all_reals_reflexive():
+    forall x R:
+        x = x
+
+by def $all_reals_reflexive()
+
+$all_reals_reflexive() or 1 = 1 and 2 = 2
+```
+
+In that intended interface, the `prop` definition would make
+`$all_reals_reflexive()` definitionally equivalent to its body; the definition alone does not assert the call. The `by
+def` line verifies the body and stores the atomic fact. If a compound subclaim
+has free mathematical objects, those objects should be parameters of the
+named predicate.
+
+Similarly, these higher-order proof-programming shapes are not Litex:
+
+```text
+forall P Prop:
+    # proof body omitted
+
+have h = (x = 2)
+some_statement(h)
+```
+
+This is a real expressiveness trade-off. Lean offers a highly general term
+language for propositions and proofs. Litex keeps a narrower object/fact split
+and asks users to name compound subclaims when they cross the directly parsed
+fact shapes. The benefit sought is a smaller, more canonical mathematical
+surface; the cost should be stated plainly rather than treated as an
+implementation detail.
+
+---
+
+## 8. A Design Perspective: What the Author States, What the Checker Reconstructs
+
+The scientific question behind these examples is how checkable mathematical
+knowledge should be represented, constructed, reviewed, and reused. Litex
+proposes a different starting point for formal-language design: organize the
+source around mathematical objects and the facts that hold about them, then
+ask the verifier to reconstruct routine local grounds. Its significance can
+therefore lie in the interaction of its design choices, even when each choice
+has precedents in Lean, Mizar, Isabelle, Rocq, or other systems.
+
+### The central inversion: state the next fact, reconstruct its grounds
+
+Return to Section 1's `x = 2` example. The Litex author writes the consequences
+`x + 1 = 3` and `x^2 = 4`; the verifier finds substitution and arithmetic
+grounds. The explicit Lean proof instead writes `rw [h]`, `norm_num`, and
+`exact ⟨h_add, h_square⟩` to construct a proof of those same consequences.
+This suggests the design principle **write what to verify; let the verifier
+determine how to justify the routine step**.
+
+That principle describes a division of labor at the source interface. Lean
+source also states what is to be proved. Its tactic execution and elaboration
+construct core terms, and its kernel checks those terms against the rules of
+its type theory; the kernel does not discover the author's intended theorem
+from a tactic script. The [Lean Language Reference](https://lean-lang.org/doc/reference/latest/Elaboration-and-Compilation/)
+separates these stages explicitly. Likewise, Litex's verifier searches for
+grounds within its supported local rules; it does not discover an arbitrary
+mathematical argument. Authors still choose useful intermediate facts,
+witnesses, estimates, cases, and induction arguments.
+
+### Six related changes of starting point
+
+These are separate design axes, rather than six names for shorter proofs.
+The comparison column describes an available or common organization, not a
+requirement imposed on every user of another system.
+
+| Design question | A different starting point | Litex's choice and concrete evidence | Consequence and boundary |
+|---|---|---|---|
+| What determines an object's mathematical classification? | Start with a host type and express movement between representations through coercions or explicit bridges. | Start with the mathematical object; accumulate membership facts such as `x $in N`, `x $in Z`, and `x $in R`. The opening `Eq`/`Same` discussion explains the representation distinction. | Knowledge about an object can grow without changing its source identity. Generated Lean remains typed, and cross-representation identity needs certified semantic bridges. |
+| Where do conditions for using an expression live? | Package a value and its condition into a subtype, or pass the condition as a proof argument. | Keep the mathematical definition domain visible: `have fn positive_successor(x R: x > 0) R = x + 1`, then `positive_successor(1) = 2`. Section 1 compares the subtype spelling. | A call asks the checker to establish its domain conditions from context. Conditions remain obligations; an undefined expression cannot become valid merely because its proposed equation looks plausible. |
+| What are the basic categories of the language? | Use one dependent term/type framework for values, propositions, and proofs, as Lean does. | Separate objects, facts, and statements that define or prove them. Section 7's rejected `have h = (x = 2)` shows that a fact is not an ordinary object. | A mathematical surface with specialized fact shapes is possible, at the cost of general proof programming and arbitrary proposition nesting. This is a restriction of the source language, not merely notation. |
+| How does a routine fact become reusable? | Select a named lemma or proof method and direct its application. | State the required fact and match it against available knowledge by its mathematical content. Section 5 states `intersect(s, u) $subset intersect(t, u)` directly under `s $subset t`. | Names need not mediate every routine step. The current checker indexes facts by shape and relation; named theorem calls remain useful, and matching is limited by scope and supported routes. |
+| What is the unit of interactive progress? | Develop a proof by transforming a current goal into remaining subgoals. | Extend an accepted mathematical context one statement at a time. In the [Agent Guide](AgentGuide.md), `$ready(8)` fails while the earlier assumed `$ready(7)` remains usable in the same Session. | An ordinary failed statement can be repaired without replaying accepted work. This is a statement-level boundary: a multi-statement input is not one transaction, and hard errors may require restart. |
+| What should checking leave behind? | Treat the checked theorem as the main deliverable, with proof terms and tooling metadata supporting it. | Retain typed execution results describing well-definedness, verification grounds, cited facts, and stored consequences. Detailed output and the current Lean compiler consume this evidence. | Checking can also produce a record for explanation, repair, and supported proof replay. Current results are not a complete portable certificate; compiler coverage and independent checking remain separate acceptance conditions. |
+
+The implementation anchors for the last four rows are the
+[fact categories](../src/ast/fact/fact.rs),
+[fact indexing and inference](../src/store_fact_and_infer/README.md),
+[statement commit boundary](../src/execute/exec_stmt.rs),
+[output projection](../src/json_output/README.md), and
+[result-driven Lean compilation](../src/compile_to_lean/README.md).
+The current [Lean semantic interface](../lean/Litex.lean) defines `Same` and
+`In` through represented meanings under an explicit semantics parameter; it
+does not establish a completed model of all Litex objects and rules.
+
+### Why the combination matters
+
+The choices reinforce one another. Membership facts let domain knowledge about
+an object accumulate in the same context as ordinary mathematical conclusions.
+The object/fact split gives the checker specialized shapes to index and match.
+Local verification makes a bare mathematical statement a useful input; the
+statement commit boundary makes its acceptance a useful unit of progress.
+Retained evidence can then explain that acceptance and supply supported
+compilation routes without asking a second prover to rediscover the argument.
+
+This changes the language-design question from choosing convenient proof
+commands to deciding which mathematical decisions must remain visible in
+source, which mechanical steps can be reconstructed, and what evidence must
+survive reconstruction. For the `x = 2` example, the two consequences remain
+visible to the reader while the substitution work belongs to the checker.
+For the convergence example, the author must still supply the substantive
+choice `epsilon / (|c| + 1)` and the estimate. The intended boundary is thus
+between meaningful mathematical choices and routine local verification, and
+its usefulness has to be tested on real proofs.
+
+The individual ideas have substantial precedents. [Mizar's manual](https://mizar.uwb.edu.pl/project/mizman.pdf)
+describes statements with empty justification, reference-based `by`
+justification, and structured subproofs. [Isabelle/Isar](https://isabelle.in.tum.de/Isar/)
+offers readable structured proofs combined with proof methods.
+[Rocq's `auto`](https://rocq-prover.org/doc/master/refman/proofs/automatic-tactics/auto.html)
+uses bounded proof search and hint databases. Lean also supports forward
+`have` proofs, automation, incremental elaboration, and rich inspection
+metadata. These systems cannot fairly be grouped into one opposing design.
+The examples justify studying Litex's coherent combination; establishing how
+rare or historically novel that combination is would require a broader
+comparison, including controlled mathematical languages such as Naproche.
+
+### A research hypothesis that can be tested
+
+The hypothesis is that this division of labor can lower the cost of producing,
+understanding, repairing, and reusing checkable mathematical knowledge for
+humans and AI. It is stronger and more useful than counting omitted tactics,
+but it is not an established performance or usability result.
+
+A comparison should use equivalent mathematical statements, explicit library
+and assumption boundaries, and idiomatic implementations in each language.
+It should measure authoring and review time, repair attempts, the ability to
+detect a mismatch with the intended statement, verification cost, and whether
+intermediate results remain reusable. Rejected invalid steps, remaining proof
+debt, and unsupported compiler routes belong in the results as well.
+
+Because mathematics supplies methods and models throughout the natural
+sciences, a successful design could matter beyond one proof assistant:
+more people might be able to construct and inspect verifiable reasoning,
+including AI-generated candidate arguments. That is a potential consequence
+of the hypothesis, contingent on measured improvements and trustworthy
+verification. The language design itself remains the scientific object to
+investigate.
+
+---
+
+## Reading the Comparison Fairly
+
+The examples support a limited conclusion: Litex can keep many elementary
+proofs close to a sequence of mathematical facts while moving routine
+matching, substitution, and small builtin steps into the checker. They do not
+show that Litex has Lean's generality, library coverage, kernel architecture,
+or production experience.
+
+Litex also does not remove a trusted computing base. Its checker, builtin and
+inference rules, imported assumptions, and every explicit `trust` or `axiom`
+matter to the result. A short source file is useful only when the checker
+reports enough provenance for accepted steps and the implementation remains
+open to tests and audit.
+
+Use the following documents for questions intentionally kept out of this
+example collection:
+
+- [Litex Blueprint](https://litexlang.com/doc/Litex_Blueprint): design goals
+  and the complete `Group` comparison;
+- [Manual](https://litexlang.com/doc/Manual): syntax and proof forms;
+- [CLI reference](cli.md): current entrypoints, output, sessions, and modules;
+- [Lean semantic interface](../lean/Litex.lean):
+  the maintained replay interface; see the [compiler guide](Litex_To_Lean_Compiler_Guide.md) and [CLI boundary](cli.md#lean-compiler-boundary).

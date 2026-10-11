@@ -1,0 +1,26 @@
+{
+  "kind": "stored_identifier",
+  "tag": "LetObj",
+  "plain_name": "a",
+  "stmt": {
+    "name": {
+      "id": 3,
+      "name": "a"
+    },
+    "value": {
+      "tag": "Literal",
+      "literal": {
+        "tag": "Number",
+        "text": "1"
+      }
+    },
+    "line_file": {
+      "line": 1,
+      "origin": {
+        "tag": "RootExport",
+        "path": "test.lit",
+        "export_file_id": 0
+      }
+    }
+  }
+}

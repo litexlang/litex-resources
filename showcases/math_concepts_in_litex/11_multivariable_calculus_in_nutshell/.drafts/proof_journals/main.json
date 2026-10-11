@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/11_multivariable_calculus_in_nutshell/main.lit",
+  "proof_spine": ["quadratic scalar field", "coordinate difference quotients", "epsilon-delta partial derivatives", "coordinate gradient"],
+  "blocks": [
+    {"id": "FILE", "status": "accepted", "classification": "proof", "note": "Release runner succeeded after making substitution a calculation chain."},
+    {"id": "M205", "intent": "Derive the x partial derivative from the exact coordinate quotient.", "accepted_litex": "thm quadratic_surface_has_x_partial_derivative: ? forall point cart(R, R): $has_x_partial_derivative_at(quadratic_surface, point, 2 * point[1])", "status": "accepted_materialized"},
+    {"id": "M206", "intent": "Derive the y partial derivative from the exact coordinate quotient.", "accepted_litex": "thm quadratic_surface_has_y_partial_derivative: ? forall point cart(R, R): $has_y_partial_derivative_at(quadratic_surface, point, 2 * point[2])", "status": "accepted_materialized"},
+    {"id": "M207", "intent": "Package the two partial derivatives as a coordinate gradient.", "result": "failed", "verifier_evidence": "Projection did not unfold through quadratic_gradient automatically."},
+    {"id": "M207b", "intent": "Add the smallest tuple-coordinate bridge and fold the gradient relation.", "accepted_litex": "thm quadratic_gradient_is_coordinate_gradient: ? forall point cart(R, R): $is_coordinate_gradient_at(quadratic_surface, point, quadratic_gradient(point))", "status": "accepted_materialized"}
+  ],
+  "materialization": {"block_ids": ["FILE", "M205", "M206", "M207b"], "file_gate_result": "file and module release runners passed; full 14-module collection gate passed"}
+}

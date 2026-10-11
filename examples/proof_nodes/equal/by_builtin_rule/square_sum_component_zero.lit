@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.SquareSumComponentZero
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/square_sum_component_zero.lit
+
+forall a R, b R:
+    a^2 + b^2 = 0
+    =>:
+        a = 0

@@ -1,0 +1,5 @@
+# Node: equal.ByBuiltinRule.SignOfNegation
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/sign_of_negation.lit
+
+have a R
+sign(0 - a) = 0 - sign(a)

@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell/main.lit",
+  "proof_spine": [
+    "use Litex's builtin union, intersection, and set difference on two displayed finite sets",
+    "define the successor as an ordinary callable function and inspect one value and its range",
+    "represent a relation directly as a subset of a Cartesian product",
+    "unfold the builtin injective predicate and cancel one from equal successor values"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Introduce the first displayed finite set with the native finite_set carrier.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "try:\n    have first_set finite_set = {1, 2, 3}",
+          "result": "failed_transport",
+          "verifier_evidence": "protocol_error: expected run, artifacts, or close",
+          "diagnosis": "The session accepts a length-delimited run frame around the literal Litex try block.",
+          "next_change": "Send the same source as run B001a <utf8-byte-count>."
+        },
+        {
+          "candidate": "have first_set finite_set = {1, 2, 3}",
+          "result": "accepted",
+          "verifier_evidence": "block B001a: ok=true",
+          "diagnosis": "The displayed set inhabits the builtin finite_set binder directly.",
+          "next_change": "Proceed to the second set and native set operations."
+        }
+      ],
+      "accepted_litex": "have first_set finite_set = {1, 2, 3}",
+      "reusable_lesson": "Displayed finite sets can be named directly with the native finite_set binder.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Introduce an overlapping second finite set.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "have second_set finite_set = {2, 3, 4}",
+          "result": "accepted",
+          "verifier_evidence": "block B002a: ok=true",
+          "diagnosis": "The second displayed set uses the same native carrier.",
+          "next_change": "Demonstrate union, intersection, and difference membership."
+        }
+      ],
+      "accepted_litex": "have second_set finite_set = {2, 3, 4}",
+      "reusable_lesson": "Named displayed finite sets remain usable by builtin set constructors.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Show one concrete member of a union, intersection, and relative difference.",
+      "dependencies": ["B001 first_set", "B002 second_set"],
+      "attempts": [
+        {
+          "candidate": "4 $in union(first_set, second_set)\n2 $in intersect(first_set, second_set)\n1 $in set_minus(first_set, second_set)",
+          "result": "failed",
+          "verifier_evidence": "block B003a: unknown 4 $in union(first_set, second_set)",
+          "diagnosis": "The union rule needs the underlying operand-membership fact made explicit before it can lift membership into the constructor.",
+          "next_change": "Expose literal membership and its rewrite through the named set before each constructor membership."
+        },
+        {
+          "candidate": "4 $in {2, 3, 4}\n4 $in second_set\n4 $in union(first_set, second_set)",
+          "result": "accepted",
+          "verifier_evidence": "block B003b: ok=true",
+          "diagnosis": "The explicit operand membership is exactly the bridge consumed by the builtin union rule.",
+          "next_change": "Use the same small bridge for intersection and difference."
+        }
+      ],
+      "accepted_litex": "4 $in {2, 3, 4}\n4 $in second_set\n4 $in union(first_set, second_set)",
+      "reusable_lesson": "A named-set example should expose concrete operand membership before applying a native binary set constructor.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "source_order": 4,
+      "intent": "Show the overlap of the two displayed sets with one concrete member.",
+      "dependencies": ["B001 first_set", "B002 second_set"],
+      "attempts": [
+        {
+          "candidate": "intersect(first_set, second_set) = {2, 3}",
+          "result": "failed",
+          "verifier_evidence": "block B004a: unknown set equality",
+          "diagnosis": "A full finite-set equality is not a one-step builtin reduction in this context and would distract from the introductory example.",
+          "next_change": "Demonstrate the native intersection semantics by proving a representative member from its two operand-membership facts."
+        },
+        {
+          "candidate": "2 $in {1, 2, 3}\n2 $in {2, 3, 4}\n2 $in first_set\n2 $in second_set\n2 $in intersect(first_set, second_set)",
+          "result": "accepted",
+          "verifier_evidence": "block B004b: ok=true",
+          "diagnosis": "Builtin intersection introduction consumes the two explicit operand memberships.",
+          "next_change": "Demonstrate relative difference with membership and non-membership."
+        }
+      ],
+      "accepted_litex": "2 $in {1, 2, 3}\n2 $in {2, 3, 4}\n2 $in first_set\n2 $in second_set\n2 $in intersect(first_set, second_set)",
+      "reusable_lesson": "For a light showcase, representative membership exposes intersection semantics more directly than a full extensional equality proof.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "source_order": 5,
+      "intent": "Show relative set difference by combining membership on the left with non-membership on the right.",
+      "dependencies": ["B001 first_set", "B002 second_set"],
+      "attempts": [
+        {
+          "candidate": "1 $in {1, 2, 3}\n1 $in first_set\nnot 1 $in {2, 3, 4}\nnot 1 $in second_set\n1 $in set_minus(first_set, second_set)",
+          "result": "accepted",
+          "verifier_evidence": "block B005a: ok=true",
+          "diagnosis": "Builtin set-difference introduction consumes exactly left membership and right non-membership.",
+          "next_change": "Proceed to a native function example."
+        }
+      ],
+      "accepted_litex": "1 $in {1, 2, 3}\n1 $in first_set\nnot 1 $in {2, 3, 4}\nnot 1 $in second_set\n1 $in set_minus(first_set, second_set)",
+      "reusable_lesson": "Set difference is clearest when its two defining facts are shown immediately before the result.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "source_order": 6,
+      "intent": "Define the ordinary successor function on natural numbers.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "have fn successor(n N) N = n + 1",
+          "result": "accepted",
+          "verifier_evidence": "block B006a: ok=true",
+          "diagnosis": "A source-defined function remains a native have fn with explicit domain and codomain.",
+          "next_change": "Evaluate it and inspect its builtin range."
+        }
+      ],
+      "accepted_litex": "have fn successor(n N) N = n + 1",
+      "reusable_lesson": "Use have fn for a callable construction; no custom successor predicate or structure is needed.",
+      "status": "materialized"
+    },
+    {
+      "id": "B007",
+      "source_order": 7,
+      "intent": "Use the successor both as a callable function and through its builtin image set.",
+      "dependencies": ["B006 successor"],
+      "attempts": [
+        {
+          "candidate": "successor(4) = 5\nsuccessor(4) $in fn_range(successor)",
+          "result": "accepted",
+          "verifier_evidence": "block B007a: ok=true",
+          "diagnosis": "Function evaluation and fn_range membership are both native consequences of the checked function interface.",
+          "next_change": "Introduce a small relation as a set of ordered pairs."
+        }
+      ],
+      "accepted_litex": "successor(4) = 5\nsuccessor(4) $in fn_range(successor)",
+      "reusable_lesson": "A minimal downstream use probe should include both application and range membership.",
+      "status": "materialized"
+    },
+    {
+      "id": "B008",
+      "source_order": 8,
+      "intent": "Represent a small binary relation directly as a subset of N x N.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "have next_relation power_set(cart(N, N)) = {(1, 2), (2, 3)}",
+          "result": "failed",
+          "verifier_evidence": "block B008a: pairwise inequality (1, 2) != (2, 3) was not provable during displayed-set well-definedness",
+          "diagnosis": "A two-pair literal introduces tuple-disequality administration that is irrelevant to this deliberately simple relation example.",
+          "next_change": "Use a singleton ordered-pair relation and demonstrate its membership semantics."
+        },
+        {
+          "candidate": "have next_relation power_set(cart(N, N)) = {(1, 2)}",
+          "result": "accepted",
+          "verifier_evidence": "block B008b: ok=true",
+          "diagnosis": "The singleton displayed set directly inhabits power_set(cart(N, N)).",
+          "next_change": "Consume the relation through ordered-pair membership."
+        }
+      ],
+      "accepted_litex": "have next_relation power_set(cart(N, N)) = {(1, 2)}",
+      "reusable_lesson": "A relation needs no custom predicate: a set with Cartesian-product carrier is already first-class.",
+      "status": "materialized"
+    },
+    {
+      "id": "B009",
+      "source_order": 9,
+      "intent": "Read an ordered pair as a fact belonging to the relation.",
+      "dependencies": ["B008 next_relation"],
+      "attempts": [
+        {
+          "candidate": "(1, 2) $in {(1, 2)}\n(1, 2) $in next_relation",
+          "result": "accepted",
+          "verifier_evidence": "block B009a: ok=true",
+          "diagnosis": "Membership in the displayed relation rewrites through the named set exactly as ordinary set membership.",
+          "next_change": "Prove the successor injective through Litex's builtin predicate."
+        }
+      ],
+      "accepted_litex": "(1, 2) $in {(1, 2)}\n(1, 2) $in next_relation",
+      "reusable_lesson": "A relation fact is ordinary membership of an ordered tuple in its relation set.",
+      "status": "materialized"
+    },
+    {
+      "id": "B010",
+      "source_order": 10,
+      "intent": "Use the builtin injective predicate to state and prove that successor is injective.",
+      "dependencies": ["B006 successor"],
+      "attempts": [
+        {
+          "candidate": "thm successor_is_injective:\n    ? $injective(N, N, successor)\n    ...",
+          "result": "failed",
+          "verifier_evidence": "block B010a: thm goal must be a single forall fact",
+          "diagnosis": "A named Litex theorem wraps even a closed proposition in an empty-binder forall.",
+          "next_change": "State the goal as ? forall: $injective(N, N, successor)."
+        },
+        {
+          "candidate": "thm successor_is_injective:\n    ? forall:\n        $injective(N, N, successor)\n    ...\n    x + 1 = y + 1\n    x = y",
+          "result": "failed",
+          "verifier_evidence": "block B010b: x = y remained unknown",
+          "diagnosis": "The verifier did not cancel the common natural-number successor from a standalone equality fact.",
+          "next_change": "Expose cancellation as the equality chain x = x + 1 - 1 = y + 1 - 1 = y."
+        },
+        {
+          "candidate": "thm successor_is_injective:\n    ? forall:\n        $injective(N, N, successor)\n    ...\n    x = x + 1 - 1 = y + 1 - 1 = y",
+          "result": "accepted",
+          "verifier_evidence": "block B010c: ok=true",
+          "diagnosis": "The explicit subtraction chain supplies the natural-number cancellation step; the builtin injective definition then folds directly.",
+          "next_change": "Run a liveness probe that removes the three separate unfolding and intermediate-equality facts."
+        },
+        {
+          "candidate": "claim ...\n    x = x + 1 - 1 = y + 1 - 1 = y",
+          "result": "failed_liveness_probe",
+          "verifier_evidence": "block B010d: the middle equality after subtraction remained unknown",
+          "diagnosis": "The premise still needs an explicit bridge from successor applications to addition.",
+          "next_change": "Keep one compact calculation chain joining the two representations."
+        },
+        {
+          "candidate": "claim ...\n    x + 1 = successor(x) = successor(y) = y + 1\n    x = x + 1 - 1 = y + 1 - 1 = y",
+          "result": "accepted_liveness_probe",
+          "verifier_evidence": "block B010f: ok=true under temporary theorem name successor_is_injective_compact",
+          "diagnosis": "One representation bridge and one cancellation chain are the shortest verified proof spine.",
+          "next_change": "Materialize this compact body under the public theorem name successor_is_injective."
+        }
+      ],
+      "accepted_litex": "thm successor_is_injective:\n    ? forall:\n        $injective(N, N, successor)\n    claim:\n        ? forall x, y N:\n            successor(x) = successor(y)\n            =>:\n                x = y\n        x + 1 = successor(x) = successor(y) = y + 1\n        x = x + 1 - 1 = y + 1 - 1 = y\n    by def $injective(N, N, successor)",
+      "reusable_lesson": "For successor injectivity, preserve the native predicate and expose only the application-to-addition bridge plus explicit natural-number cancellation.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B006", "B007", "B008", "B009", "B010"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell/main.lit",
+    "file_gate_result": "ok=true, exit code 0"
+  }
+}

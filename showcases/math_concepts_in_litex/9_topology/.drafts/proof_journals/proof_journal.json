@@ -1,0 +1,521 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/topology/main.lit",
+  "date": "2026-08-17",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/topology/main.lit",
+  "proof_spine": [
+    "state topology axioms using native set objects and expose a named setting",
+    "derive binary open unions and three-way open intersections",
+    "state continuity by open preimages",
+    "obtain the two open-preimage facts for a composable pair",
+    "identify the nested preimage with the composite preimage by extension",
+    "derive both directions of the closed-preimage characterization",
+    "pull an indexed target cover back and reuse its finite index subset to cover the compact image"
+  ],
+  "blocks": [
+    {
+      "id": "T001",
+      "source_order": 1,
+      "intent": "Define topology using the native empty set, intersection, and big union objects.",
+      "dependencies": ["builtin power_set", "builtin intersect", "builtin family_union", "builtin subset"],
+      "attempts": [
+        {
+          "candidate": "prop is_topology_on(X set, T power_set(power_set(X))) with empty, whole-space, binary-intersection, and family_union closure",
+          "result": "accepted",
+          "verifier_evidence": "session block T001: ok=true",
+          "diagnosis": "The native family_union interface is sufficient; no local family_union definition is needed.",
+          "next_change": "Expose the laws through a theorem-facing setting."
+        }
+      ],
+      "accepted_litex": "prop is_topology_on(X set, T power_set(power_set(X))):\n    {} $in T\n    X $in T\n    forall U, V T:\n        intersect(U, V) $in T\n    forall family power_set(power_set(X)):\n        family $subset T\n        =>:\n            family_union(family) $in T",
+      "reusable_lesson": "Use the kernel's family union directly instead of recreating its membership semantics.",
+      "status": "materialized"
+    },
+    {
+      "id": "T002",
+      "source_order": 2,
+      "intent": "Expose topology axioms as the ambient theorem-writing context.",
+      "dependencies": ["builtin topology ingredients", "T001 documents the corresponding first-class predicate"],
+      "attempts": [
+        {
+          "candidate": "setting TopologicalSpaceSetting with the topology laws written directly",
+          "result": "accepted",
+          "verifier_evidence": "session block T002: ok=true",
+          "diagnosis": "Direct laws avoid the known proposition-call setting elaboration bug.",
+          "next_change": "Derive three-way intersection closure."
+        }
+      ],
+      "accepted_litex": "setting TopologicalSpaceSetting:\n    X set\n    T power_set(power_set(X))\n    {} $in T\n    X $in T\n    forall U, V T:\n        intersect(U, V) $in T\n    forall family power_set(power_set(X)):\n        family $subset T\n        =>:\n            family_union(family) $in T",
+      "reusable_lesson": "Settings keep topology theorems readable without wrapping the topology in a struct value.",
+      "status": "materialized"
+    },
+    {
+      "id": "T003",
+      "source_order": 3,
+      "intent": "Derive closure under an intersection of three open sets.",
+      "dependencies": ["T002: TopologicalSpaceSetting"],
+      "attempts": [
+        {
+          "candidate": "thm topology_triple_intersection with theorem variables U, V, W",
+          "result": "failed",
+          "verifier_evidence": "session block T003: DefineParamsError, duplicate Forall free parameter `U` in nested scope",
+          "diagnosis": "The theorem variable U collided with the same binder name inside an expanded setting law.",
+          "next_change": "Rename theorem variables to A, B, C."
+        },
+        {
+          "candidate": "thm topology_triple_intersection with theorem variables A, B, C",
+          "result": "failed",
+          "verifier_evidence": "session block T003R: ParseError, name `C` is already active in this scope and cannot be rebound",
+          "diagnosis": "C is the built-in complex-number carrier and cannot be rebound.",
+          "next_change": "Use descriptive open_A, open_B, open_C names."
+        },
+        {
+          "candidate": "thm topology_triple_intersection with open_A, open_B, open_C",
+          "result": "accepted",
+          "verifier_evidence": "session block T003S: ok=true",
+          "diagnosis": "The first binary intersection is open, so the setting law applies once more.",
+          "next_change": "Define continuity via open preimages."
+        }
+      ],
+      "accepted_litex": "thm topology_triple_intersection:\n    ? forall [TopologicalSpaceSetting], open_A, open_B, open_C T:\n        intersect(intersect(open_A, open_B), open_C) $in T\n    intersect(open_A, open_B) $in T",
+      "reusable_lesson": "Avoid reusing setting-internal forall binder names in theorem parameters.",
+      "status": "materialized"
+    },
+    {
+      "id": "T004",
+      "source_order": 4,
+      "intent": "Derive binary open-union closure from arbitrary-union closure.",
+      "dependencies": ["T002: TopologicalSpaceSetting", "builtin family_union", "builtin union"],
+      "attempts": [
+        {
+          "candidate": "Use the family literal {open_A, open_B}, prove it is a subset of T by finite enumeration, and identify its big union with union(open_A, open_B).",
+          "result": "failed",
+          "verifier_evidence": "session block T004: WellDefinedError, list set elements must be pairwise not equal; open_A != open_B is not provable",
+          "diagnosis": "A two-element set literal is not total when the two supplied open sets may coincide.",
+          "next_change": "Represent the two-member family with a set builder whose predicate allows equality."
+        },
+        {
+          "candidate": "Use the set-builder family {candidate power_set(X): candidate = open_A or candidate = open_B} and prove equality with the native union by extension.",
+          "result": "failed",
+          "verifier_evidence": "session block T004R reached the reverse extension direction, then failed to infer open_A membership in the set builder",
+          "diagnosis": "Set-builder introduction is not automatic from the disjunction witness in this caller context.",
+          "next_change": "Use the existing set_builder_member theorem explicitly for open_A and open_B."
+        },
+        {
+          "candidate": "The same set-builder-family proof with explicit set_builder_member calls in the reverse extension direction.",
+          "result": "accepted",
+          "verifier_evidence": "session block T004S: ok=true",
+          "diagnosis": "The native family_union and union interfaces align once set-builder introduction is made explicit.",
+          "next_change": "Define continuity by open preimages."
+        }
+      ],
+      "accepted_litex": "thm topology_binary_union:\n    ? forall [TopologicalSpaceSetting], open_A, open_B T:\n        union(open_A, open_B) $in T\n    have family power_set(power_set(X)) = {candidate power_set(X): candidate = open_A or candidate = open_B}\n    claim:\n        ? family $subset T\n        claim:\n            ? forall candidate family:\n                candidate $in T\n            candidate $in {choice power_set(X): choice = open_A or choice = open_B}\n            candidate = open_A or candidate = open_B\n            by cases:\n                ? candidate $in T\n                case candidate = open_A:\n                    candidate $in T\n                case candidate = open_B:\n                    candidate $in T\n        by def:\n            ? family $subset T\n    family_union(family) $in T\n    by extension:\n        ? family_union(family) = union(open_A, open_B)\n        claim:\n            ? forall point family_union(family):\n                point $in union(open_A, open_B)\n            obtain candidate from exist candidate family st {point $in candidate}\n            candidate $in {choice power_set(X): choice = open_A or choice = open_B}\n            candidate = open_A or candidate = open_B\n            by cases:\n                ? point $in union(open_A, open_B)\n                case candidate = open_A:\n                    point $in open_A\n                    point $in union(open_A, open_B)\n                case candidate = open_B:\n                    point $in open_B\n                    point $in union(open_A, open_B)\n        claim:\n            ? forall point union(open_A, open_B):\n                point $in family_union(family)\n            point $in open_A or point $in open_B\n            by cases:\n                ? point $in family_union(family)\n                case point $in open_A:\n                    open_A = open_A or open_A = open_B\n                    by thm set_builder_member(open_A, {choice power_set(X): choice = open_A or choice = open_B})\n                    open_A $in family\n                    point $in family_union(family)\n                case point $in open_B:\n                    open_B = open_A or open_B = open_B\n                    by thm set_builder_member(open_B, {choice power_set(X): choice = open_A or choice = open_B})\n                    open_B $in family\n                    point $in family_union(family)",
+      "reusable_lesson": "Do not use a multi-element set literal for arbitrary parameters unless pairwise distinctness is available.",
+      "status": "materialized"
+    },
+    {
+      "id": "T005",
+      "source_order": 5,
+      "intent": "Define continuity using native set-builder preimages of open sets.",
+      "dependencies": ["T001: is_topology_on", "builtin function application", "builtin set builder"],
+      "attempts": [
+        {
+          "candidate": "prop is_continuous with source and target topology facts plus forall open_Y, {x X: f(x) in open_Y} in T_X",
+          "result": "accepted",
+          "verifier_evidence": "session block T005: ok=true",
+          "diagnosis": "The ordinary open-preimage definition is directly expressible.",
+          "next_change": "Create the composition setting."
+        }
+      ],
+      "accepted_litex": "prop is_continuous(X, Y set, T_X power_set(power_set(X)), T_Y power_set(power_set(Y)), f fn(x X) Y):\n    $is_topology_on(X, T_X)\n    $is_topology_on(Y, T_Y)\n    forall open_Y T_Y:\n        {x X: f(x) $in open_Y} $in T_X",
+      "reusable_lesson": "Continuity needs no custom preimage constructor; a set builder is the native object.",
+      "status": "materialized"
+    },
+    {
+      "id": "T006",
+      "source_order": 6,
+      "intent": "Create the setting-first ambient context for two composable continuous maps.",
+      "dependencies": ["T001 topology laws", "T005 open-preimage continuity law"],
+      "attempts": [
+        {
+          "candidate": "setting ContinuousCompositionSetting with three direct topology-law groups and the two open-preimage laws",
+          "result": "accepted",
+          "verifier_evidence": "session block T006: ok=true",
+          "diagnosis": "The expanded setting supplies exactly the facts needed to prove composite continuity.",
+          "next_change": "Prove continuity of the explicit lambda composition."
+        }
+      ],
+      "accepted_litex": "setting ContinuousCompositionSetting:\n    A, B, CarrierC set\n    T_A power_set(power_set(A))\n    T_B power_set(power_set(B))\n    T_C power_set(power_set(CarrierC))\n    f fn(x A) B\n    g fn(y B) CarrierC\n    {} $in T_A\n    A $in T_A\n    forall open_A1, open_A2 T_A:\n        intersect(open_A1, open_A2) $in T_A\n    forall family_A power_set(power_set(A)):\n        family_A $subset T_A\n        =>:\n            family_union(family_A) $in T_A\n    {} $in T_B\n    B $in T_B\n    forall open_B1, open_B2 T_B:\n        intersect(open_B1, open_B2) $in T_B\n    forall family_B power_set(power_set(B)):\n        family_B $subset T_B\n        =>:\n            family_union(family_B) $in T_B\n    {} $in T_C\n    CarrierC $in T_C\n    forall open_C1, open_C2 T_C:\n        intersect(open_C1, open_C2) $in T_C\n    forall family_C power_set(power_set(CarrierC)):\n        family_C $subset T_C\n        =>:\n            family_union(family_C) $in T_C\n    forall open_B T_B:\n        {x A: f(x) $in open_B} $in T_A\n    forall open_C T_C:\n        {y B: g(y) $in open_C} $in T_B",
+      "reusable_lesson": "The setting is an ambient context, not a packaged continuous-map object.",
+      "status": "materialized"
+    },
+    {
+      "id": "T007",
+      "source_order": 7,
+      "intent": "Prove the tracer theorem that a composition of continuous maps is continuous.",
+      "dependencies": ["T005: is_continuous", "T006: ContinuousCompositionSetting", "builtin set_builder_member", "native by extension"],
+      "attempts": [
+        {
+          "candidate": "Obtain the two open-preimage facts, identify the nested and direct preimages by extension, then bridge explicit lambda application to g(f(x)).",
+          "result": "accepted",
+          "verifier_evidence": "session block T007: ok=true",
+          "diagnosis": "Two extensional equality bridges are sufficient; no custom preimage object or trust is needed.",
+          "next_change": "Materialize the accepted source and run the file gate."
+        }
+      ],
+      "accepted_litex": "thm continuous_composition:\n    ? forall [ContinuousCompositionSetting]:\n        $is_continuous(A, CarrierC, T_A, T_C, fn(x A) CarrierC {g(f(x))})\n    claim:\n        ? forall target_open T_C:\n            {x A: g(f(x)) $in target_open} $in T_A\n        {y B: g(y) $in target_open} $in T_B\n        have middle_open T_B = {y B: g(y) $in target_open}\n        {x A: f(x) $in middle_open} $in T_A\n        have nested_preimage T_A = {x A: f(x) $in middle_open}\n        have direct_preimage power_set(A) = {x A: g(f(x)) $in target_open}\n        claim:\n            ? nested_preimage $subset direct_preimage\n            claim:\n                ? forall point nested_preimage:\n                    point $in direct_preimage\n                f(point) $in middle_open\n                g(f(point)) $in target_open\n                by thm set_builder_member(point, {x A: g(f(x)) $in target_open})\n            by def:\n                ? nested_preimage $subset direct_preimage\n        claim:\n            ? direct_preimage $subset nested_preimage\n            claim:\n                ? forall point direct_preimage:\n                    point $in nested_preimage\n                g(f(point)) $in target_open\n                by thm set_builder_member(f(point), {y B: g(y) $in target_open})\n                f(point) $in middle_open\n                by thm set_builder_member(point, {x A: f(x) $in middle_open})\n            by def:\n                ? direct_preimage $subset nested_preimage\n        by extension:\n            ? nested_preimage = direct_preimage\n        direct_preimage $in T_A\n    claim:\n        ? forall target_open T_C:\n            {candidate A: fn(argument A) CarrierC {g(f(argument))}(candidate) $in target_open} $in T_A\n        have direct_preimage T_A = {candidate A: g(f(candidate)) $in target_open}\n        have literal_preimage power_set(A) = {candidate A: fn(argument A) CarrierC {g(f(argument))}(candidate) $in target_open}\n        claim:\n            ? literal_preimage $subset direct_preimage\n            claim:\n                ? forall point literal_preimage:\n                    point $in direct_preimage\n                fn(argument A) CarrierC {g(f(argument))}(point) = g(f(point))\n                g(f(point)) $in target_open\n                by thm set_builder_member(point, {candidate A: g(f(candidate)) $in target_open})\n            by def:\n                ? literal_preimage $subset direct_preimage\n        claim:\n            ? direct_preimage $subset literal_preimage\n            claim:\n                ? forall point direct_preimage:\n                    point $in literal_preimage\n                g(f(point)) $in target_open\n                fn(argument A) CarrierC {g(f(argument))}(point) = g(f(point))\n                fn(argument A) CarrierC {g(f(argument))}(point) $in target_open\n                by thm set_builder_member(point, {candidate A: fn(argument A) CarrierC {g(f(argument))}(candidate) $in target_open})\n            by def:\n                ? direct_preimage $subset literal_preimage\n        by extension:\n            ? literal_preimage = direct_preimage\n        literal_preimage $in T_A\n    by def:\n        ? $is_continuous(A, CarrierC, T_A, T_C, fn(x A) CarrierC {g(f(x))})",
+      "reusable_lesson": "For composition, reuse native set builders and prove only the extensional bridge between nested and literal preimages.",
+      "status": "materialized"
+    }
+  ],
+  "lesson": "Native family_union, fn_range, and set-builder preimages cover the topology chain. Indexed covers preserve finite subcover witnesses across pullback; literal fn_range applications and explicit family_union member witnesses are the stable introduction forms.",
+  "materialization": {
+    "block_ids": ["T001", "T002", "T003", "T004", "T005", "T006", "T007"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/topology/main.lit",
+    "file_gate_result": "exit 0; top-level ok=true"
+  },
+  "final_gate": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/topology: exit 0; top-level ok=true",
+  "closed_and_compactness_extension": {
+    "date": "2026-08-17",
+    "goal": "Add the closed-set characterization of continuity and prove that continuous images of compact subsets are compact.",
+    "modeling": {
+      "closed_subset": "F is closed in X when set_minus(X, F) is in open_sets",
+      "compact_subset": "Every indexed open cover cover: I -> open_sets has a finite index subset J whose restricted range still covers K",
+      "continuous_image": "fn_range(fn(x K) Y {f(x)})"
+    },
+    "blocks": [
+      {
+        "id": "C000",
+        "source_order": 5,
+        "intent": "Expose two topological spaces, a function, and its open-preimage law as one reusable continuous-map context.",
+        "accepted_litex": "empty TopologicalMapSetting over two topology bundles and f; ContinuousMapSetting composes it with the open-preimage law; is_continuous consumes ContinuousMapSetting",
+        "verifier_evidence": "session blocks C000A/C000B and CBASEPROBE: ok=true; empty inherited-law settings are accepted and flat is_continuous ABI remains unchanged",
+        "status": "materialized"
+      },
+      {
+        "id": "C001",
+        "source_order": 8,
+        "intent": "Define closed subsets by relative-open complement.",
+        "accepted_litex": "prop is_closed([TopologicalSpaceSetting], F power_set(X)): set_minus(X, F) $in open_sets",
+        "verifier_evidence": "session block C001: ok=true",
+        "status": "materialized"
+      },
+      {
+        "id": "C002",
+        "source_order": 9,
+        "intent": "Name the closed-preimage condition used in the continuity characterization.",
+        "accepted_litex": "prop has_closed_preimages over two topology bundles and f",
+        "verifier_evidence": "session block C002: ok=true",
+        "status": "materialized"
+      },
+      {
+        "id": "C003",
+        "source_order": 10,
+        "intent": "Establish that inverse image commutes with relative complement.",
+        "attempts": [
+          {
+            "candidate": "direct universal equality",
+            "result": "failed",
+            "verifier_evidence": "session block C003PROBE: well-definedness succeeded; verification returned atomic fact unknown",
+            "diagnosis": "The equality needs an explicit extensional proof.",
+            "next_change": "Prove both membership directions by extension."
+          }
+        ],
+        "accepted_litex": "thm preimage_of_relative_complement proved by extension and two membership directions",
+        "verifier_evidence": "session block C003A: ok=true",
+        "reusable_lesson": "Relative-complement preimages need explicit extensionality; set-builder introduction is explicit in the reverse direction.",
+        "status": "materialized"
+      },
+      {
+        "id": "C004",
+        "source_order": 11,
+        "intent": "Prove that a continuous map has closed preimages.",
+        "attempts": [{
+          "candidate": "A theorem header with two consecutive forall setting bundles",
+          "result": "failed",
+          "verifier_evidence": "session block C004: ParseError at the second '['",
+          "diagnosis": "forall accepts one setting bundle in this position.",
+          "next_change": "Introduce a reusable ContinuousMapSetting that composes both topology bundles."
+        }],
+        "accepted_litex": "thm continuous_map_has_closed_preimages over ContinuousMapSetting",
+        "verifier_evidence": "session block C004A: ok=true",
+        "status": "materialized"
+      },
+      {
+        "id": "C005",
+        "source_order": 12,
+        "intent": "Prove the converse: a map whose closed-set preimages are closed is continuous.",
+        "attempts": [
+          {
+            "candidate": "Name F = set_minus(Y, U) and rewrite the double complement and its preimage through equality chains.",
+            "result": "failed",
+            "verifier_evidence": "session blocks C005/C005A/C005B: inner set-builder substitution and the final equality chain remained atomic unknown",
+            "diagnosis": "Object equality did not automatically rewrite predicates nested inside set builders or compose the two set equalities at the requested goal.",
+            "next_change": "Prove the exact preimage/complement equality directly by extension."
+          }
+        ],
+        "accepted_litex": "thm closed_preimages_imply_continuous over TopologicalMapSetting, using the complement of each target open set and a direct extensional preimage-complement proof",
+        "verifier_evidence": "session block C005C: ok=true",
+        "reusable_lesson": "When equality transport stops at a set-builder boundary, prove the exact set equality needed by the consumer rather than adding aliases.",
+        "status": "materialized"
+      },
+      {
+        "id": "C006",
+        "source_order": 13,
+        "intent": "Package both closed-preimage directions as one named iff theorem.",
+        "attempts": [
+          {
+            "candidate": "A named theorem whose target is forall [TopologicalMapSetting] => is_continuous <=> has_closed_preimages.",
+            "result": "failed",
+            "verifier_evidence": "session block C006: ParseError, thm forall with <=> is not allowed here",
+            "diagnosis": "Universal equivalence is a fact form but is not currently admitted as a named theorem target.",
+            "next_change": "Keep the two verified directional theorems side by side as the characterization."
+          }
+        ],
+        "accepted_litex": "continuous_map_has_closed_preimages plus closed_preimages_imply_continuous",
+        "verifier_evidence": "session blocks C004A and C005C: ok=true",
+        "status": "materialized"
+      },
+      {
+        "id": "C007",
+        "source_order": 14,
+        "intent": "Define compact subsets by finite subcovers of indexed open covers.",
+        "attempts": [
+          {
+            "candidate": "Use i as the cover index binder.",
+            "result": "failed",
+            "verifier_evidence": "session block C007A: ParseError, name i is already active",
+            "diagnosis": "i is reserved in the ambient language scope.",
+            "next_change": "Use Index and index."
+          }
+        ],
+        "accepted_litex": "prop is_compact_subset([TopologicalSpaceSetting], K) with cover: Index -> open_sets and finite J subset Index",
+        "verifier_evidence": "session block C007B: ok=true",
+        "reusable_lesson": "The indexed-cover form preserves the original cover indices and avoids a choice step when restricting to a finite subcover.",
+        "status": "materialized"
+      },
+      {
+        "id": "C008",
+        "source_order": 15,
+        "intent": "Prove that the image of a compact subset under a continuous map is compact.",
+        "attempts": [
+          {
+            "candidate": "Pull back the cover, apply compactness, and push the finite index subset forward, relying on direct fn_range introductions.",
+            "result": "failed",
+            "verifier_evidence": "session blocks C008/C008A/C008B: direct fn_range membership for beta-reduced values and the final family_union introduction were atomic unknown",
+            "diagnosis": "fn_range introduction recognizes the literal function application, and family_union needed the existential member-set witness made explicit at the last step.",
+            "next_change": "State literal application membership plus beta equality, then witness the member open set explicitly."
+          }
+        ],
+        "accepted_litex": "thm continuous_image_of_compact_is_compact: pull back an indexed open cover, reuse compactness' finite J, and witness each image point in cover(index) for index in J",
+        "verifier_evidence": "session block C008C: ok=true; clean release file gate: ok=true, exit 0",
+        "reusable_lesson": "For restricted images, introduce fn_range membership through the literal lambda application before beta reduction; for family unions, retain an explicit member-set witness when inference cannot reconstruct it.",
+        "status": "materialized"
+      }
+    ],
+    "materialization": {
+      "block_ids": ["C000", "C001", "C002", "C003", "C004", "C005", "C006", "C007", "C008"],
+      "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/topology/main.lit",
+      "file_gate_result": "exit 0; top-level ok=true"
+    }
+  },
+  "identifier_rename": {
+    "date": "2026-08-17",
+    "goal": "Rename topology-family parameters from T variants to open_sets variants and use A/B for the two local open-set operands where those names are free.",
+    "boundary": "Keep open_B in ContinuousCompositionSetting because B is already the middle carrier in that scope.",
+    "blocks": [
+      {
+        "id": "R001",
+        "source_order": 1,
+        "intent": "Rename the topology collection parameter T to open_sets at its source setting.",
+        "accepted_litex": "setting TopologicalSpaceSetting(X set, open_sets power_set(power_set(X))) with unchanged topology laws",
+        "verifier_evidence": "session block R001: ok=true",
+        "status": "materialized"
+      },
+      {
+        "id": "R002",
+        "source_order": 2,
+        "intent": "Replay is_topology_on from the renamed bare setting bundle.",
+        "accepted_litex": "prop is_topology_on([TopologicalSpaceSetting])",
+        "verifier_evidence": "session block R002: ok=true; elaborated parameters are X, open_sets",
+        "status": "materialized"
+      },
+      {
+        "id": "R003",
+        "source_order": 3,
+        "intent": "Rename open_A/open_B to A/B in topology_triple_intersection.",
+        "accepted_litex": "topology_triple_intersection with A, B, open_C in open_sets",
+        "verifier_evidence": "session block R003: ok=true",
+        "status": "materialized"
+      },
+      {
+        "id": "R004",
+        "source_order": 4,
+        "intent": "Rename open_A/open_B to A/B throughout topology_binary_union.",
+        "accepted_litex": "T004 proof with identifier map T -> open_sets, open_A -> A, open_B -> B",
+        "verifier_evidence": "session block R004: ok=true",
+        "status": "materialized"
+      },
+      {
+        "id": "R005",
+        "source_order": 5,
+        "intent": "Rename continuity topology-family parameters to open_sets_X/open_sets_Y.",
+        "accepted_litex": "is_continuous over TopologicalSpaceSetting(X, open_sets_X) and TopologicalSpaceSetting(Y, open_sets_Y)",
+        "verifier_evidence": "session block R005: ok=true; flat ABI order is X, open_sets_X, Y, open_sets_Y, f",
+        "status": "materialized"
+      },
+      {
+        "id": "R006",
+        "source_order": 6,
+        "intent": "Rename the three composition topology-family parameters while retaining open_B/open_C as local open sets.",
+        "accepted_litex": "ContinuousCompositionSetting over open_sets_A/open_sets_B/open_sets_C",
+        "verifier_evidence": "session block R006: ok=true; open_B remains distinct from carrier B",
+        "status": "materialized"
+      },
+      {
+        "id": "R007",
+        "source_order": 7,
+        "intent": "Replay continuous_composition against the renamed topology-family parameters.",
+        "accepted_litex": "T007 proof with T_A/T_B/T_C renamed to open_sets_A/open_sets_B/open_sets_C",
+        "verifier_evidence": "session block R007: ok=true; proof spine unchanged",
+        "status": "materialized"
+      }
+    ],
+    "materialization": {
+      "block_ids": ["R001", "R002", "R003", "R004", "R005", "R006", "R007"],
+      "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/topology/main.lit",
+      "file_gate_result": "exit 0; top-level ok=true"
+    }
+  },
+  "setting_bundle_migration": {
+    "date": "2026-08-17",
+    "proof_spine": [
+      "make TopologicalSpaceSetting the single source of topology parameters and laws",
+      "derive is_topology_on and is_continuous interfaces from setting bundles",
+      "compose three renamed topology bundles in ContinuousCompositionSetting without repeating their laws"
+    ],
+    "blocks": [
+      {
+        "id": "M001",
+        "source_order": 1,
+        "intent": "Keep one reusable setting as the source of topology parameters and laws.",
+        "dependencies": ["native set operations"],
+        "attempts": [
+          {
+            "candidate": "setting TopologicalSpaceSetting(X set, T power_set(power_set(X))) with the topology laws",
+            "result": "accepted",
+            "verifier_evidence": "session block M001: ok=true",
+            "diagnosis": "The parameterized setting verifies directly.",
+            "next_change": "Define is_topology_on from the bare setting bundle."
+          }
+        ],
+        "accepted_litex": "setting TopologicalSpaceSetting(X set, T power_set(power_set(X))):\n    {} $in T\n    X $in T\n    forall U, V T:\n        intersect(U, V) $in T\n    forall family power_set(power_set(X)):\n        family $subset T\n        =>:\n            family_union(family) $in T",
+        "reusable_lesson": "A named setting can be the single source for both parameters and laws.",
+        "status": "materialized"
+      },
+      {
+        "id": "M002",
+        "source_order": 2,
+        "intent": "Expose the topology relation without duplicating the setting signature or laws.",
+        "dependencies": ["M001: TopologicalSpaceSetting"],
+        "attempts": [
+          {
+            "candidate": "prop is_topology_on([TopologicalSpaceSetting])",
+            "result": "accepted",
+            "verifier_evidence": "session block M002: ok=true",
+            "diagnosis": "A bare setting bundle preserves the original X and T names and elaborates the same flat predicate.",
+            "next_change": "Replay the existing open-set theorems against the new declaration order."
+          }
+        ],
+        "accepted_litex": "prop is_topology_on([TopologicalSpaceSetting])",
+        "reusable_lesson": "Use a bare bundle when the setting's parameter names are already the desired public names.",
+        "status": "materialized"
+      },
+      {
+        "id": "M003",
+        "source_order": 3,
+        "intent": "Confirm existing theorem headers still consume the bare topology setting.",
+        "dependencies": ["M001: TopologicalSpaceSetting"],
+        "attempts": [{
+          "candidate": "existing topology_triple_intersection theorem",
+          "result": "accepted",
+          "verifier_evidence": "session block M003: ok=true",
+          "diagnosis": "The theorem-facing bare bundle remains source-compatible.",
+          "next_change": "Replay binary union before changing the continuity interface."
+        }],
+        "accepted_litex": "thm topology_triple_intersection:\n    ? forall [TopologicalSpaceSetting], open_A, open_B, open_C T:\n        intersect(intersect(open_A, open_B), open_C) $in T\n    intersect(open_A, open_B) $in T",
+        "reusable_lesson": "Existing forall [TopologicalSpaceSetting] consumers need no change.",
+        "status": "materialized"
+      },
+      {
+        "id": "M004",
+        "source_order": 4,
+        "intent": "Replay the unchanged binary-union theorem in the migrated setting context.",
+        "dependencies": ["M001: TopologicalSpaceSetting", "T004: full accepted theorem source"],
+        "attempts": [{
+          "candidate": "existing topology_binary_union theorem",
+          "result": "accepted",
+          "verifier_evidence": "session block M004: ok=true",
+          "diagnosis": "The existing proof remains valid under the migrated setting declaration.",
+          "next_change": "Define continuity from two explicitly renamed topology bundles."
+        }],
+        "accepted_litex": "unchanged from T004",
+        "reusable_lesson": "Bundle-backed settings preserve the same laws for existing theorem proofs.",
+        "status": "materialized"
+      },
+      {
+        "id": "M005",
+        "source_order": 5,
+        "intent": "Define continuity from two topology bundles and only its additional preimage law.",
+        "dependencies": ["M001: TopologicalSpaceSetting"],
+        "attempts": [{
+          "candidate": "prop is_continuous([TopologicalSpaceSetting(X, T_X)], [TopologicalSpaceSetting(Y, T_Y)], f fn(x X) Y)",
+          "result": "accepted",
+          "verifier_evidence": "session block M005: ok=true; elaborated ABI is X, T_X, Y, T_Y, f",
+          "diagnosis": "Explicit bundle arguments rename both topology contexts and supply their laws.",
+          "next_change": "Compose three topology bundles in ContinuousCompositionSetting."
+        }],
+        "accepted_litex": "prop is_continuous([TopologicalSpaceSetting(X, T_X)], [TopologicalSpaceSetting(Y, T_Y)], f fn(x X) Y):\n    forall open_Y T_Y:\n        {x X: f(x) $in open_Y} $in T_X",
+        "reusable_lesson": "The bundle order becomes the flat positional ABI, so callers must use X, T_X, Y, T_Y, f order.",
+        "status": "materialized"
+      },
+      {
+        "id": "M006",
+        "source_order": 6,
+        "intent": "Compose the three ambient topological spaces without repeating any topology law.",
+        "dependencies": ["M001: TopologicalSpaceSetting"],
+        "attempts": [{
+          "candidate": "setting ContinuousCompositionSetting with three renamed TopologicalSpaceSetting bundles plus f, g and their preimage laws",
+          "result": "accepted",
+          "verifier_evidence": "session block M006: ok=true",
+          "diagnosis": "Nested setting bundles expand into the three renamed carriers, topology collections, and law groups.",
+          "next_change": "Replay continuous_composition with the new is_continuous positional order."
+        }],
+        "accepted_litex": "setting ContinuousCompositionSetting([TopologicalSpaceSetting(A, T_A)], [TopologicalSpaceSetting(B, T_B)], [TopologicalSpaceSetting(CarrierC, T_C)], f fn(x A) B, g fn(y B) CarrierC):\n    forall open_B T_B:\n        {x A: f(x) $in open_B} $in T_A\n    forall open_C T_C:\n        {y B: g(y) $in open_C} $in T_B",
+        "reusable_lesson": "A larger setting should compose smaller ambient settings and state only its genuinely new laws.",
+        "status": "materialized"
+      },
+      {
+        "id": "M007",
+        "source_order": 7,
+        "intent": "Keep the continuous-composition proof while updating calls to the bundle-derived continuity ABI.",
+        "dependencies": ["M005: is_continuous", "M006: ContinuousCompositionSetting", "T007: full accepted theorem source"],
+        "attempts": [{
+          "candidate": "existing continuous_composition proof with is_continuous(A, T_A, CarrierC, T_C, composition) calls",
+          "result": "accepted",
+          "verifier_evidence": "session block M007: ok=true",
+          "diagnosis": "Only the positional predicate call order changes; the proof spine and preimage bridges are unchanged.",
+          "next_change": "Materialize M001-M007 and run the clean file gate."
+        }],
+        "accepted_litex": "unchanged from T007 except both is_continuous calls use A, T_A, CarrierC, T_C, f order",
+        "reusable_lesson": "After bundle migration, audit positional calls for the flattened bundle order.",
+        "status": "materialized"
+      }
+    ],
+    "materialization": {
+      "block_ids": ["M001", "M002", "M003", "M004", "M005", "M006", "M007"],
+      "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/topology/main.lit",
+      "file_gate_result": "exit 0; top-level ok=true"
+    }
+  }
+}

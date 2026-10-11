@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "proof_spine": [
+    "Use the nonnegativity of (x-y)^2 to compare xy with ((x+y)/2)^2.",
+    "Use nonnegativity and square-root monotonicity to take square roots.",
+    "Read the endpoints as the geometric and arithmetic means."
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Replay the unchanged target-file prefix through the two mean definitions.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "gcd(84, 30) = 6\n2 $in {1, 2, 3}\n{1, 2} $subset {1, 2, 3}\nfinite_set_size({1, 2, 3}) = 3\nhave fn symmetric_difference(A, B power_set(R)) power_set(R) = union(set_minus(A, B), set_minus(B, A))\nsymmetric_difference({1, 2}, {2, 3}) = union(set_minus({1, 2}, {2, 3}), set_minus({2, 3}, {1, 2}))\n1 $in set_minus({1, 2}, {2, 3})\n1 $in union(set_minus({1, 2}, {2, 3}), set_minus({2, 3}, {1, 2}))\n1 $in symmetric_difference({1, 2}, {2, 3})\nthm solve_linear_equation: ...\nthm factored_quadratic_roots: ...\nhave fn arithmetic_mean(x, y R) R = (x + y) / 2\nhave fn geometric_mean(x, y R: x >= 0, y >= 0) R = sqrt(x * y)",
+          "result": "accepted",
+          "verifier_evidence": "session block B001 returned ok=true",
+          "diagnosis": "The existing prefix is callable in the target session.",
+          "next_change": "Deletion-probe the AM-GM theorem body."
+        }
+      ],
+      "accepted_litex": "The unchanged source prefix from the first executable statement through geometric_mean, replayed literally in B001.",
+      "reusable_lesson": "A single transactional replay can establish an unchanged short target prefix before focused theorem experiments.",
+      "status": "session_committed"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Test whether the theorem is already discharged without a proof body.",
+      "dependencies": ["B001 mean definitions"],
+      "attempts": [
+        {
+          "candidate": "thm two_variable_am_gm:\n    ? forall x, y R:\n        x >= 0\n        y >= 0\n        =>:\n            geometric_mean(x, y) <= arithmetic_mean(x, y)",
+          "result": "failed",
+          "verifier_evidence": "session block B002 returned ok=false: thm `two_variable_am_gm` failed: cannot prove then-clause",
+          "diagnosis": "This is not an echo-only theorem; a genuine inequality derivation is required.",
+          "next_change": "Test the ordinary three-move proof through square-root monotonicity."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Bodyless theorem style does not replace a real proof; this unsupported then-clause remains rejected.",
+      "status": "failed"
+    },
+    {
+      "id": "B003",
+      "source_order": 2,
+      "intent": "Try the four-line human proof without algebra-normalization bridges.",
+      "dependencies": ["B001 mean definitions", "builtin square nonnegativity", "builtin sqrt monotonicity"],
+      "attempts": [
+        {
+          "candidate": "0 <= (x - y)^2\nx * y <= ((x + y) / 2)^2\n0 <= (x + y) / 2\ngeometric_mean(x, y) = sqrt(x * y) <= sqrt(((x + y) / 2)^2) = (x + y) / 2 = arithmetic_mean(x, y)",
+          "result": "failed",
+          "verifier_evidence": "session block B003 returned ok=false at `x * y <= ((x + y) / 2)^2`: atomic fact unknown",
+          "diagnosis": "The verifier does not connect square nonnegativity to the normalized mean-square comparison in one algebraic step.",
+          "next_change": "Add the standard difference-of-squares identity and only the necessary comparison normalization."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Human proof structure is sound, but the current algebra checker needs a visible normal-form bridge between `(x-y)^2 >= 0` and the mean-square bound.",
+      "status": "failed"
+    },
+    {
+      "id": "B004",
+      "source_order": 2,
+      "intent": "Expose the nonnegative-square identity and test whether the remaining normalization is automatic.",
+      "dependencies": ["B001 mean definitions", "B003 diagnosis"],
+      "attempts": [
+        {
+          "candidate": "0 <= (x - y)^2 = (x + y)^2 - 4 * x * y\n4 * x * y <= (x + y)^2\nx * y <= ((x + y) / 2)^2\n0 <= (x + y) / 2\n<mean-to-mean sqrt chain>",
+          "result": "failed",
+          "verifier_evidence": "session block B004 returned ok=false only at `x * y <= ((x + y) / 2)^2`",
+          "diagnosis": "The identity is enough to derive `4*x*y <= (x+y)^2`; only division-by-four / half-square normalization remains missing.",
+          "next_change": "Connect the two algebraic normal forms in one comparison/equality chain."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Keep the mathematical nonnegative-square line and one visible algebra normalization; the earlier difference comparison is automatic.",
+      "status": "failed"
+    },
+    {
+      "id": "B005",
+      "source_order": 2,
+      "intent": "Use one continuous comparison/equality chain for the division-by-four normalization.",
+      "dependencies": ["B004 nonnegative-square route"],
+      "attempts": [
+        {
+          "candidate": "0 <= (x - y)^2 = (x + y)^2 - 4*x*y\n4*x*y <= (x+y)^2\nx*y <= (x+y)^2/4 = ((x+y)/2)^2\n0 <= (x+y)/2\n<mean-to-mean sqrt chain>",
+          "result": "failed_after_progress",
+          "verifier_evidence": "session block B005 passed the mean-square normalization and failed only at `0 <= (x + y) / 2`",
+          "diagnosis": "The comparison/equality chain is accepted; the verifier needs a visible sign bridge for the half-sum before applying `sqrt(a^2)=a`.",
+          "next_change": "Add `0 <= x + y` and test whether literal denominator positivity is automatic."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "The two former mean-square lines compress into `x*y <= (x+y)^2/4 = ((x+y)/2)^2`.",
+      "status": "failed"
+    },
+    {
+      "id": "B006",
+      "source_order": 2,
+      "intent": "Add only the numerator sign bridge and complete the proof by square-root monotonicity.",
+      "dependencies": ["B001 mean definitions", "B005 accepted algebra route", "builtin sqrt monotonicity", "builtin sqrt of a nonnegative square"],
+      "attempts": [
+        {
+          "candidate": "thm two_variable_am_gm:\n    ? forall x, y R:\n        x >= 0\n        y >= 0\n        =>:\n            geometric_mean(x, y) <= arithmetic_mean(x, y)\n    0 <= (x - y)^2 = (x + y)^2 - 4 * x * y\n    4 * x * y <= (x + y)^2\n    x * y <= (x + y)^2 / 4 = ((x + y) / 2)^2\n    0 <= x + y\n    0 <= (x + y) / 2\n    geometric_mean(x, y) = sqrt(x * y) <= sqrt(((x + y) / 2)^2) = (x + y) / 2 = arithmetic_mean(x, y)",
+          "result": "accepted",
+          "verifier_evidence": "session block B006 returned ok=true",
+          "diagnosis": "The current verifier accepts the complete human route with two small sign/algebra bridges.",
+          "next_change": "Restart the session and deletion-probe each remaining candidate bridge."
+        }
+      ],
+      "accepted_litex": "thm two_variable_am_gm:\n    ? forall x, y R:\n        x >= 0\n        y >= 0\n        =>:\n            geometric_mean(x, y) <= arithmetic_mean(x, y)\n    0 <= (x - y)^2 = (x + y)^2 - 4 * x * y\n    4 * x * y <= (x + y)^2\n    x * y <= (x + y)^2 / 4 = ((x + y) / 2)^2\n    0 <= x + y\n    0 <= (x + y) / 2\n    geometric_mean(x, y) = sqrt(x * y) <= sqrt(((x + y) / 2)^2) = (x + y) / 2 = arithmetic_mean(x, y)",
+      "reusable_lesson": "A direct mean-to-mean chain makes the definition unfolding, sqrt monotonicity, and square-root identity read as one mathematical move.",
+      "status": "superseded_by_B011"
+    },
+    {
+      "id": "B007-B008",
+      "source_order": 2,
+      "intent": "Deletion-probe the two sign bridges in the accepted proof.",
+      "dependencies": ["B006 accepted proof"],
+      "attempts": [
+        {
+          "candidate": "B006 without `0 <= (x + y) / 2`",
+          "result": "failed",
+          "verifier_evidence": "B007 failed at `sqrt(((x+y)/2)^2) = (x+y)/2`",
+          "diagnosis": "The sqrt-of-square rule consumes the explicit nonnegativity of the half-sum.",
+          "next_change": "Restore the half-sum sign and test its numerator premise."
+        },
+        {
+          "candidate": "B006 without `0 <= x + y`",
+          "result": "failed",
+          "verifier_evidence": "B008 failed at `0 <= (x + y) / 2`",
+          "diagnosis": "The division sign rule needs the explicitly stored nonnegativity of the numerator; literal denominator positivity is automatic.",
+          "next_change": "Retain both sign lines and continue deleting algebra bridges."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "The pair `0 <= x+y` then `0 <= (x+y)/2` is the current verifier's smallest sign bridge for `sqrt(((x+y)/2)^2) = (x+y)/2`; the old explicit `0 < 2` is removable.",
+      "status": "failed_deletion_controls"
+    },
+    {
+      "id": "B009",
+      "source_order": 2,
+      "intent": "Deletion-probe the intermediate comparison `4*x*y <= (x+y)^2`.",
+      "dependencies": ["B006 accepted proof"],
+      "attempts": [
+        {
+          "candidate": "B006 without `4 * x * y <= (x + y)^2`",
+          "result": "failed",
+          "verifier_evidence": "B009 failed at `x*y <= (x+y)^2/4`",
+          "diagnosis": "The division comparison consumes the unscaled comparison and cannot derive it directly from the stored difference identity.",
+          "next_change": "Restore the line and deletion-probe the identity connection."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "The unscaled comparison is a current-verifier bridge, not a redundant endpoint.",
+      "status": "failed_deletion_control"
+    },
+    {
+      "id": "B010",
+      "source_order": 2,
+      "intent": "Deletion-probe the algebraic identity connecting the nonnegative square to the unscaled comparison.",
+      "dependencies": ["B006 accepted proof"],
+      "attempts": [
+        {
+          "candidate": "B006 with only `0 <= (x-y)^2`, omitting its equality to `(x+y)^2 - 4*x*y`",
+          "result": "failed",
+          "verifier_evidence": "B010 failed at `4*x*y <= (x+y)^2`",
+          "diagnosis": "The nonnegative square must be connected to the target algebraic expression.",
+          "next_change": "Try a better one-line normal form: `4xy <= (x-y)^2 + 4xy = (x+y)^2`."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Square nonnegativity alone is not transported across a polynomial identity that the source never states.",
+      "status": "failed_deletion_control"
+    },
+    {
+      "id": "B011",
+      "source_order": 2,
+      "intent": "Express the nonnegative-square argument directly in the comparison's useful normal form.",
+      "dependencies": ["B010 diagnosis", "builtin square nonnegativity"],
+      "attempts": [
+        {
+          "candidate": "4*x*y <= (x-y)^2 + 4*x*y = (x+y)^2\nx*y <= (x+y)^2/4 = ((x+y)/2)^2\n0 <= x+y\n0 <= (x+y)/2\n<mean-to-mean sqrt chain>",
+          "result": "accepted",
+          "verifier_evidence": "session block B011 returned ok=true",
+          "diagnosis": "The useful normal form lets square nonnegativity and the polynomial identity live in one readable chain.",
+          "next_change": "Restart and test whether both algebra chains can merge into one."
+        }
+      ],
+      "accepted_litex": "thm two_variable_am_gm:\n    ? forall x, y R:\n        x >= 0\n        y >= 0\n        =>:\n            geometric_mean(x, y) <= arithmetic_mean(x, y)\n    4 * x * y <= (x - y)^2 + 4 * x * y = (x + y)^2\n    x * y <= (x + y)^2 / 4 = ((x + y) / 2)^2\n    0 <= x + y\n    0 <= (x + y) / 2\n    geometric_mean(x, y) = sqrt(x * y) <= sqrt(((x + y) / 2)^2) = (x + y) / 2 = arithmetic_mean(x, y)",
+      "reusable_lesson": "Choose an algebraic normal form that exposes the nonnegative addend instead of logging the same identity and comparison separately.",
+      "status": "materialized"
+    },
+    {
+      "id": "B012",
+      "source_order": 2,
+      "intent": "Test whether the two accepted algebra chains can be merged through division by four.",
+      "dependencies": ["B011 accepted proof"],
+      "attempts": [
+        {
+          "candidate": "x*y <= ((x-y)^2 + 4*x*y)/4 = (x+y)^2/4 = ((x+y)/2)^2",
+          "result": "failed",
+          "verifier_evidence": "B012 failed at the first step `x*y <= ((x-y)^2 + 4*x*y)/4`",
+          "diagnosis": "The order checker does not combine square nonnegativity with division normalization in one atomic comparison.",
+          "next_change": "Materialize B011 as the current-verifier practical floor."
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Keep the unscaled nonnegative-addend comparison separate from division normalization; merging them crosses two semantic steps.",
+      "status": "failed_deletion_control"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B011"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+    "file_gate_result": "exit 0; top-level ok=true"
+  }
+}

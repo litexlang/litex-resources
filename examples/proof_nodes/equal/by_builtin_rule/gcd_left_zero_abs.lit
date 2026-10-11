@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.GcdLeftZeroAbs
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/gcd_left_zero_abs.lit
+
+forall a Z:
+    a != 0
+    =>:
+        gcd(0, a) = |a|

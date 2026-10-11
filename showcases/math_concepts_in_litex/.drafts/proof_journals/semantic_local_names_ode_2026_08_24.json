@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/12_ordinary_differential_equations_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/12_ordinary_differential_equations_in_nutshell/main.lit",
+  "proof_spine": [
+    "Choose one common epsilon and one nearby sample radius for both derivative estimates.",
+    "Treat the difference quotient at that sample as one mathematical atom.",
+    "Apply the triangle inequality and derive the strict self-bound contradiction."
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Give the three repeated analytic objects role-based typed local names.",
+      "dependencies": ["has_derivative_at", "derivative_delta_controlled"],
+      "attempts": [
+        {
+          "id": "B001-A1",
+          "candidate_is_literal": true,
+          "candidate": "thm derivative_value_unique:\n    ? forall f fn(t R) R, x0, slope1, slope2 R:\n        $has_derivative_at(f, x0, slope1)\n        $has_derivative_at(f, x0, slope2)\n        =>:\n            slope1 = slope2\n    by contra:\n        ? slope1 = slope2\n        slope1 != slope2\n        slope1 - slope2 != 0\n        abs(slope1 - slope2) > 0\n        abs(slope1 - slope2) / 3 $in R+\n        have epsilon R+ = abs(slope1 - slope2) / 3\n        obtain delta1 from exist delta1 R+ st {$derivative_delta_controlled(f, x0, slope1, epsilon, delta1)}\n        obtain delta2 from exist delta2 R+ st {$derivative_delta_controlled(f, x0, slope2, epsilon, delta2)}\n        finite_set_min(union({delta1}, {delta2})) $in R+\n        have radius R+ = finite_set_min(union({delta1}, {delta2}))\n        radius / 2 $in R+\n        have sample R = x0 + radius / 2\n        sample = x0 + radius / 2 > x0\n        sample != x0\n        sample - x0 = radius / 2\n        sample - x0 > 0\n        abs(sample - x0) = sample - x0 = radius / 2\n        abs(sample - x0) = radius / 2 < radius <= delta1\n        abs(sample - x0) = radius / 2 < radius <= delta2\n        have difference_quotient R = (f(sample) - f(x0)) / (sample - x0)\n        abs(difference_quotient - slope1) < epsilon\n        abs(difference_quotient - slope2) < epsilon\n        abs(slope1 - difference_quotient) = abs(difference_quotient - slope1)\n        slope1 - slope2 = (slope1 - difference_quotient) + (difference_quotient - slope2)\n        abs(slope1 - slope2) = abs((slope1 - difference_quotient) + (difference_quotient - slope2)) <= abs(slope1 - difference_quotient) + abs(difference_quotient - slope2)\n        abs(slope1 - difference_quotient) + abs(difference_quotient - slope2) < epsilon + epsilon = 2 * epsilon\n        2 / 3 < 1\n        (2 / 3) * abs(slope1 - slope2) < 1 * abs(slope1 - slope2)\n        2 * epsilon = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n        1 * abs(slope1 - slope2) = abs(slope1 - slope2)\n        2 * epsilon < abs(slope1 - slope2)\n        abs(slope1 - slope2) <= abs(slope1 - difference_quotient) + abs(difference_quotient - slope2) < 2 * epsilon < abs(slope1 - slope2)\n        impossible abs(slope1 - slope2) < abs(slope1 - slope2)",
+          "result": "failed",
+          "failed_phase": "proof",
+          "verifier_evidence": "comparison `abs(difference_quotient - slope1) < epsilon` remained unknown after the typed alias was introduced",
+          "diagnosis": "The derivative-control fact is released in the canonical quotient spelling and comparison transport does not select the alias automatically.",
+          "next_change": "Release each canonical comparison once, then connect it to the local name in one equality/comparison chain."
+        },
+        {
+          "id": "B001-A2",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "        abs(difference_quotient - slope1) < epsilon\n        abs(difference_quotient - slope2) < epsilon\n",
+              "new": "        abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs(difference_quotient - slope1) = abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n        abs(difference_quotient - slope2) = abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n"
+            }
+          ],
+          "result": "failed",
+          "failed_phase": "proof",
+          "verifier_evidence": "the canonical-to-quotient bridges passed; `2 * epsilon = 2 * abs(slope1 - slope2) / 3` remained unknown",
+          "diagnosis": "The alias equality must preserve the parenthesized quotient before ordinary arithmetic reassociation.",
+          "next_change": "Bridge `2 * epsilon` through `2 * (abs(slope1 - slope2) / 3)` first."
+        },
+        {
+          "id": "B001-A3",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "        abs(difference_quotient - slope1) < epsilon\n        abs(difference_quotient - slope2) < epsilon\n",
+              "new": "        abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs(difference_quotient - slope1) = abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n        abs(difference_quotient - slope2) = abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n"
+            },
+            {
+              "old": "        2 * epsilon = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n",
+              "new": "        2 * epsilon = 2 * (abs(slope1 - slope2) / 3)\n        2 * (abs(slope1 - slope2) / 3) = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n"
+            }
+          ],
+          "result": "accepted",
+          "verifier_evidence": "persistent registered source-order session returned ok: true",
+          "diagnosis": "Three semantic local names work with two canonical comparison bridges and one parenthesized epsilon bridge.",
+          "next_change": "Restart and deletion-probe the explicit radius-half carrier fact."
+        },
+        {
+          "id": "B001-A4",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "        abs(difference_quotient - slope1) < epsilon\n        abs(difference_quotient - slope2) < epsilon\n",
+              "new": "        abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs(difference_quotient - slope1) = abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n        abs(difference_quotient - slope2) = abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n"
+            },
+            {
+              "old": "        2 * epsilon = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n",
+              "new": "        2 * epsilon = 2 * (abs(slope1 - slope2) / 3)\n        2 * (abs(slope1 - slope2) / 3) = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n"
+            },
+            {
+              "old": "        radius / 2 $in R+\n",
+              "new": ""
+            }
+          ],
+          "result": "accepted",
+          "verifier_evidence": "restarted source-order session returned ok: true",
+          "diagnosis": "The typed `radius` declaration makes a separate `radius / 2 $in R+` echo unnecessary.",
+          "next_change": "Deletion-probe the preceding expanded finite-set-min carrier fact."
+        },
+        {
+          "id": "B001-A5",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "        abs(difference_quotient - slope1) < epsilon\n        abs(difference_quotient - slope2) < epsilon\n",
+              "new": "        abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs(difference_quotient - slope1) = abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n        abs(difference_quotient - slope2) = abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n"
+            },
+            {
+              "old": "        2 * epsilon = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n",
+              "new": "        2 * epsilon = 2 * (abs(slope1 - slope2) / 3)\n        2 * (abs(slope1 - slope2) / 3) = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n"
+            },
+            {
+              "old": "        finite_set_min(union({delta1}, {delta2})) $in R+\n        have radius R+ = finite_set_min(union({delta1}, {delta2}))\n        radius / 2 $in R+\n",
+              "new": "        have radius R+ = finite_set_min(union({delta1}, {delta2}))\n"
+            }
+          ],
+          "result": "accepted",
+          "verifier_evidence": "restarted source-order session returned ok: true",
+          "diagnosis": "The typed `radius` declaration also subsumes the expanded finite-set-min carrier line.",
+          "next_change": "Deletion-probe the analogous carrier echo immediately before typed `epsilon`."
+        },
+        {
+          "id": "B001-A6",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "        abs(slope1 - slope2) / 3 $in R+\n        have epsilon R+ = abs(slope1 - slope2) / 3\n",
+              "new": "        have epsilon R+ = abs(slope1 - slope2) / 3\n"
+            },
+            {
+              "old": "        abs(difference_quotient - slope1) < epsilon\n        abs(difference_quotient - slope2) < epsilon\n",
+              "new": "        abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs(difference_quotient - slope1) = abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n        abs(difference_quotient - slope2) = abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n"
+            },
+            {
+              "old": "        2 * epsilon = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n",
+              "new": "        2 * epsilon = 2 * (abs(slope1 - slope2) / 3)\n        2 * (abs(slope1 - slope2) / 3) = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n"
+            },
+            {
+              "old": "        finite_set_min(union({delta1}, {delta2})) $in R+\n        have radius R+ = finite_set_min(union({delta1}, {delta2}))\n        radius / 2 $in R+\n",
+              "new": "        have radius R+ = finite_set_min(union({delta1}, {delta2}))\n"
+            }
+          ],
+          "result": "accepted",
+          "verifier_evidence": "restarted source-order session returned ok: true",
+          "diagnosis": "Typed local declarations perform their own carrier checks, so both preceding expanded carrier echoes are removable.",
+          "next_change": "Materialize the liveness-minimized theorem."
+        }
+      ],
+      "accepted_litex": "thm derivative_value_unique:\n    ? forall f fn(t R) R, x0, slope1, slope2 R:\n        $has_derivative_at(f, x0, slope1)\n        $has_derivative_at(f, x0, slope2)\n        =>:\n            slope1 = slope2\n    by contra:\n        ? slope1 = slope2\n        slope1 != slope2\n        slope1 - slope2 != 0\n        abs(slope1 - slope2) > 0\n        have epsilon R+ = abs(slope1 - slope2) / 3\n        obtain delta1 from exist delta1 R+ st {$derivative_delta_controlled(f, x0, slope1, epsilon, delta1)}\n        obtain delta2 from exist delta2 R+ st {$derivative_delta_controlled(f, x0, slope2, epsilon, delta2)}\n        have radius R+ = finite_set_min(union({delta1}, {delta2}))\n        have sample R = x0 + radius / 2\n        sample = x0 + radius / 2 > x0\n        sample != x0\n        sample - x0 = radius / 2\n        sample - x0 > 0\n        abs(sample - x0) = sample - x0 = radius / 2\n        abs(sample - x0) = radius / 2 < radius <= delta1\n        abs(sample - x0) = radius / 2 < radius <= delta2\n        have difference_quotient R = (f(sample) - f(x0)) / (sample - x0)\n        abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs(difference_quotient - slope1) = abs((f(sample) - f(x0)) / (sample - x0) - slope1) < epsilon\n        abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n        abs(difference_quotient - slope2) = abs((f(sample) - f(x0)) / (sample - x0) - slope2) < epsilon\n        abs(slope1 - difference_quotient) = abs(difference_quotient - slope1)\n        slope1 - slope2 = (slope1 - difference_quotient) + (difference_quotient - slope2)\n        abs(slope1 - slope2) = abs((slope1 - difference_quotient) + (difference_quotient - slope2)) <= abs(slope1 - difference_quotient) + abs(difference_quotient - slope2)\n        abs(slope1 - difference_quotient) + abs(difference_quotient - slope2) < epsilon + epsilon = 2 * epsilon\n        2 / 3 < 1\n        (2 / 3) * abs(slope1 - slope2) < 1 * abs(slope1 - slope2)\n        2 * epsilon = 2 * (abs(slope1 - slope2) / 3)\n        2 * (abs(slope1 - slope2) / 3) = 2 * abs(slope1 - slope2) / 3 = (2 / 3) * abs(slope1 - slope2)\n        1 * abs(slope1 - slope2) = abs(slope1 - slope2)\n        2 * epsilon < abs(slope1 - slope2)\n        abs(slope1 - slope2) <= abs(slope1 - difference_quotient) + abs(difference_quotient - slope2) < 2 * epsilon < abs(slope1 - slope2)\n        impossible abs(slope1 - slope2) < abs(slope1 - slope2)",
+      "reusable_lesson": "Typed local names can replace repeated analytic objects and subsume separate carrier echoes; retain canonical-to-alias comparison bridges only where theorem-generated facts do not transport automatically.",
+      "status": "materialized_clean"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/12_ordinary_differential_equations_in_nutshell/main.lit",
+    "file_gate_result": "exit 0; top-level ok: true"
+  }
+}

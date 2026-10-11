@@ -1,0 +1,7 @@
+# Node: atomic.ByBuiltinRule.ProductComponentNonzero
+# Run: litex -f examples/proof_nodes/atomic/by_builtin_rule/not_equal_product_component_nonzero.lit
+
+forall a R, b R:
+    a * b != 0
+    =>:
+        a != 0

@@ -1,0 +1,5 @@
+# Node: equal.ByBuiltinRule.AbsOfNegation
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/abs_of_negation.lit
+
+have a R
+|0 - a| = |a|

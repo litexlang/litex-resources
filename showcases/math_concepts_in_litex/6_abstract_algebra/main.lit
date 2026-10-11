@@ -1,0 +1,505 @@
+# Package 6: abstract algebra without Setting surface.
+# Carriers live in struct angle brackets; theorems take &Group / &CommutativeRing.
+# Flat props keep the by-def ABI used by concrete consumers.
+
+forall x, y, z Z:
+    (x + y) + z = x + (y + z)
+    (x * y) * z = x * (y * z)
+    x * (y + z) = x * y + x * z
+    (x + y) * z = x * z + y * z
+    x + y = y + x
+    x * y = y * x
+    0 + x = x
+    x + 0 = x
+    x + (-x) = 0
+    (-x) + x = 0
+    1 * x = x
+    x * 1 = x
+    0 * x = 0
+    x * 0 = 0
+    -0 = 0
+
+# Abstract algebra — groups and homomorphisms, setting-first.
+#
+# Named settings are the reusable source of parameter bundles and laws.
+# Concrete propositions elaborate those bundles to their existing flat ABI;
+# theorem-writing uses the same settings directly.
+
+prop GroupSetting(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A):
+    forall u, v, w A:
+        mul(mul(u, v), w) = mul(u, mul(v, w))
+    forall u A:
+        mul(one, u) = u
+        mul(u, one) = u
+        mul(inv(u), u) = one
+        mul(u, inv(u)) = one
+
+prop is_group(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A):
+    $GroupSetting(A, mul, one, inv)
+
+thm group_left_cancel:
+    ? forall A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A, a A, b A, c A:
+        $GroupSetting(A, mul, one, inv)
+        mul(a, b) = mul(a, c)
+        =>:
+            b = c
+    mul(inv(a), a) = one
+    b = mul(one, b) = mul(mul(inv(a), a), b) = mul(inv(a), mul(a, b)) = mul(inv(a), mul(a, c)) = mul(mul(inv(a), a), c) = mul(one, c) = c
+
+thm group_identity_unique:
+    ? forall A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A, identity A:
+        $GroupSetting(A, mul, one, inv)
+        forall a A:
+            mul(identity, a) = a
+            mul(a, identity) = a
+        =>:
+            identity = one
+    identity = mul(one, identity) = one
+
+thm group_inverse_unique:
+    ? forall A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A, a A, b A:
+        $GroupSetting(A, mul, one, inv)
+        mul(b, a) = one
+        =>:
+            b = inv(a)
+    mul(a, inv(a)) = one
+    b = mul(b, one) = mul(b, mul(a, inv(a))) = mul(mul(b, a), inv(a)) = mul(one, inv(a)) = inv(a)
+
+prop is_group_homomorphism(A nonempty_set, mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A, B nonempty_set, mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B, f fn(x A) B):
+    $GroupSetting(A, mul_A, one_A, inv_A)
+    $GroupSetting(B, mul_B, one_B, inv_B)
+    forall x, y A:
+        f(mul_A(x, y)) = mul_B(f(x), f(y))
+
+prop GroupHomomorphismSetting(A nonempty_set, mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A, B nonempty_set, mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B, f fn(x A) B):
+    $GroupSetting(A, mul_A, one_A, inv_A)
+    $GroupSetting(B, mul_B, one_B, inv_B)
+    forall x, y A:
+        f(mul_A(x, y)) = mul_B(f(x), f(y))
+
+thm homomorphism_maps_identity:
+    ? forall A nonempty_set, mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A, B nonempty_set, mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B, f fn(x A) B:
+        $GroupHomomorphismSetting(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)
+        =>:
+            f(one_A) = one_B
+    mul_A(one_A, one_A) = one_A
+    mul_B(f(one_A), f(one_A)) = f(mul_A(one_A, one_A)) = f(one_A) = mul_B(f(one_A), one_B)
+    release thm group_left_cancel(B, mul_B, one_B, inv_B, f(one_A), f(one_A), one_B)
+    f(one_A) = one_B
+
+# Tracer theorem: the setting keeps the ambient groups readable while the
+# proof works directly with the map and the two multiplications.
+thm homomorphism_maps_inverse:
+    ? forall A nonempty_set, mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A, B nonempty_set, mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B, f fn(x A) B, a A:
+        $GroupHomomorphismSetting(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)
+        =>:
+            f(inv_A(a)) = inv_B(f(a))
+    release thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)
+    f(one_A) = one_B
+    mul_A(inv_A(a), a) = one_A
+    mul_B(f(inv_A(a)), f(a)) = f(mul_A(inv_A(a), a)) = f(one_A) = one_B
+    release thm group_inverse_unique(B, mul_B, one_B, inv_B, f(a), f(inv_A(a)))
+    f(inv_A(a)) = inv_B(f(a))
+
+prop is_subgroup(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A, H power_set(A)):
+    $GroupSetting(A, mul, one, inv)
+    one $in H
+    forall x, y H:
+        mul(x, y) $in H
+    forall x H:
+        inv(x) $in H
+
+prop is_normal_subgroup(A nonempty_set, mul fn(x, y A) A, one A, inv fn(x A) A, H power_set(A)):
+    $GroupSetting(A, mul, one, inv)
+    $is_subgroup(A, mul, one, inv, H)
+    forall a A, h H:
+        mul(mul(a, h), inv(a)) $in H
+
+# Flagship theorem: the kernel uses the native set-builder representation.
+thm kernel_is_normal_subgroup:
+    ? forall A nonempty_set, mul_A fn(x, y A) A, one_A A, inv_A fn(x A) A, B nonempty_set, mul_B fn(x, y B) B, one_B B, inv_B fn(x B) B, f fn(x A) B:
+        $GroupHomomorphismSetting(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)
+        =>:
+            $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})
+    claim:
+        ? $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})
+        release thm homomorphism_maps_identity(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f)
+        f(one_A) = one_B
+        release thm set_builder_member(one_A, {candidate A: f(candidate) = one_B})
+        one_A $in {candidate A: f(candidate) = one_B}
+        claim:
+            ? forall kernel_x, kernel_y {candidate A: f(candidate) = one_B}:
+                mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}
+            f(mul_A(kernel_x, kernel_y)) = mul_B(f(kernel_x), f(kernel_y)) = mul_B(one_B, one_B) = one_B
+            release thm set_builder_member(mul_A(kernel_x, kernel_y), {candidate A: f(candidate) = one_B})
+            mul_A(kernel_x, kernel_y) $in {candidate A: f(candidate) = one_B}
+        claim:
+            ? forall kernel_x {candidate A: f(candidate) = one_B}:
+                inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}
+            release thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, kernel_x)
+            f(inv_A(kernel_x)) = inv_B(f(kernel_x))
+            release thm group_inverse_unique(B, mul_B, one_B, inv_B, one_B, one_B)
+            inv_B(one_B) = one_B
+            f(inv_A(kernel_x)) = inv_B(f(kernel_x)) = inv_B(one_B) = one_B
+            release thm set_builder_member(inv_A(kernel_x), {candidate A: f(candidate) = one_B})
+            inv_A(kernel_x) $in {candidate A: f(candidate) = one_B}
+        by def $is_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})
+    claim:
+        ? forall conjugator A, kernel_h {candidate A: f(candidate) = one_B}:
+            mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}
+        f(mul_A(conjugator, kernel_h)) = mul_B(f(conjugator), f(kernel_h))
+        release thm homomorphism_maps_inverse(A, mul_A, one_A, inv_A, B, mul_B, one_B, inv_B, f, conjugator)
+        f(inv_A(conjugator)) = inv_B(f(conjugator))
+        mul_B(f(conjugator), one_B) = f(conjugator)
+        f(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator))) = mul_B(f(mul_A(conjugator, kernel_h)), f(inv_A(conjugator))) = mul_B(mul_B(f(conjugator), f(kernel_h)), inv_B(f(conjugator))) = mul_B(mul_B(f(conjugator), one_B), inv_B(f(conjugator))) = mul_B(f(conjugator), inv_B(f(conjugator))) = one_B
+        release thm set_builder_member(mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)), {candidate A: f(candidate) = one_B})
+        mul_A(mul_A(conjugator, kernel_h), inv_A(conjugator)) $in {candidate A: f(candidate) = one_B}
+    by def $is_normal_subgroup(A, mul_A, one_A, inv_A, {candidate A: f(candidate) = one_B})
+
+struct Group<A nonempty_set>:
+    mul fn(x, y A) A
+    one A
+    inv fn(x A) A
+    <=>:
+        forall x, y, z A:
+            mul(mul(x, y), z) = mul(x, mul(y, z))
+        forall x A:
+            mul(one, x) = x
+            mul(x, one) = x
+            mul(x, inv(x)) = one
+            mul(inv(x), x) = one
+
+
+# Unital commutative ring.
+struct CommutativeRing<A nonempty_set>:
+    add fn(x, y A) A
+    zero A
+    neg fn(x A) A
+    mul fn(x, y A) A
+    one A
+    <=>:
+        forall x, y, z A:
+            add(add(x, y), z) = add(x, add(y, z))
+            mul(mul(x, y), z) = mul(x, mul(y, z))
+            mul(x, add(y, z)) = add(mul(x, y), mul(x, z))
+            mul(add(x, y), z) = add(mul(x, z), mul(y, z))
+        forall x, y A:
+            add(x, y) = add(y, x)
+            mul(x, y) = mul(y, x)
+        forall x A:
+            add(zero, x) = x
+            add(x, zero) = x
+            add(x, neg(x)) = zero
+            add(neg(x), x) = zero
+            mul(one, x) = x
+            mul(x, one) = x
+            mul(zero, x) = zero
+            mul(x, zero) = zero
+        neg(zero) = zero
+
+prop is_commutative_ring(A nonempty_set, add fn(x, y A) A, zero A, neg fn(x A) A, mul fn(x, y A) A, one A):
+    forall x, y, z A:
+        add(add(x, y), z) = add(x, add(y, z))
+        mul(mul(x, y), z) = mul(x, mul(y, z))
+        mul(x, add(y, z)) = add(mul(x, y), mul(x, z))
+        mul(add(x, y), z) = add(mul(x, z), mul(y, z))
+    forall x, y A:
+        add(x, y) = add(y, x)
+        mul(x, y) = mul(y, x)
+    forall x A:
+        add(zero, x) = x
+        add(x, zero) = x
+        add(x, neg(x)) = zero
+        add(neg(x), x) = zero
+        mul(one, x) = x
+        mul(x, one) = x
+        mul(zero, x) = zero
+        mul(x, zero) = zero
+    neg(zero) = zero
+
+prop is_ideal(A nonempty_set, add fn(x, y A) A, zero A, neg fn(x A) A, mul fn(x, y A) A, one A, I power_set(A)):
+    zero $in I
+    forall x, y I:
+        add(x, y) $in I
+    forall x I:
+        neg(x) $in I
+    forall scalar A, x I:
+        mul(scalar, x) $in I
+
+prop is_field(A nonempty_set, add fn(x, y A) A, zero A, neg fn(x A) A, mul fn(x, y A) A, one A):
+    $is_commutative_ring(A, add, zero, neg, mul, one)
+    zero != one
+    forall x A:
+        x != zero
+        =>:
+            exist inv_x A st {mul(x, inv_x) = one, mul(inv_x, x) = one}
+
+prop is_integral_domain(A nonempty_set, add fn(x, y A) A, zero A, neg fn(x A) A, mul fn(x, y A) A, one A):
+    $is_commutative_ring(A, add, zero, neg, mul, one)
+    zero != one
+    forall x, y A:
+        mul(x, y) = zero
+        =>:
+            x = zero or y = zero
+
+prop is_prime_ideal(A nonempty_set, add fn(x, y A) A, zero A, neg fn(x A) A, mul fn(x, y A) A, one A, I power_set(A)):
+    $is_ideal(A, add, zero, neg, mul, one, I)
+    not one $in I
+    forall x, y A:
+        mul(x, y) $in I
+        =>:
+            x $in I or y $in I
+
+prop is_ring_homomorphism(A nonempty_set, add_A fn(x, y A) A, zero_A A, neg_A fn(x A) A, mul_A fn(x, y A) A, one_A A, B nonempty_set, add_B fn(x, y B) B, zero_B B, neg_B fn(x B) B, mul_B fn(x, y B) B, one_B B, map fn(x A) B):
+    $is_commutative_ring(A, add_A, zero_A, neg_A, mul_A, one_A)
+    $is_commutative_ring(B, add_B, zero_B, neg_B, mul_B, one_B)
+    forall x, y A:
+        map(add_A(x, y)) = add_B(map(x), map(y))
+        map(mul_A(x, y)) = mul_B(map(x), map(y))
+    map(zero_A) = zero_B
+    map(one_A) = one_B
+    forall x A:
+        map(neg_A(x)) = neg_B(map(x))
+
+# Quotient presentation: flat parameters (no Setting pack).
+prop is_quotient_ring_presentation(A nonempty_set, add_A fn(x, y A) A, zero_A A, neg_A fn(x A) A, mul_A fn(x, y A) A, one_A A, B nonempty_set, add_B fn(x, y B) B, zero_B B, neg_B fn(x B) B, mul_B fn(x, y B) B, one_B B, map fn(x A) B, I power_set(A)):
+    $is_ring_homomorphism(A, add_A, zero_A, neg_A, mul_A, one_A, B, add_B, zero_B, neg_B, mul_B, one_B, map)
+    $is_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, I)
+    forall kernel_element I:
+        map(kernel_element) = zero_B
+    forall x A:
+        map(x) = zero_B
+        =>:
+            x $in I
+    forall quotient_element B:
+        exist representative A st {map(representative) = quotient_element}
+
+# Group theorems use &Group fields.
+thm group_associativity:
+    ? forall A nonempty_set, G &Group<A>, a, b, c A:
+        G.mul(G.mul(a, b), c) = G.mul(a, G.mul(b, c))
+
+thm group_identity_laws:
+    ? forall A nonempty_set, G &Group<A>, a A:
+        G.mul(G.one, a) = a
+        G.mul(a, G.one) = a
+
+thm group_inverse_laws:
+    ? forall A nonempty_set, G &Group<A>, a A:
+        G.mul(a, G.inv(a)) = G.one
+        G.mul(G.inv(a), a) = G.one
+
+thm subgroup_contains_identity:
+    ? forall A nonempty_set, G &Group<A>, H power_set(A):
+        $is_subgroup(A, G.mul, G.one, G.inv, H)
+        =>:
+            G.one $in H
+    by def $is_subgroup(A, G.mul, G.one, G.inv, H)
+
+thm subgroup_closed_under_mul:
+    ? forall A nonempty_set, G &Group<A>, H power_set(A), x, y H:
+        $is_subgroup(A, G.mul, G.one, G.inv, H)
+        =>:
+            G.mul(x, y) $in H
+    by def $is_subgroup(A, G.mul, G.one, G.inv, H)
+
+thm subgroup_closed_under_inv:
+    ? forall A nonempty_set, G &Group<A>, H power_set(A), x H:
+        $is_subgroup(A, G.mul, G.one, G.inv, H)
+        =>:
+            G.inv(x) $in H
+    by def $is_subgroup(A, G.mul, G.one, G.inv, H)
+
+thm group_homomorphism_preserves_mul:
+    ? forall A nonempty_set, G &Group<A>, B nonempty_set, H &Group<B>, f fn(x A) B, x, y A:
+        $is_group_homomorphism(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f)
+        =>:
+            f(G.mul(x, y)) = H.mul(f(x), f(y))
+    by def $is_group_homomorphism(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f)
+
+thm group_homomorphism_preserves_identity:
+    ? forall A nonempty_set, G &Group<A>, B nonempty_set, H &Group<B>, f fn(x A) B:
+        $is_group_homomorphism(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f)
+        =>:
+            f(G.one) = H.one
+    # Apply the general theorem proved above to the operations stored in G/H.
+    $GroupHomomorphismSetting(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f)
+    release thm homomorphism_maps_identity(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f)
+    f(G.one) = H.one
+
+thm group_homomorphism_preserves_inverse:
+    ? forall A nonempty_set, G &Group<A>, B nonempty_set, H &Group<B>, f fn(x A) B, a A:
+        $is_group_homomorphism(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f)
+        =>:
+            f(G.inv(a)) = H.inv(f(a))
+    $GroupHomomorphismSetting(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f)
+    release thm homomorphism_maps_inverse(A, G.mul, G.one, G.inv, B, H.mul, H.one, H.inv, f, a)
+    f(G.inv(a)) = H.inv(f(a))
+
+# Kernel of a ring homomorphism is an ideal.
+thm ring_homomorphism_kernel_is_ideal:
+    ? forall A nonempty_set, add_A fn(x, y A) A, zero_A A, neg_A fn(x A) A, mul_A fn(x, y A) A, one_A A, B nonempty_set, add_B fn(x, y B) B, zero_B B, neg_B fn(x B) B, mul_B fn(x, y B) B, one_B B, map fn(x A) B:
+        $is_ring_homomorphism(A, add_A, zero_A, neg_A, mul_A, one_A, B, add_B, zero_B, neg_B, mul_B, one_B, map)
+        =>:
+            $is_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, {candidate A: map(candidate) = zero_B})
+    by def $is_ring_homomorphism(A, add_A, zero_A, neg_A, mul_A, one_A, B, add_B, zero_B, neg_B, mul_B, one_B, map)
+    claim:
+        ? zero_A $in {candidate A: map(candidate) = zero_B}
+        map(zero_A) = zero_B
+        release thm set_builder_member(zero_A, {candidate A: map(candidate) = zero_B})
+        zero_A $in {candidate A: map(candidate) = zero_B}
+    claim:
+        ? forall kernel_x, kernel_y {candidate A: map(candidate) = zero_B}:
+            add_A(kernel_x, kernel_y) $in {candidate A: map(candidate) = zero_B}
+        map(add_A(kernel_x, kernel_y)) = add_B(map(kernel_x), map(kernel_y)) = add_B(zero_B, zero_B) = zero_B
+        release thm set_builder_member(add_A(kernel_x, kernel_y), {candidate A: map(candidate) = zero_B})
+        add_A(kernel_x, kernel_y) $in {candidate A: map(candidate) = zero_B}
+    claim:
+        ? forall kernel_x {candidate A: map(candidate) = zero_B}:
+            neg_A(kernel_x) $in {candidate A: map(candidate) = zero_B}
+        map(neg_A(kernel_x)) = neg_B(map(kernel_x)) = neg_B(zero_B) = zero_B
+        release thm set_builder_member(neg_A(kernel_x), {candidate A: map(candidate) = zero_B})
+        neg_A(kernel_x) $in {candidate A: map(candidate) = zero_B}
+    claim:
+        ? forall scalar A, kernel_x {candidate A: map(candidate) = zero_B}:
+            mul_A(scalar, kernel_x) $in {candidate A: map(candidate) = zero_B}
+        map(mul_A(scalar, kernel_x)) = mul_B(map(scalar), map(kernel_x)) = mul_B(map(scalar), zero_B) = zero_B
+        release thm set_builder_member(mul_A(scalar, kernel_x), {candidate A: map(candidate) = zero_B})
+        mul_A(scalar, kernel_x) $in {candidate A: map(candidate) = zero_B}
+    by def $is_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, {candidate A: map(candidate) = zero_B})
+
+thm field_is_integral_domain:
+    ? forall A nonempty_set, add fn(x, y A) A, zero A, neg fn(x A) A, mul fn(x, y A) A, one A:
+        $is_field(A, add, zero, neg, mul, one)
+        =>:
+            $is_integral_domain(A, add, zero, neg, mul, one)
+    by def $is_field(A, add, zero, neg, mul, one)
+    claim:
+        ? forall x, y A:
+            mul(x, y) = zero
+            =>:
+                x = zero or y = zero
+        by cases:
+            ? x = zero or y = zero
+            case x = zero:
+                x = zero
+            case x != zero:
+                obtain inverse_x from exist inv_x A st {mul(x, inv_x) = one, mul(inv_x, x) = one}
+                y = mul(one, y) = mul(mul(inverse_x, x), y) = mul(inverse_x, mul(x, y)) = mul(inverse_x, zero) = zero
+    by def $is_integral_domain(A, add, zero, neg, mul, one)
+
+thm prime_ideal_gives_integral_domain_quotient:
+    ? forall A nonempty_set, add_A fn(x, y A) A, zero_A A, neg_A fn(x A) A, mul_A fn(x, y A) A, one_A A, B nonempty_set, add_B fn(x, y B) B, zero_B B, neg_B fn(x B) B, mul_B fn(x, y B) B, one_B B, map fn(x A) B, I power_set(A):
+        $is_quotient_ring_presentation(A, add_A, zero_A, neg_A, mul_A, one_A, B, add_B, zero_B, neg_B, mul_B, one_B, map, I)
+        $is_prime_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, I)
+        =>:
+            $is_integral_domain(B, add_B, zero_B, neg_B, mul_B, one_B)
+    by def $is_prime_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, I)
+    by def $is_quotient_ring_presentation(A, add_A, zero_A, neg_A, mul_A, one_A, B, add_B, zero_B, neg_B, mul_B, one_B, map, I)
+    claim:
+        ? zero_B != one_B
+        by contra:
+            ? zero_B != one_B
+            zero_B = one_B
+            map(one_A) = one_B = zero_B
+            one_A $in I
+            impossible not one_A $in I
+    claim:
+        ? forall quotient_x, quotient_y B:
+            mul_B(quotient_x, quotient_y) = zero_B
+            =>:
+                quotient_x = zero_B or quotient_y = zero_B
+        obtain representative_x from exist representative A st {map(representative) = quotient_x}
+        obtain representative_y from exist representative A st {map(representative) = quotient_y}
+        map(mul_A(representative_x, representative_y)) = mul_B(map(representative_x), map(representative_y)) = mul_B(quotient_x, quotient_y) = zero_B
+        mul_A(representative_x, representative_y) $in I
+        representative_x $in I or representative_y $in I
+        by cases:
+            ? quotient_x = zero_B or quotient_y = zero_B
+            case representative_x $in I:
+                map(representative_x) = zero_B
+                quotient_x = zero_B
+            case representative_y $in I:
+                map(representative_y) = zero_B
+                quotient_y = zero_B
+    by def $is_integral_domain(B, add_B, zero_B, neg_B, mul_B, one_B)
+
+thm integral_domain_quotient_gives_prime_ideal:
+    ? forall A nonempty_set, add_A fn(x, y A) A, zero_A A, neg_A fn(x A) A, mul_A fn(x, y A) A, one_A A, B nonempty_set, add_B fn(x, y B) B, zero_B B, neg_B fn(x B) B, mul_B fn(x, y B) B, one_B B, map fn(x A) B, I power_set(A):
+        $is_quotient_ring_presentation(A, add_A, zero_A, neg_A, mul_A, one_A, B, add_B, zero_B, neg_B, mul_B, one_B, map, I)
+        $is_integral_domain(B, add_B, zero_B, neg_B, mul_B, one_B)
+        =>:
+            $is_prime_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, I)
+    by def $is_integral_domain(B, add_B, zero_B, neg_B, mul_B, one_B)
+    by def $is_quotient_ring_presentation(A, add_A, zero_A, neg_A, mul_A, one_A, B, add_B, zero_B, neg_B, mul_B, one_B, map, I)
+    $is_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, I)
+    claim:
+        ? not one_A $in I
+        by contra:
+            ? not one_A $in I
+            one_A $in I
+            map(one_A) = zero_B
+            map(one_A) = one_B
+            zero_B = one_B
+            impossible zero_B != one_B
+    claim:
+        ? forall x, y A:
+            mul_A(x, y) $in I
+            =>:
+                x $in I or y $in I
+        map(mul_A(x, y)) = zero_B
+        map(mul_A(x, y)) = mul_B(map(x), map(y))
+        mul_B(map(x), map(y)) = zero_B
+        map(x) = zero_B or map(y) = zero_B
+        by cases:
+            ? x $in I or y $in I
+            case map(x) = zero_B:
+                x $in I
+            case map(y) = zero_B:
+                y $in I
+    by def $is_prime_ideal(A, add_A, zero_A, neg_A, mul_A, one_A, I)
+
+# Concrete consumer: Z with ordinary operations.
+have fn integer_ring_add(x, y Z) Z = x + y
+have fn integer_ring_neg(x Z) Z = -x
+have fn integer_ring_mul(x, y Z) Z = x * y
+
+thm integers_form_a_commutative_ring:
+    ? forall:
+        $is_commutative_ring(Z, integer_ring_add, 0, integer_ring_neg, integer_ring_mul, 1)
+    claim:
+        ? forall x, y, z Z:
+            integer_ring_add(integer_ring_add(x, y), z) = integer_ring_add(x, integer_ring_add(y, z))
+            integer_ring_mul(integer_ring_mul(x, y), z) = integer_ring_mul(x, integer_ring_mul(y, z))
+            integer_ring_mul(x, integer_ring_add(y, z)) = integer_ring_add(integer_ring_mul(x, y), integer_ring_mul(x, z))
+            integer_ring_mul(integer_ring_add(x, y), z) = integer_ring_add(integer_ring_mul(x, z), integer_ring_mul(y, z))
+        integer_ring_add(integer_ring_add(x, y), z) = (x + y) + z = x + (y + z) = integer_ring_add(x, integer_ring_add(y, z))
+        integer_ring_mul(integer_ring_mul(x, y), z) = (x * y) * z = x * (y * z) = integer_ring_mul(x, integer_ring_mul(y, z))
+        integer_ring_mul(x, integer_ring_add(y, z)) = x * (y + z) = x * y + x * z = integer_ring_add(integer_ring_mul(x, y), integer_ring_mul(x, z))
+        integer_ring_mul(integer_ring_add(x, y), z) = (x + y) * z = x * z + y * z = integer_ring_add(integer_ring_mul(x, z), integer_ring_mul(y, z))
+    claim:
+        ? forall x, y Z:
+            integer_ring_add(x, y) = integer_ring_add(y, x)
+            integer_ring_mul(x, y) = integer_ring_mul(y, x)
+        integer_ring_add(x, y) = x + y = y + x = integer_ring_add(y, x)
+        integer_ring_mul(x, y) = x * y = y * x = integer_ring_mul(y, x)
+    claim:
+        ? forall x Z:
+            integer_ring_add(0, x) = x
+            integer_ring_add(x, 0) = x
+            integer_ring_add(x, integer_ring_neg(x)) = 0
+            integer_ring_add(integer_ring_neg(x), x) = 0
+            integer_ring_mul(1, x) = x
+            integer_ring_mul(x, 1) = x
+            integer_ring_mul(0, x) = 0
+            integer_ring_mul(x, 0) = 0
+        integer_ring_add(0, x) = 0 + x = x
+        integer_ring_add(x, 0) = x + 0 = x
+        integer_ring_add(x, integer_ring_neg(x)) = x + (-x) = 0
+        integer_ring_add(integer_ring_neg(x), x) = (-x) + x = 0
+        integer_ring_mul(1, x) = 1 * x = x
+        integer_ring_mul(x, 1) = x * 1 = x
+        integer_ring_mul(0, x) = 0 * x = 0
+        integer_ring_mul(x, 0) = x * 0 = 0
+    integer_ring_neg(0) = -0 = 0
+    by def $is_commutative_ring(Z, integer_ring_add, 0, integer_ring_neg, integer_ring_mul, 1)

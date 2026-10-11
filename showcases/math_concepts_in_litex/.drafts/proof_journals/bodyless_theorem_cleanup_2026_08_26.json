@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/15_category_theory_in_set_theory/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/15_category_theory_in_set_theory/main.lit",
+  "proof_spine": [
+    "Introduce the category setting as the theorem context",
+    "Let the theorem verifier discharge the setting-provided conclusion directly",
+    "Reject an empty proof when its conclusion is not available from the context"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Expose the category identity law as a named theorem without repeating the setting-provided instance.",
+      "dependencies": [
+        "CategorySetting",
+        "is_identity_morphism"
+      ],
+      "attempts": [
+        {
+          "candidate": "thm category_identity_is_identity_morphism:\n    ? forall [CategorySetting], chosen_object Obj:\n        $is_identity_morphism(Obj, Mor, Hom, compose, chosen_object, identity(chosen_object))",
+          "result": "accepted",
+          "verifier_evidence": "session block identity-empty returned ok:true; SuccessVerifyTheoremResult has proof_steps:[] and one successful KnownForallInstantiation conclusion check",
+          "diagnosis": "the CategorySetting premise already stores the required universal identity fact",
+          "next_change": "materialize the empty theorem body"
+        }
+      ],
+      "accepted_litex": "thm category_identity_is_identity_morphism:\n    ? forall [CategorySetting], chosen_object Obj:\n        $is_identity_morphism(Obj, Mor, Hom, compose, chosen_object, identity(chosen_object))",
+      "reusable_lesson": "A theorem may have zero proof statements when its conclusion is discharged from its own binder-provided premises; do not echo the conclusion merely to make the body nonempty.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Expose category associativity as a named theorem without repeating the setting-provided instance.",
+      "dependencies": [
+        "CategorySetting",
+        "composition_is_associative_at"
+      ],
+      "attempts": [
+        {
+          "candidate": "thm category_composition_is_associative:\n    ? forall [CategorySetting], source_object, first_middle_object, second_middle_object, target_object Obj, first_arrow Hom(source_object, first_middle_object), middle_arrow Hom(first_middle_object, second_middle_object), last_arrow Hom(second_middle_object, target_object):\n        $composition_is_associative_at(Obj, Mor, Hom, compose, source_object, first_middle_object, second_middle_object, target_object, first_arrow, middle_arrow, last_arrow)",
+          "result": "accepted",
+          "verifier_evidence": "session block associative-empty returned ok:true with an empty theorem proof and a successful setting-law instantiation conclusion check",
+          "diagnosis": "the CategorySetting associativity premise already supplies the required instance",
+          "next_change": "materialize the empty theorem body"
+        }
+      ],
+      "accepted_litex": "thm category_composition_is_associative:\n    ? forall [CategorySetting], source_object, first_middle_object, second_middle_object, target_object Obj, first_arrow Hom(source_object, first_middle_object), middle_arrow Hom(first_middle_object, second_middle_object), last_arrow Hom(second_middle_object, target_object):\n        $composition_is_associative_at(Obj, Mor, Hom, compose, source_object, first_middle_object, second_middle_object, target_object, first_arrow, middle_arrow, last_arrow)",
+      "reusable_lesson": "The same zero-body form works for a larger setting law with dependent morphism parameters; proof length is not a reason to echo the conclusion.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Confirm that an empty theorem body cannot turn well-definedness checking into proof of an unsupported conclusion.",
+      "dependencies": [
+        "tests/unit/kernel_contracts/lit_file_runner_tests/runtime_regression_tests/definitions_and_runtime.rs::prechecked_goal_certificate_never_stores_the_goal_itself"
+      ],
+      "attempts": [
+        {
+          "candidate": "abstract_prop prechecked_unproved(x)\n\nthm prechecked_goal_is_not_a_proof:\n    ? forall x set:\n        $prechecked_unproved(x)",
+          "result": "rejected_as_expected",
+          "verifier_evidence": "cargo test --release prechecked_goal_certificate_never_stores_the_goal_itself -- --nocapture passed; the regression requires cannot prove then-clause",
+          "diagnosis": "the theorem executor checks every then-clause after the optional proof body; preflight well-definedness does not store or prove the goal",
+          "next_change": "keep the skill rule conditional on a real positive verification"
+        }
+      ],
+      "accepted_litex": "",
+      "reusable_lesson": "Bodyless means proof-step-free, not unchecked: use it only when the theorem context or ordinary verifier rules actually discharge the conclusion.",
+      "status": "negative_control_passed"
+    }
+  ],
+  "materialization": {
+    "block_ids": [
+      "B001",
+      "B002"
+    ],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/15_category_theory_in_set_theory/main.lit",
+    "file_gate_result": "exit 0; top-level ok:true",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/15_category_theory_in_set_theory",
+    "module_gate_result": "exit 0; top-level ok:true",
+    "promotion_evidence": [
+      "bodyless_theorem_cleanup_2026_08_26.json#B001",
+      "bodyless_theorem_cleanup_2026_08_26.json#B002",
+      "showcases/math_concepts_in_litex/16_probability_theory/.drafts/proof_journals/transparent_let_full_replay_a3_2026_08_26.json#main_541",
+      "definitions_and_runtime.rs::prechecked_goal_certificate_never_stores_the_goal_itself"
+    ],
+    "skill_validation": "golitex-repository-policy, litex-proof-writer, and litex-kernel-engineer all passed skill-creator quick_validate.py",
+    "trust_delta": "none",
+    "statement_delta": "none; only two echo proof statements were removed"
+  }
+}

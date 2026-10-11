@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "proof_spine": [
+    "Keep each application immediately after the reusable interface it consumes.",
+    "Remove main:: qualification because definitions and uses now share main.lit.",
+    "Retain each distinct application once and avoid exact same-namespace fact duplication."
+  ],
+  "blocks": [
+    {
+      "id": "I001",
+      "source_order": 1,
+      "intent": "Verify the section-1 symmetric-difference application in the main-file namespace.",
+      "dependencies": ["power_set(R)", "union", "set_minus"],
+      "attempts": [
+        {
+          "candidate": "Send the literal try block directly to session stdin.",
+          "result": "failed",
+          "verifier_evidence": "protocol_error: expected run, artifacts, or close",
+          "diagnosis": "The current session accepts length-prefixed run frames; no Litex statement was parsed.",
+          "next_change": "Send the identical try block as run <id> <utf8-byte-count> followed by the source bytes."
+        },
+        {
+          "candidate": "gcd/opening set facts, the symmetric_difference definition, and its unqualified concrete membership application inside one framed outer try block",
+          "result": "passed",
+          "verifier_evidence": "Session event block id=tracer-001 returned ok=true.",
+          "diagnosis": "The application remains checkable when definition and use share the main-file environment.",
+          "next_change": "Materialize the application immediately after the definition and remove main:: qualification."
+        }
+      ],
+      "accepted_litex": "symmetric_difference({1, 2}, {2, 3}) = union(set_minus({1, 2}, {2, 3}), set_minus({2, 3}, {1, 2}))\n1 $in set_minus({1, 2}, {2, 3})\n1 $in union(set_minus({1, 2}, {2, 3}), set_minus({2, 3}, {1, 2}))\n1 $in symmetric_difference({1, 2}, {2, 3})",
+      "reusable_lesson": "Moving a caller into its defining file removes source qualification but does not remove the explicit union-membership bridge required by this example.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["I001"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+    "file_gate_result": "exit 0; top-level result=success and ok=true",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell",
+    "module_gate_result": "exit 0; top-level result=success and ok=true"
+  }
+}

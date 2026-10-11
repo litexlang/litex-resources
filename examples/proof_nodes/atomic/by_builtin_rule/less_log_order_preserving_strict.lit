@@ -1,0 +1,11 @@
+# Node: atomic.ByBuiltinRule.Less.LogOrderPreservingStrict
+# Run: litex -f examples/proof_nodes/atomic/by_builtin_rule/less_log_order_preserving_strict.lit
+
+claim:
+    ? forall x R, y R:
+        0 < x
+        0 < y
+        x < y
+        =>:
+            log(2, x) < log(2, y)
+    1 < 2

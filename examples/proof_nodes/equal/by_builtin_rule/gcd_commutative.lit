@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.GcdCommutative
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/gcd_commutative.lit
+
+forall a Z, b Z:
+    a != 0
+    =>:
+        gcd(a, b) = gcd(b, a)

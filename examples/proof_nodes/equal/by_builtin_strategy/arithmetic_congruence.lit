@@ -1,0 +1,7 @@
+# Arithmetic congruence consumes ordinary coordinate calls.
+# The original tuple values are named because literal application heads remain unsupported.
+# Gate: target/release/litex -strict -f examples/proof_nodes/equal/by_builtin_strategy/arithmetic_congruence.lit
+let p = (1,2)
+let q = (3,4)
+p(1) + q(1) = 1 + 3
+p(2) * q(2) = 2 * 4

@@ -1,0 +1,1259 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/14_tarski_geometry_from_axioms/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/14_tarski_geometry_from_axioms/main.lit",
+  "proof_spine": [
+    "Represent betweenness and segment congruence as primitive relation sets on one point carrier",
+    "State the SST dimensionless neutral axioms as one reusable setting",
+    "Derive congruence reflexivity from pseudo-reflexivity and inner transitivity",
+    "Derive congruence symmetry from inner transitivity and the derived reflexivity theorem",
+    "Expose collinearity and midpoint as derived relations without claiming a selector",
+    "Layer decidable equality, two-dimensionality, and the Euclidean axiom as nested settings",
+    "Build the source-aligned Chapter 2-4 congruence, betweenness, triangle-congruence, and collinearity foundation",
+    "Extend through the Chapter 7 midpoint relation without assuming general existence",
+    "Add the Chapter 8-10 perpendicularity, side, reflection, and coplanarity interfaces",
+    "Use exact Chapter 11 angle congruence, four direct segment constructions, and three five-segment applications to prove Euclid I.5",
+    "Derive segment addition and inverse five-segment under decidable point equality",
+    "Align the four exact angle witnesses and apply inverse five-segment twice to derive the SAS third side",
+    "Fold the two premises and derived third side into Chapter 4 triangle congruence"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Declare readable wrappers for the two primitive relation sets",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "prop is_between(..., A, B, C Point) and prop are_segments_congruent(..., A, B, C, D Point)",
+          "result": "failed",
+          "verifier_evidence": "ParseError at line 2: name `C` is already active in this scope and cannot be rebound",
+          "diagnosis": "The uppercase point binder collides with the active builtin complex-number carrier name.",
+          "next_change": "Use lowercase point binders in both predicate headers."
+        }
+      ],
+      "accepted_litex": "prop is_between(Point set, Bet power_set(cart(Point, Point, Point)), a, b, c Point):\n    (a, b, c) $in Bet\n\nprop are_segments_congruent(Point set, Cong power_set(cart(Point, Point, Point, Point)), a, b, c, d Point):\n    (a, b, c, d) $in Cong",
+      "reusable_lesson": "Represent primitive predicates as readable wrappers over first-class relation sets; avoid uppercase `C` as a binder because it is the complex carrier.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Declare the SST dimensionless neutral axiom bundle as one named setting",
+      "dependencies": ["B001 primitive relation signatures"],
+      "attempts": [
+        {
+          "candidate": "TarskiNeutralDimensionlessSetting with conventional a,b,c,d,e,f point binders",
+          "result": "failed",
+          "verifier_evidence": "ParseError at line 5: name `e` is already active in this scope and cannot be rebound",
+          "diagnosis": "The conventional point name `e` collides with an active builtin mathematical constant.",
+          "next_change": "Use neutral indexed point binders p1 through p8 throughout the setting laws."
+        }
+      ],
+      "accepted_litex": "setting TarskiNeutralDimensionlessSetting(Point nonempty_set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), lower_a, lower_b, lower_c Point):\n    forall p1, p2 Point:\n        (p1, p2, p2, p1) $in Cong\n    forall p1, p2, p3, p4, p5, p6 Point:\n        (p1, p2, p3, p4) $in Cong\n        (p1, p2, p5, p6) $in Cong\n        =>:\n            (p3, p4, p5, p6) $in Cong\n    forall p1, p2, p3 Point:\n        (p1, p2, p3, p3) $in Cong\n        =>:\n            p1 = p2\n    forall p1, p2, p3, p4 Point:\n        exist x Point st {(p1, p2, x) $in Bet, (p2, x, p3, p4) $in Cong}\n    forall p1, p2, p3, p4, p5, p6, p7, p8 Point:\n        (p1, p3, p2, p4) $in Cong\n        (p3, p5, p4, p6) $in Cong\n        (p1, p7, p2, p8) $in Cong\n        (p3, p7, p4, p8) $in Cong\n        (p1, p3, p5) $in Bet\n        (p2, p4, p6) $in Bet\n        p1 != p3\n        =>:\n            (p5, p7, p6, p8) $in Cong\n    forall p1, p2 Point:\n        (p1, p2, p1) $in Bet\n        =>:\n            p1 = p2\n    forall p1, p2, p3, p4, p5 Point:\n        (p1, p4, p3) $in Bet\n        (p2, p5, p3) $in Bet\n        =>:\n            exist x Point st {(p4, x, p2) $in Bet, (p5, x, p1) $in Bet}\n    not (lower_a, lower_b, lower_c) $in Bet\n    not (lower_b, lower_c, lower_a) $in Bet\n    not (lower_c, lower_a, lower_b) $in Bet",
+      "reusable_lesson": "Use indexed point binders for axiom schemas; a named setting can carry the complete flat SST neutral prefix without global axioms.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Derive ordinary segment-congruence reflexivity from the first two SST congruence axioms",
+      "dependencies": ["B001 are_segments_congruent", "B002 pseudo-reflexivity and inner transitivity"],
+      "attempts": [
+        {
+          "candidate": "Use Cong(b,a,a,b) twice through inner transitivity, then fold are_segments_congruent(a,b,a,b)",
+          "result": "success",
+          "verifier_evidence": "session block B003 returned ok=true",
+          "diagnosis": "The setting exposes both required universal laws to ordinary inference.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm segment_congruence_reflexive:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b Point:\n        $are_segments_congruent(Point, Cong, a, b, a, b)\n    (b, a, a, b) $in Cong\n    by def $are_segments_congruent(Point, Cong, a, b, a, b)",
+      "reusable_lesson": "Tarski's pseudo-reflexivity becomes ordinary reflexivity by instantiating inner transitivity with the same reversed segment twice.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "source_order": 4,
+      "intent": "Tracer: derive symmetry of segment congruence rather than assuming equivalence-relation laws",
+      "dependencies": ["B002 inner transitivity", "B003 segment_congruence_reflexive"],
+      "attempts": [
+        {
+          "candidate": "Select the derived reflexive instance AB congruent AB, apply inner transitivity to the premise AB congruent CD, then fold the reversed predicate",
+          "result": "success",
+          "verifier_evidence": "session block B004 returned ok=true",
+          "diagnosis": "The shortest GeoCoq/SST proof spine maps directly to one theorem selection, one inferred relation fact, and one definition fold.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm segment_congruence_symmetric:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b, c, d Point:\n        $are_segments_congruent(Point, Cong, a, b, c, d)\n        =>:\n            $are_segments_congruent(Point, Cong, c, d, a, b)\n    by thm segment_congruence_reflexive(Point, Bet, Cong, lower_a, lower_b, lower_c, a, b) => $are_segments_congruent(Point, Cong, a, b, a, b)\n    by def $are_segments_congruent(Point, Cong, c, d, a, b)",
+      "reusable_lesson": "A named setting can expose primitive axioms while a checked theorem derives the familiar relation law with no global axiom or trust.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "source_order": 5,
+      "intent": "Define standard collinearity and midpoint relations from the two primitive predicates",
+      "dependencies": ["B001 is_between and are_segments_congruent"],
+      "attempts": [
+        {
+          "candidate": "Concrete are_collinear and is_midpoint predicate definitions",
+          "result": "success",
+          "verifier_evidence": "session block B005 returned ok=true",
+          "diagnosis": "Both concepts classify supplied points and therefore remain propositions rather than constructions.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop are_collinear(Point set, Bet power_set(cart(Point, Point, Point)), a, b, c Point):\n    (a, b, c) $in Bet or (b, c, a) $in Bet or (c, a, b) $in Bet\n\nprop is_midpoint(Point set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), midpoint, endpoint_a, endpoint_b Point):\n    $is_between(Point, Bet, endpoint_a, midpoint, endpoint_b)\n    $are_segments_congruent(Point, Cong, endpoint_a, midpoint, midpoint, endpoint_b)",
+      "reusable_lesson": "Keep midpoint as a relation until separate existence and uniqueness theorems justify a selector.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "source_order": 6,
+      "intent": "Consume the midpoint relation through its betweenness projection",
+      "dependencies": ["B005 is_midpoint"],
+      "attempts": [
+        {
+          "candidate": "A bodyless theorem exposing the betweenness component of is_midpoint",
+          "result": "success",
+          "verifier_evidence": "session block B006 returned ok=true",
+          "diagnosis": "Known positive predicate instances expose their definition clauses directly.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm midpoint_is_between:\n    ? forall Point set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), midpoint, endpoint_a, endpoint_b Point:\n        $is_midpoint(Point, Bet, Cong, midpoint, endpoint_a, endpoint_b)\n        =>:\n            $is_between(Point, Bet, endpoint_a, midpoint, endpoint_b)",
+      "reusable_lesson": "A derived relation can have a natural use probe without inventing a midpoint construction or selector.",
+      "status": "materialized"
+    },
+    {
+      "id": "B007",
+      "source_order": 7,
+      "intent": "Extend the neutral setting with decidable point equality",
+      "dependencies": ["B002 TarskiNeutralDimensionlessSetting"],
+      "attempts": [
+        {
+          "candidate": "A nested setting bundle plus one point-equality disjunction law",
+          "result": "success",
+          "verifier_evidence": "session block B007 returned ok=true",
+          "diagnosis": "Nested settings preserve the neutral prefix and append only the new law.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "setting TarskiNeutralWithDecidableEqualitySetting([TarskiNeutralDimensionlessSetting]):\n    forall p1, p2 Point:\n        p1 = p2 or p1 != p2",
+      "reusable_lesson": "Keep equality decidability separate from the dimensionless neutral axiom bundle, matching the source hierarchy.",
+      "status": "materialized"
+    },
+    {
+      "id": "B008",
+      "source_order": 8,
+      "intent": "Add the SST upper-dimension axiom as the two-dimensional extension",
+      "dependencies": ["B007 TarskiNeutralWithDecidableEqualitySetting"],
+      "attempts": [
+        {
+          "candidate": "Tarski2DSetting reusing the equality-decidable neutral setting and adding upper dimension",
+          "result": "success",
+          "verifier_evidence": "session block B008 returned ok=true",
+          "diagnosis": "The point-only upper-dimension law is expressible directly over Cong and Bet relation membership.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "setting Tarski2DSetting([TarskiNeutralWithDecidableEqualitySetting]):\n    forall p1, p2, p3, p4, p5 Point:\n        p4 != p5\n        (p1, p4, p1, p5) $in Cong\n        (p2, p4, p2, p5) $in Cong\n        (p3, p4, p3, p5) $in Cong\n        =>:\n            (p1, p2, p3) $in Bet or (p2, p3, p1) $in Bet or (p3, p1, p2) $in Bet",
+      "reusable_lesson": "Dimension is an extension law over the same primitive relations, not a new point or line representation.",
+      "status": "materialized"
+    },
+    {
+      "id": "B009",
+      "source_order": 9,
+      "intent": "Select the Euclidean branch by adding the SST Euclid axiom to the 2D setting",
+      "dependencies": ["B008 Tarski2DSetting"],
+      "attempts": [
+        {
+          "candidate": "TarskiEuclidean2DSetting with the three-betweenness existential Euclid law",
+          "result": "success",
+          "verifier_evidence": "session block B009 returned ok=true",
+          "diagnosis": "The Euclidean postulate is isolated as the sole new assumption beyond the two-dimensional neutral prefix.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "setting TarskiEuclidean2DSetting([Tarski2DSetting]):\n    forall p1, p2, p3, p4, p5 Point:\n        (p1, p4, p5) $in Bet\n        (p2, p4, p3) $in Bet\n        p1 != p4\n        =>:\n            exist x, y Point st {(p1, p2, x) $in Bet, (p1, p3, y) $in Bet, (x, p5, y) $in Bet}",
+      "reusable_lesson": "A geometry branch should append its postulate to a shared neutral setting instead of duplicating the foundational laws.",
+      "status": "materialized"
+    },
+    {
+      "id": "B013",
+      "source_order": 10,
+      "intent": "Chapter 2: derive transitivity of segment congruence",
+      "dependencies": ["B002 inner transitivity", "B004 segment_congruence_symmetric"],
+      "attempts": [
+        {
+          "candidate": "Reverse AB congruent CD, then instantiate inner transitivity at the common segment CD",
+          "result": "success",
+          "verifier_evidence": "session block B013_attempt1 returned ok=true",
+          "diagnosis": "The positive congruence predicates unfold for inference, so only the symmetry theorem selection and final definition fold are explicit.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm segment_congruence_transitive:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b, c, d, f, g Point:\n        $are_segments_congruent(Point, Cong, a, b, c, d)\n        $are_segments_congruent(Point, Cong, c, d, f, g)\n        =>:\n            $are_segments_congruent(Point, Cong, a, b, f, g)\n    by thm segment_congruence_symmetric(Point, Bet, Cong, lower_a, lower_b, lower_c, a, b, c, d) => $are_segments_congruent(Point, Cong, c, d, a, b)\n    by def $are_segments_congruent(Point, Cong, a, b, f, g)",
+      "reusable_lesson": "Tarski inner transitivity plus symmetry yields the ordinary transitivity interface expected by later SSS proofs.",
+      "status": "materialized"
+    },
+    {
+      "id": "B014",
+      "source_order": 11,
+      "intent": "Chapter 2: derive endpoint commutativity of segment congruence",
+      "dependencies": ["B002 pseudo-reflexivity and inner transitivity", "B004 segment_congruence_symmetric"],
+      "attempts": [
+        {
+          "candidate": "Derive CD congruent BA implicitly, then apply symmetry; derive right and two-sided commutativity from that theorem",
+          "result": "failed",
+          "verifier_evidence": "session block B014_attempt1 returned ok=false: domain fact are_segments_congruent(CD, BA) is not verified",
+          "diagnosis": "The attempted intermediate was unnecessarily oriented. Pseudo-reflexivity supplies AB congruent BA directly, so inner transitivity with the premise yields BA congruent CD without a symmetry call.",
+          "next_change": "Fold the left-commutative goal directly, then derive the other orientations from checked endpoint theorems."
+        },
+        {
+          "candidate": "Fold the left-commutative goal directly from the premise and setting laws",
+          "result": "failed",
+          "verifier_evidence": "session block B014_attempt2_left returned ok=false: raw relation fact (b,a,c,d) in Cong remained unknown",
+          "diagnosis": "The verifier did not instantiate pseudo-reflexivity merely from the desired definition clause.",
+          "next_change": "State the pseudo-reflexive instance (a,b,b,a) in Cong explicitly to activate inner transitivity."
+        },
+        {
+          "candidate": "Activate pseudo-reflexivity explicitly, derive left commutativity by inner transitivity, then compose symmetry and endpoint theorems for the remaining orientations",
+          "result": "success",
+          "verifier_evidence": "session blocks B014_attempt3_left and B014_attempt3_rest returned ok=true",
+          "diagnosis": "One explicit primitive relation instance is enough to activate the source axiom; the rest composes checked theorems.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm segment_congruence_left_commutative:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b, c, d Point:\n        $are_segments_congruent(Point, Cong, a, b, c, d)\n        =>:\n            $are_segments_congruent(Point, Cong, b, a, c, d)\n    (a, b, b, a) $in Cong\n    (b, a, c, d) $in Cong\n    by def $are_segments_congruent(Point, Cong, b, a, c, d)\n\nthm segment_congruence_right_commutative:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b, c, d Point:\n        $are_segments_congruent(Point, Cong, a, b, c, d)\n        =>:\n            $are_segments_congruent(Point, Cong, a, b, d, c)\n    by thm segment_congruence_symmetric(Point, Bet, Cong, lower_a, lower_b, lower_c, a, b, c, d) => $are_segments_congruent(Point, Cong, c, d, a, b)\n    by thm segment_congruence_left_commutative(Point, Bet, Cong, lower_a, lower_b, lower_c, c, d, a, b) => $are_segments_congruent(Point, Cong, d, c, a, b)\n    by thm segment_congruence_symmetric(Point, Bet, Cong, lower_a, lower_b, lower_c, d, c, a, b) => $are_segments_congruent(Point, Cong, a, b, d, c)\n\nthm segment_congruence_endpoint_commutative:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b, c, d Point:\n        $are_segments_congruent(Point, Cong, a, b, c, d)\n        =>:\n            $are_segments_congruent(Point, Cong, b, a, d, c)\n    by thm segment_congruence_left_commutative(Point, Bet, Cong, lower_a, lower_b, lower_c, a, b, c, d) => $are_segments_congruent(Point, Cong, b, a, c, d)\n    by thm segment_congruence_right_commutative(Point, Bet, Cong, lower_a, lower_b, lower_c, b, a, c, d) => $are_segments_congruent(Point, Cong, b, a, d, c)",
+      "reusable_lesson": "A primitive axiom instance may need to be named explicitly even when its consequence is the desired definition clause; theorem-level endpoint rewrites then compose cleanly.",
+      "status": "materialized"
+    },
+    {
+      "id": "B015",
+      "source_order": 12,
+      "intent": "Chapter 3: construct degenerate betweenness A-B-B",
+      "dependencies": ["B002 segment construction and congruence identity", "B004 segment_congruence_symmetric"],
+      "attempts": [
+        {
+          "candidate": "Instantiate segment construction with the degenerate target BB, eliminate the witness, use congruence identity, and substitute into betweenness",
+          "result": "success",
+          "verifier_evidence": "session block B015_attempt1 returned ok=true",
+          "diagnosis": "The source proof simplifies because the primitive congruence identity axiom applies directly to Cong(B,X,B,B).",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm between_trivial:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b Point:\n        $is_between(Point, Bet, a, b, b)\n    obtain x from exist x Point st {(a, b, x) $in Bet, (b, x, b, b) $in Cong}\n    b = x\n    (a, b, b) $in Bet\n    by def $is_between(Point, Bet, a, b, b)",
+      "reusable_lesson": "A degenerate segment-construction instance plus congruence identity establishes non-strict reflexive betweenness.",
+      "status": "materialized"
+    },
+    {
+      "id": "B016",
+      "source_order": 13,
+      "intent": "Chapter 3: derive symmetry of betweenness",
+      "dependencies": ["B002 inner Pasch and betweenness identity", "B015 between_trivial"],
+      "attempts": [
+        {
+          "candidate": "Select Bet(B,C,C), invoke inner Pasch implicitly with Bet(A,B,C), eliminate the witness, and use betweenness identity",
+          "result": "failed",
+          "verifier_evidence": "session block B016_attempt1 returned ok=false: the inner-Pasch existential was unknown",
+          "diagnosis": "The two positive predicate instances were not exposed as raw relation facts before matching the primitive Pasch schema.",
+          "next_change": "State (A,B,C) and (B,C,C) membership in Bet explicitly before the existential."
+        },
+        {
+          "candidate": "Expose both raw Bet memberships before requesting the inner-Pasch existential",
+          "result": "failed",
+          "verifier_evidence": "session block B016_attempt2 returned ok=false: the existential still remained unknown",
+          "diagnosis": "The verifier did not select the anonymous conditional existential axiom through ordinary forward inference.",
+          "next_change": "Create a named raw inner-Pasch theorem as an exact setting projection, then select it explicitly."
+        },
+        {
+          "candidate": "Declare the raw inner-Pasch projection with indexed p1 through p5 theorem binders",
+          "result": "failed",
+          "verifier_evidence": "session block B016_attempt3_helper returned ok=false: duplicate forall free parameter p1 in nested scope",
+          "diagnosis": "The setting expansion already owns indexed p1 names, so a theorem using the same binders collides with its expanded prefix.",
+          "next_change": "Use distinct geometric binders a, b, c, d, f."
+        },
+        {
+          "candidate": "Declare the raw inner-Pasch projection with distinct binders",
+          "result": "failed",
+          "verifier_evidence": "session block B016_attempt4_helper returned ok=false: cannot prove existential then-clause",
+          "diagnosis": "The issue is not binder naming; the anonymous conditional existential is not replayed as a selectable theorem.",
+          "next_change": "Probe an equivalent named property carried by a setting."
+        },
+        {
+          "candidate": "Probe a named inner-Pasch property, carrier setting, and projection in one try block",
+          "result": "failed",
+          "verifier_evidence": "session block B016_attempt5_named_property_probe returned ok=false: the setting was not visible to the later theorem in the same try block",
+          "diagnosis": "This probe mixed declaration visibility with the existential question.",
+          "next_change": "Submit property/setting and projection as separate persistent-session blocks."
+        },
+        {
+          "candidate": "Submit the quantified named property and carrier setting separately, then project its existential conclusion",
+          "result": "failed",
+          "verifier_evidence": "B016_attempt6_property and B016_attempt6_setting returned ok=true; B016_attempt6_projection returned ok=false: cannot prove existential then-clause",
+          "diagnosis": "Naming the entire quantified law does not make a conditional existential conclusion directly eliminable.",
+          "next_change": "Name only the existential result as an atomic prop and keep the conditional rule in the setting."
+        },
+        {
+          "candidate": "Package only the Pasch witness result as an existential prop and make the setting implication conclude that atomic prop",
+          "result": "partial success",
+          "verifier_evidence": "B016_attempt7_result_prop and B016_attempt7_result_setting returned ok=true; B016_attempt7_result_projection failed only because theorem binders collided with expanded setting binders",
+          "diagnosis": "The representation is usable; remaining failures are scope-level binder issues rather than proof search.",
+          "next_change": "Use q-prefixed theorem binders and a witness name distinct from the target existential binder."
+        },
+        {
+          "candidate": "Project the atomic result with q-prefixed binders and obtain x",
+          "result": "failed",
+          "verifier_evidence": "session block B016_attempt8_result_projection returned ok=false: x is already active and cannot be rebound",
+          "diagnosis": "The target existential already reserves x in theorem scope.",
+          "next_change": "Obtain a witness named y, then discharge the target existential from y."
+        },
+        {
+          "candidate": "Obtain y from the atomic witness prop and witness the target existential with y",
+          "result": "success",
+          "verifier_evidence": "session block B016_attempt9_result_projection returned ok=true",
+          "diagnosis": "Atomic-result packaging supports both conditional axiom matching and ordinary existential elimination.",
+          "next_change": "Apply the same representation to the real Tarski setting and retest from a clean session."
+        },
+        {
+          "candidate": "Use the refactored real Tarski setting to derive betweenness symmetry through inner Pasch and betweenness identity",
+          "result": "success",
+          "verifier_evidence": "clean session block B016_attempt10_actual returned ok=true after the materialized prefix independently passed the file gate",
+          "diagnosis": "The exact GeoCoq proof spine is now checkable with no added axiom: Bet(A,B,C), Bet(B,C,C), inner Pasch witness, Bet(B,X,B) identity, substitution.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop inner_pasch_witness_exists(Point set, Bet power_set(cart(Point, Point, Point)), first_line_point, second_line_point, first_side_point, second_side_point Point):\n    exist x Point st {(first_line_point, x, second_line_point) $in Bet, (first_side_point, x, second_side_point) $in Bet}\n\nthm between_symmetric:\n    ? forall [TarskiNeutralDimensionlessSetting], a, b, c Point:\n        $is_between(Point, Bet, a, b, c)\n        =>:\n            $is_between(Point, Bet, c, b, a)\n    by thm between_trivial(Point, Bet, Cong, lower_a, lower_b, lower_c, b, c) => $is_between(Point, Bet, b, c, c)\n    (a, b, c) $in Bet\n    (b, c, c) $in Bet\n    obtain x from $inner_pasch_witness_exists(Point, Bet, b, b, c, a)\n    b = x\n    (c, b, a) $in Bet\n    by def $is_between(Point, Bet, c, b, a)",
+      "reusable_lesson": "For conditional existential axioms, make the implication conclude an atomic existential-result prop; this preserves the mathematics while giving Litex a selectable and eliminable proof source.",
+      "status": "materialized"
+    },
+    {
+      "id": "B017",
+      "source_order": 14,
+      "intent": "Chapter 4: define three-side triangle congruence",
+      "dependencies": ["B001 are_segments_congruent"],
+      "attempts": [
+        {
+          "candidate": "Define are_triangles_congruent as the three source-ordered corresponding segment congruences",
+          "result": "success",
+          "verifier_evidence": "clean session block B017_attempt1 returned ok=true",
+          "diagnosis": "GeoCoq Cong_3 is a direct derived relation and needs no new setting assumption.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop are_triangles_congruent(Point set, Cong power_set(cart(Point, Point, Point, Point)), a, b, c, d, f, g Point):\n    $are_segments_congruent(Point, Cong, a, b, d, f)\n    $are_segments_congruent(Point, Cong, a, c, d, g)\n    $are_segments_congruent(Point, Cong, b, c, f, g)",
+      "reusable_lesson": "Keep Cong_3 as a transparent three-clause relation so downstream SSS proofs can consume individual sides without an opaque triangle object.",
+      "status": "materialized"
+    },
+    {
+      "id": "B018",
+      "source_order": 15,
+      "intent": "Chapter 4: expose source-ordered projections from triangle congruence and collinearity",
+      "dependencies": ["B005 are_collinear", "B017 are_triangles_congruent"],
+      "attempts": [
+        {
+          "candidate": "Prove Bet implies Col by definition and expose all three Cong_3 clauses in one theorem",
+          "result": "success",
+          "verifier_evidence": "clean session block B018_attempt1 returned ok=true",
+          "diagnosis": "Positive concrete predicates expose conjunctive clauses; collinearity needs one explicit raw Bet fact to select the first disjunct.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm between_implies_collinear:\n    ? forall Point set, Bet power_set(cart(Point, Point, Point)), a, b, c Point:\n        $is_between(Point, Bet, a, b, c)\n        =>:\n            $are_collinear(Point, Bet, a, b, c)\n    (a, b, c) $in Bet\n    by def $are_collinear(Point, Bet, a, b, c)\n\nthm triangle_congruence_has_three_sides:\n    ? forall Point set, Cong power_set(cart(Point, Point, Point, Point)), a, b, c, d, f, g Point:\n        $are_triangles_congruent(Point, Cong, a, b, c, d, f, g)\n        =>:\n            $are_segments_congruent(Point, Cong, a, b, d, f)\n            $are_segments_congruent(Point, Cong, a, c, d, g)\n            $are_segments_congruent(Point, Cong, b, c, f, g)",
+      "reusable_lesson": "Definition-use probes establish that the Chapter 4 relations are consumable without adding any theorem-strength assumption.",
+      "status": "materialized"
+    },
+    {
+      "id": "B019",
+      "source_order": 16,
+      "intent": "Chapter 5: define segment less-than-or-equal and strict less-than with witness elimination probes",
+      "dependencies": ["B001 primitive relations", "B004 segment congruence symmetry"],
+      "attempts": [
+        {
+          "candidate": "Define Le by a point on CD congruent to AB, define Lt as Le without Cong, and eliminate the Le witness",
+          "result": "success",
+          "verifier_evidence": "session blocks B019_attempt1_defs and B019_attempt1_probes returned ok=true",
+          "diagnosis": "The existential Le definition supports direct atomic-prop elimination; Lt exposes its two conjuncts.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop is_segment_le(Point set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), a, b, c, d Point):\n    exist witness_point Point st {$is_between(Point, Bet, c, witness_point, d), $are_segments_congruent(Point, Cong, a, b, c, witness_point)}\n\nprop is_segment_lt(Point set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), a, b, c, d Point):\n    $is_segment_le(Point, Bet, Cong, a, b, c, d)\n    not $are_segments_congruent(Point, Cong, a, b, c, d)\n\nthm segment_le_has_witness:\n    ? forall Point set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), a, b, c, d Point:\n        $is_segment_le(Point, Bet, Cong, a, b, c, d)\n        =>:\n            exist witness_point Point st {$is_between(Point, Bet, c, witness_point, d), $are_segments_congruent(Point, Cong, a, b, c, witness_point)}\n    obtain selected_point from $is_segment_le(Point, Bet, Cong, a, b, c, d)\n    witness exist witness_point Point st {$is_between(Point, Bet, c, witness_point, d), $are_segments_congruent(Point, Cong, a, b, c, witness_point)} from selected_point\n\nthm segment_lt_is_le_and_not_congruent:\n    ? forall Point set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), a, b, c, d Point:\n        $is_segment_lt(Point, Bet, Cong, a, b, c, d)\n        =>:\n            $is_segment_le(Point, Bet, Cong, a, b, c, d)\n            not $are_segments_congruent(Point, Cong, a, b, c, d)",
+      "reusable_lesson": "Witness-based segment order preserves the synthetic language and remains directly consumable without numerical lengths.",
+      "status": "materialized"
+    },
+    {
+      "id": "B020",
+      "source_order": 17,
+      "intent": "Chapter 6: define same-ray Out and expose its nondegeneracy and betweenness disjunction",
+      "dependencies": ["B001 is_between"],
+      "attempts": [
+        {
+          "candidate": "Define Out by two nondegeneracy clauses and the two allowed non-strict Bet orders, then project all clauses",
+          "result": "success",
+          "verifier_evidence": "session blocks B020_attempt1_def and B020_attempt1_probe returned ok=true",
+          "diagnosis": "The exact GeoCoq Definition 6.1 maps to one transparent Litex predicate.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop is_out_on_ray(Point set, Bet power_set(cart(Point, Point, Point)), vertex, first_point, second_point Point):\n    first_point != vertex\n    second_point != vertex\n    $is_between(Point, Bet, vertex, first_point, second_point) or $is_between(Point, Bet, vertex, second_point, first_point)\n\nthm out_on_ray_is_nondegenerate_and_ordered:\n    ? forall Point set, Bet power_set(cart(Point, Point, Point)), vertex, first_point, second_point Point:\n        $is_out_on_ray(Point, Bet, vertex, first_point, second_point)\n        =>:\n            first_point != vertex\n            second_point != vertex\n            $is_between(Point, Bet, vertex, first_point, second_point) or $is_between(Point, Bet, vertex, second_point, first_point)",
+      "reusable_lesson": "Ray membership needs no line object: nondegeneracy plus non-strict betweenness order is enough.",
+      "status": "materialized"
+    },
+    {
+      "id": "B021",
+      "source_order": 18,
+      "intent": "Chapter 7: expose midpoint congruence, endpoint symmetry, and the degenerate midpoint",
+      "dependencies": ["B005 is_midpoint", "B003 segment reflexivity", "B016 between symmetry"],
+      "attempts": [
+        {
+          "candidate": "Project congruent halves, reverse endpoint order through Bet/Cong symmetry, and construct the degenerate midpoint A of AA",
+          "result": "success",
+          "verifier_evidence": "session block B021_attempt1 returned ok=true after B021_replay_midpoint_def",
+          "diagnosis": "Chapter 7's basic midpoint interface follows from already checked Chapter 2-3 symmetry laws; no general midpoint existence is claimed.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm midpoint_has_congruent_halves:\n    ? forall Point set, Bet power_set(cart(Point, Point, Point)), Cong power_set(cart(Point, Point, Point, Point)), midpoint, endpoint_a, endpoint_b Point:\n        $is_midpoint(Point, Bet, Cong, midpoint, endpoint_a, endpoint_b)\n        =>:\n            $are_segments_congruent(Point, Cong, endpoint_a, midpoint, midpoint, endpoint_b)\n\nthm midpoint_symmetric:\n    ? forall [TarskiNeutralDimensionlessSetting], midpoint, endpoint_a, endpoint_b Point:\n        $is_midpoint(Point, Bet, Cong, midpoint, endpoint_a, endpoint_b)\n        =>:\n            $is_midpoint(Point, Bet, Cong, midpoint, endpoint_b, endpoint_a)\n    by thm between_symmetric(Point, Bet, Cong, lower_a, lower_b, lower_c, endpoint_a, midpoint, endpoint_b) => $is_between(Point, Bet, endpoint_b, midpoint, endpoint_a)\n    by thm segment_congruence_endpoint_commutative(Point, Bet, Cong, lower_a, lower_b, lower_c, endpoint_a, midpoint, midpoint, endpoint_b) => $are_segments_congruent(Point, Cong, midpoint, endpoint_a, endpoint_b, midpoint)\n    by thm segment_congruence_symmetric(Point, Bet, Cong, lower_a, lower_b, lower_c, midpoint, endpoint_a, endpoint_b, midpoint) => $are_segments_congruent(Point, Cong, endpoint_b, midpoint, midpoint, endpoint_a)\n    by def $is_midpoint(Point, Bet, Cong, midpoint, endpoint_b, endpoint_a)\n\nthm point_is_own_degenerate_midpoint:\n    ? forall [TarskiNeutralDimensionlessSetting], a Point:\n        $is_midpoint(Point, Bet, Cong, a, a, a)\n    by thm between_trivial(Point, Bet, Cong, lower_a, lower_b, lower_c, a, a) => $is_between(Point, Bet, a, a, a)\n    by thm segment_congruence_reflexive(Point, Bet, Cong, lower_a, lower_b, lower_c, a, a) => $are_segments_congruent(Point, Cong, a, a, a, a)\n    by def $is_midpoint(Point, Bet, Cong, a, a, a)",
+      "reusable_lesson": "Midpoint remains a relation with useful symmetry and degenerate instances even when the later general existence theorem is outside the slice.",
+      "status": "materialized"
+    },
+    {
+      "id": "B022",
+      "source_order": 19,
+      "intent": "Chapter 8: define right angle, perpendicular-at, and perpendicular lines with witness probes",
+      "dependencies": ["B005 are_collinear and is_midpoint", "B001 segment congruence"],
+      "attempts": [
+        {
+          "candidate": "Define right angle by a midpoint reflection witness, perpendicular-at by universal right angles on two incident lines, and perpendicular lines by an intersection witness",
+          "result": "success",
+          "verifier_evidence": "session blocks B022_attempt1_defs and B022_attempt1_probes returned ok=true",
+          "diagnosis": "All three exact synthetic relations admit direct existential witness elimination without numerical angle measures.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop is_right_angle(...): exist reflected_c Point st {is_midpoint(vertex, point_c, reflected_c), are_segments_congruent(point_a, point_c, point_a, reflected_c)}\nprop is_perpendicular_at(...): nondegenerate incident lines, both contain intersection, and every point pair forms is_right_angle\nprop are_lines_perpendicular(...): exist intersection Point st {is_perpendicular_at(intersection, ...)}\nthm right_angle_has_reflected_witness\nthm perpendicular_lines_have_intersection",
+      "reusable_lesson": "Tarski right angles and perpendicularity remain purely relational; witness probes prevent existential definitions from becoming unusable interfaces.",
+      "status": "materialized"
+    },
+    {
+      "id": "B023",
+      "source_order": 20,
+      "intent": "Chapter 9: define opposite/same side, point reflection, and coplanarity with projections",
+      "dependencies": ["B005 are_collinear and is_midpoint", "B001 is_between"],
+      "attempts": [
+        {
+          "candidate": "Define all Chapter 9 relations and put conjunctions directly inside the three coplanarity disjuncts",
+          "result": "failed",
+          "verifier_evidence": "session block B023_attempt1_defs returned ok=false: Expected token ')' in is_coplanarity_witness",
+          "diagnosis": "Litex's concrete predicate grammar does not accept parenthesized conjunctions as operands in this disjunction shape.",
+          "next_change": "Name a two-line shared-point conjunction and disjoin three atomic instances."
+        },
+        {
+          "candidate": "Package each pair-of-lines intersection conjunction as line_pairs_share_point and disjoin three atomic instances",
+          "result": "success",
+          "verifier_evidence": "session blocks B023_attempt2_defs and B023_attempt2_probes returned ok=true",
+          "diagnosis": "Atomic disjunct packaging preserves GeoCoq's three coplanarity matchings and enables witness elimination.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop are_on_opposite_sides(...): both points are off the line and a between-witness lies on it\nprop is_point_reflection(...): is_midpoint(center, point, reflected_point)\nprop are_on_same_side(...): exist reference_point opposite to each point\nprop line_pairs_share_point(...)\nprop is_coplanarity_witness(...): the three source pairings as atomic disjuncts\nprop are_coplanar(...): exist an is_coplanarity_witness\nthm opposite_sides_points_are_off_line\nthm point_reflection_is_midpoint\nthm same_side_has_reference_point\nthm coplanar_has_intersection_pattern",
+      "reusable_lesson": "When Litex disjunction grammar rejects compound operands, a named transparent proposition can preserve exact logic while keeping every disjunct atomic.",
+      "status": "materialized"
+    },
+    {
+      "id": "B024",
+      "source_order": 21,
+      "intent": "Chapter 10: define nondegenerate and degenerate line reflection with a perpendicular-or-fixed probe",
+      "dependencies": ["B022 perpendicularity", "B023 point reflection"],
+      "attempts": [
+        {
+          "candidate": "Define the line-axis midpoint hit, perpendicular-or-fixed line reflection, and explicit nondegenerate/degenerate branches",
+          "result": "success",
+          "verifier_evidence": "session blocks B024_attempt1_defs and B024_attempt1_probes returned ok=true",
+          "diagnosis": "Naming the two total-reflection branches keeps the top-level disjunction atomic and exposes the exact GeoCoq cases.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop line_reflection_axis_hit(...): exist intersection that is the midpoint of point/reflected_point and lies on the axis\nprop is_line_reflection(...): axis hit and (perpendicular axes or fixed point)\nprop is_nondegenerate_line_reflection_case(...)\nprop is_degenerate_line_reflection_case(...)\nprop is_reflection(...): nondegenerate case or degenerate case\nthm line_reflection_has_axis_hit\nthm line_reflection_is_perpendicular_or_fixed\nthm reflection_has_nondegenerate_or_degenerate_case",
+      "reusable_lesson": "Totalized degenerate geometry should stay explicit at the API boundary; named branch propositions satisfy Litex syntax without hiding the source definition.",
+      "status": "materialized"
+    },
+    {
+      "id": "B025",
+      "source_order": 22,
+      "intent": "Chapter 11: implement exact GeoCoq Definition 11.2 angle congruence and expose nondegeneracy",
+      "dependencies": ["B001 primitive relations", "B020 rays are not substituted for exact extension witnesses"],
+      "attempts": [
+        {
+          "candidate": "Place the nine existential witness clauses on indented lines inside a brace block",
+          "result": "failed",
+          "verifier_evidence": "session block B025_attempt1_def returned ok=false: unexpected indent",
+          "diagnosis": "The current concrete existential grammar requires this finite atomic brace body on one logical line.",
+          "next_change": "Keep the exact clauses but place the brace body on one line."
+        },
+        {
+          "candidate": "Declare the four nondegeneracy clauses and exact four-extension existential on one logical line",
+          "result": "success",
+          "verifier_evidence": "session blocks B025_attempt2_def and B025_attempt2_probe returned ok=true",
+          "diagnosis": "Exact CongA is directly expressible; no SSS alias or angle measure is needed.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop are_angles_congruent(...): four endpoint inequalities plus four extension witnesses, eight Bet/Cong construction clauses, and Cong(a_ext,c_ext,d_ext,f_ext)\nthm angle_congruence_is_nondegenerate",
+      "reusable_lesson": "Angle congruence should preserve the source witness contract even when a shorter SSS-shaped surrogate would be easier to prove.",
+      "status": "materialized"
+    },
+    {
+      "id": "B026",
+      "source_order": 23,
+      "intent": "Derive the three pairwise inequalities of noncollinear points",
+      "dependencies": ["B005 are_collinear", "B015 between_trivial"],
+      "attempts": [
+        {
+          "candidate": "For each equality, substitute into a trivial betweenness instance and contradict non-collinearity",
+          "result": "success",
+          "verifier_evidence": "session block B026_attempt1 returned ok=true",
+          "diagnosis": "All nondegeneracy obligations for CongA follow from the existing non-strict Bet convention.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm noncollinear_points_are_pairwise_distinct: not Col(a,b,c) => a != b, b != c, a != c",
+      "reusable_lesson": "Non-strict trivial betweenness is the small bridge from non-collinearity to distinctness.",
+      "status": "materialized"
+    },
+    {
+      "id": "B027",
+      "source_order": 24,
+      "intent": "Derive congruence of arbitrary degenerate segments",
+      "dependencies": ["B002 segment construction and congruence identity"],
+      "attempts": [
+        {
+          "candidate": "Construct AX congruent BB, use congruence identity to obtain A=X, then substitute",
+          "result": "success",
+          "verifier_evidence": "session block B027_attempt1 returned ok=true",
+          "diagnosis": "The zero-segment fact needed by five-segment is derived rather than added as an axiom.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm degenerate_segments_congruent: forall [TarskiNeutralDimensionlessSetting], a,b Point: Cong(a,a,b,b)",
+      "reusable_lesson": "Segment construction plus congruence identity derives equality of zero-length segments in the primitive relational language.",
+      "status": "materialized"
+    },
+    {
+      "id": "B028",
+      "source_order": 25,
+      "intent": "Expose five-segment as a callable theorem and compare opposite segment extensions",
+      "dependencies": ["B002 five-segment law", "B027 degenerate segments", "B013-B014 congruence algebra"],
+      "attempts": [
+        {
+          "candidate": "Ask anonymous setting inference to synthesize the two five-segment conclusions inline",
+          "result": "failed",
+          "verifier_evidence": "session blocks B028_attempt1 and B028_attempt2 could not prove Cong(c_ext,a,f_ext,c)",
+          "diagnosis": "The anonymous conditional law was not a stable theorem-selection source.",
+          "next_change": "Project the law through a named theorem."
+        },
+        {
+          "candidate": "Declare five_segment as a named setting projection and apply it twice",
+          "result": "success",
+          "verifier_evidence": "B028_five_segment_projection and B028_attempt4 returned ok=true after explicit wrapper facts",
+          "diagnosis": "The mathematical two-application spine is correct; cold-session stability is audited separately in B031.",
+          "next_change": "Run repeated fresh-process gates."
+        }
+      ],
+      "accepted_litex": "thm five_segment(...)\nthm opposite_extensions_preserve_distances(...): Cong(a,c_ext,c,f_ext) and Cong(b,c_ext,b,f_ext)",
+      "reusable_lesson": "A primitive conditional should have a named theorem-facing route; raw membership and readable prop wrappers must not be conflated during application.",
+      "status": "materialized"
+    },
+    {
+      "id": "B029",
+      "source_order": 26,
+      "intent": "Prove Euclid I.5 under only the neutral dimensionless setting",
+      "dependencies": ["B025 exact CongA", "B026 distinctness", "B028 opposite extensions and five_segment", "B002 segment construction"],
+      "attempts": [
+        {
+          "candidate": "Construct four exact CongA witnesses, derive the two extension comparisons, apply five-segment once more, and witness the definition",
+          "result": "success",
+          "verifier_evidence": "session block B029_attempt1 returned ok=true",
+          "diagnosis": "Equal BA and BC imply CongA(B,A,C,B,C,A) without upper dimension, Euclid, midpoint existence, or any added axiom.",
+          "next_change": "audit the last five-segment dependency"
+        }
+      ],
+      "accepted_litex": "thm isosceles_triangle_has_equal_base_angles: forall [TarskiNeutralDimensionlessSetting], a,b,c Point: not Col(a,b,c), Cong(BA,BC) => CongA(BAC,BCA)",
+      "reusable_lesson": "The direct four-extension proof keeps the target at GeoCoq Definition 11.2 while avoiding a much larger midpoint-existence dependency.",
+      "status": "materialized"
+    },
+    {
+      "id": "B031",
+      "source_order": 27,
+      "intent": "Make five-segment replay deterministic in fresh verifier processes",
+      "dependencies": ["B002 five-segment axiom", "B028 callable projection"],
+      "attempts": [
+        {
+          "candidate": "Package only the five-segment conclusion as an atomic result prop",
+          "result": "failed intermittently",
+          "verifier_evidence": "fresh file/module runs alternated between success and an unknown five_segment_result conclusion",
+          "diagnosis": "The anonymous conditional match remained nondeterministic even though the result atom was named.",
+          "next_change": "Package the entire universally quantified implication as one transparent prop carried atomically by the setting."
+        },
+        {
+          "candidate": "Use transparent satisfies_five_segment as the setting clause and let five_segment consume that named law",
+          "result": "success",
+          "verifier_evidence": "three sequential fresh file gates and one fresh module gate all returned exit 0 and ok=true",
+          "diagnosis": "Full-law packaging is propositionally identical to the source axiom and removes anonymous conditional matching from the public proof path.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "prop satisfies_five_segment(...): forall q1...q8: four Cong premises, two Bet premises, q1 != q3 => Cong(q5,q7,q6,q8)\nsetting TarskiNeutralDimensionlessSetting: $satisfies_five_segment(Point,Bet,Cong)",
+      "reusable_lesson": "For deterministic cold replay, package a conditional primitive's whole implication, not only its conclusion.",
+      "status": "materialized"
+    },
+    {
+      "id": "B032",
+      "source_order": 28,
+      "intent": "Remove existential facts repeated immediately before obtain",
+      "dependencies": ["B015 between_trivial", "B027 degenerate_segments_congruent", "B029 isosceles_triangle_has_equal_base_angles"],
+      "attempts": [
+        {
+          "candidate": "Delete the standalone existential immediately preceding each identical obtain source in the two helper proofs and four I.5 constructions",
+          "result": "success",
+          "verifier_evidence": "persistent-session blocks cleanup_between, cleanup_degenerate, and cleanup_i5 returned ok=true",
+          "diagnosis": "obtain validates and eliminates its existential expression directly; the preceding stored existential had no independent consumer",
+          "next_change": "materialize the six-line deletion and retain only direct obtain forms"
+        }
+      ],
+      "accepted_litex": "between_trivial, between_symmetric, degenerate_segments_congruent, and isosceles_triangle_has_equal_base_angles use obtain directly from their existential source without a preceding identical stored fact",
+      "reusable_lesson": "Write obtain x from exist x T st {...} directly; keep a separate existential only for an independent consumer or a verifier-proven bridge.",
+      "status": "materialized"
+    },
+    {
+      "id": "B033",
+      "source_order": 29,
+      "intent": "Add the betweenness exchange and strict-extension constructions used by inverse five-segment",
+      "dependencies": ["B015 between_symmetric", "B002 inner Pasch and segment construction", "B013-B014 congruence algebra"],
+      "attempts": [
+        {
+          "candidate": "Derive Bet(b,c,d) from Bet(a,b,c) and Bet(a,c,d) by symmetric inputs and one direct obtain from inner Pasch",
+          "result": "success",
+          "verifier_evidence": "persistent-session block sas_between_exchange_1 returned ok=true",
+          "diagnosis": "The direct atomic-prop obtain eliminates the Pasch witness without a preceding prop echo.",
+          "next_change": "none"
+        },
+        {
+          "candidate": "Construct a strict extension using a segment congruent to the fixed lower-dimension segment",
+          "result": "failed",
+          "verifier_evidence": "sas_strict_extension_1 could not infer lower_a = lower_b after substituting b = x",
+          "diagnosis": "The congruence identity rule needed the exact rewritten raw tuple Cong(lower_a,lower_b,b,b).",
+          "next_change": "Add only that atomic representation bridge."
+        },
+        {
+          "candidate": "Retain the exact raw Cong(lower_a,lower_b,b,b) bridge in the contradiction branch",
+          "result": "success",
+          "verifier_evidence": "persistent-session block sas_strict_extension_2 returned ok=true",
+          "diagnosis": "The strict-extension construction is neutral and needs no new axiom.",
+          "next_change": "none"
+        }
+      ],
+      "accepted_litex": "thm between_exchange(...): Bet(a,b,c), Bet(a,c,d) => Bet(b,c,d)\nthm point_has_strict_extension(...): exists x with Bet(a,b,x) and b != x",
+      "reusable_lesson": "Inner Pasch gives exchange directly after symmetry; one exact raw relation tuple may still be the minimal equality-rewrite bridge.",
+      "status": "materialized"
+    },
+    {
+      "id": "B034",
+      "source_order": 30,
+      "intent": "Add GeoCoq-aligned segment addition and inverse five-segment foundations",
+      "dependencies": ["B033 strict extension and exchange", "B028 five_segment", "TarskiNeutralWithDecidableEqualitySetting"],
+      "attempts": [
+        {
+          "candidate": "State segment_congruence_addition with the second triangle points named d,e,f",
+          "result": "failed",
+          "verifier_evidence": "sas_segment_addition_1 reported that name e was already active in the scope",
+          "diagnosis": "This was a binder-name collision, not a mathematical failure.",
+          "next_change": "Use a2,b2,c2 for the second ordered triple."
+        },
+        {
+          "candidate": "Split on a=b and otherwise apply five-segment with a degenerate comparison segment",
+          "result": "success",
+          "verifier_evidence": "persistent-session block sas_segment_addition_2 returned ok=true",
+          "diagnosis": "This is GeoCoq l2_11 in the readable relation interface.",
+          "next_change": "none"
+        },
+        {
+          "candidate": "Define the exact IFSC clauses and prove its missing inner segment by two five-segment applications around strict extensions",
+          "result": "success",
+          "verifier_evidence": "persistent-session blocks sas_ifsc_def and sas_inner_five_1 returned ok=true",
+          "diagnosis": "GeoCoq l4_2 is derivable from the existing SST axioms plus decidable point equality.",
+          "next_change": "none"
+        },
+        {
+          "candidate": "Delete the point_has_strict_extension theorem selection immediately before obtaining its witness",
+          "result": "failed",
+          "verifier_evidence": "fresh file gate failed at line 604: existential elimination source existence fact is not verified",
+          "diagnosis": "Unlike a duplicated standalone existential, the explicit theorem selection is the live bridge that verifies this obtain source.",
+          "next_change": "Keep the theorem selection; the direct-obtain cleanup rule does not remove verifier-proven bridges."
+        }
+      ],
+      "accepted_litex": "thm segment_congruence_addition(...): adjacent pairwise congruent segments have congruent unions\nprop is_inner_five_segment_configuration(...)\nthm inner_five_segment(...): IFSC implies congruence of the two inner segments",
+      "reusable_lesson": "SAS should cite the reusable Chapter 2/4 segment lemmas instead of embedding their case split and extension construction.",
+      "status": "materialized"
+    },
+    {
+      "id": "B035",
+      "source_order": 31,
+      "intent": "Prove exact side-angle-side and package it as Cong3",
+      "dependencies": ["B025 exact are_angles_congruent", "B034 segment_congruence_addition and inner_five_segment"],
+      "attempts": [
+        {
+          "candidate": "Obtain Definition 11.2's four witnesses, extend the two adjacent side congruences, apply inner five-segment twice, and derive the opposite side",
+          "result": "success",
+          "verifier_evidence": "persistent-session block sas_main_1 returned ok=true",
+          "diagnosis": "CongA plus the two adjacent side congruences proves the third side without non-collinearity, upper dimension, or Euclid.",
+          "next_change": "fold the three side facts into Cong3"
+        },
+        {
+          "candidate": "Cite the third-side theorem and fold are_triangles_congruent",
+          "result": "success",
+          "verifier_evidence": "persistent-session block sas_cong3_1 returned ok=true",
+          "diagnosis": "The public SAS theorem exposes the standard whole-triangle conclusion.",
+          "next_change": "run a fresh pre-SAS deletion probe before final gates"
+        }
+      ],
+      "accepted_litex": "thm side_angle_side_gives_third_side(...): CongA, Cong(AB,A2B2), Cong(BC,B2C2) => Cong(AC,A2C2)\nthm triangle_congruence_sas(...): the same premises imply Cong3",
+      "reusable_lesson": "Exact witness-based CongA supports the ordinary SAS rule through two inverse five-segment applications.",
+      "status": "materialized"
+    },
+    {
+      "id": "B036",
+      "source_order": 32,
+      "intent": "Audit that the derived third side is a live dependency of the final Cong3 theorem",
+      "dependencies": ["B034 inner_five_segment", "B035 side_angle_side_gives_third_side and triangle_congruence_sas"],
+      "attempts": [
+        {
+          "candidate": "Delete the explicit third-side theorem selection from the Cong3 wrapper after the SAS theorem has already been registered",
+          "result": "inconclusive success",
+          "verifier_evidence": "persistent-session block sas_liveness_delete_third_side returned ok=true",
+          "diagnosis": "The registered side_angle_side_gives_third_side theorem was selected automatically, so this post-registration probe cannot establish liveness.",
+          "next_change": "Replay a fresh source prefix ending at inner_five_segment and probe the wrapper before registering either SAS theorem."
+        },
+        {
+          "candidate": "In a fresh pre-SAS session, try to fold Cong3 from exact CongA and the two adjacent side congruences without deriving the third side",
+          "result": "expected failure",
+          "verifier_evidence": "after 64/64 source-order blocks through inner_five_segment replayed successfully, sas_liveness_pre_main returned ok=false: are_triangles_congruent definition clause 2, are_segments_congruent(Point,Cong,a,c,a2,c2), is not verified",
+          "diagnosis": "The two supplied side facts do not satisfy Cong3 without the SAS third-side derivation.",
+          "next_change": "Keep the side_angle_side_gives_third_side theorem selection in triangle_congruence_sas."
+        }
+      ],
+      "accepted_litex": "The production wrapper cites side_angle_side_gives_third_side before folding are_triangles_congruent; the independent pre-SAS deletion probe fails exactly at the missing opposite side.",
+      "reusable_lesson": "Run deletion probes before the theorem under audit is registered, because automatic theorem selection can otherwise mask a live proof dependency.",
+      "status": "materialized"
+    },
+    {
+      "id": "B037",
+      "source_order": 33,
+      "intent": "Derive exact Chapter 11 angle congruence from three corresponding side congruences",
+      "dependencies": ["B034 segment_congruence_addition and inner_five_segment", "B035 exact Chapter 11 angle interface"],
+      "proof_spine_move": "Extend both pairs of rays by corresponding side lengths, use segment addition on the rays, and apply five-segment once for each arm extension",
+      "attempts": [
+        {
+          "candidate": "Construct four exact CongA witnesses from Cong3, prove the two extended radii congruent by segment addition, and prove the final witness chord by two five-segment applications",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 66 existing blocks and main_candidate_file_after_659 returned ok=true in 1.101 seconds",
+          "diagnosis": "Cong3 supplies the original triangle sides; segment construction and five-segment lift those facts to the witness-based angle definition without changing that definition into an SSS alias.",
+          "next_change": "materialize the accepted theorem and make angle reflexivity reuse it"
+        }
+      ],
+      "accepted_litex": "thm triangle_congruence_sss_gives_angles(...): nondegenerate arms and Cong3(a,b,c,a2,b2,c2) imply the exact witness-based CongA(a,b,c,a2,b2,c2)",
+      "reusable_lesson": "For exact CongA, SSS is proved by extending both arms, not by redefining angle congruence; the final chord needs one five-segment application per arm.",
+      "status": "materialized"
+    },
+    {
+      "id": "B038",
+      "source_order": 34,
+      "intent": "Expose reflexivity of exact angle congruence",
+      "dependencies": ["B037 triangle_congruence_sss_gives_angles", "segment congruence reflexivity"],
+      "attempts": [
+        {
+          "candidate": "Package the three reflexive side congruences as Cong3 and call the verified SSS-to-angle tracer",
+          "result": "success",
+          "verifier_evidence": "source-order release session main_candidate_file_after_727 returned ok=true in 0.108 seconds",
+          "diagnosis": "Angle reflexivity is now a thin consumer of the real SSS bridge rather than a second copy of its extension construction.",
+          "next_change": "materialize with the symmetry theorem after that independent block verifies"
+        }
+      ],
+      "accepted_litex": "thm angle_congruence_reflexive(...): a!=b and c!=b imply CongA(a,b,c,a,b,c)",
+      "reusable_lesson": "Once SSS-to-CongA is available, reflexivity should reuse the triangle interface and stay short.",
+      "status": "materialized"
+    },
+    {
+      "id": "B039",
+      "source_order": 35,
+      "intent": "Prove symmetry of exact angle congruence",
+      "dependencies": ["B025 exact are_angles_congruent", "segment_congruence_symmetric"],
+      "attempts": [
+        {
+          "candidate": "Swap the two pairs of extension witnesses and reverse only the final witness chord congruence",
+          "result": "success",
+          "verifier_evidence": "source-order release session main_candidate_file_after_727 returned ok=true in 0.563 seconds",
+          "diagnosis": "The four-extension definition is symmetric without any new geometric construction.",
+          "next_change": "verify simultaneous arm reversal, then materialize the algebra checkpoint"
+        }
+      ],
+      "accepted_litex": "thm angle_congruence_symmetric(...): CongA(a,b,c,a2,b2,c2) implies CongA(a2,b2,c2,a,b,c)",
+      "reusable_lesson": "Symmetry of witness-based CongA is witness reordering plus symmetry of the last segment congruence.",
+      "status": "materialized"
+    },
+    {
+      "id": "B040",
+      "source_order": 36,
+      "intent": "Reverse both arms of two congruent angles",
+      "dependencies": ["B025 exact are_angles_congruent", "segment_congruence_endpoint_commutative"],
+      "attempts": [
+        {
+          "candidate": "Swap the two ray witnesses on each side and reverse both endpoints of the witness chord",
+          "result": "success",
+          "verifier_evidence": "source-order release session main_candidate_file_after_727 returned ok=true in 0.566 seconds",
+          "diagnosis": "Simultaneous arm reversal is another direct algebraic law of the exact witness definition.",
+          "next_change": "materialize B038-B040 as the first angle-algebra checkpoint"
+        }
+      ],
+      "accepted_litex": "thm angle_congruence_arms_commutative(...): CongA(a,b,c,a2,b2,c2) implies CongA(c,b,a,c2,b2,a2)",
+      "reusable_lesson": "Changing both angle orientations does not need transitivity or ray replacement; reorder the witnesses directly.",
+      "status": "materialized"
+    },
+    {
+      "id": "B041",
+      "source_order": 37,
+      "intent": "Test whether reversing only the first angle is direct witness algebra",
+      "dependencies": ["B025 exact are_angles_congruent", "B040 angle_congruence_arms_commutative"],
+      "attempts": [
+        {
+          "candidate": "Swap only the two extension witnesses of the first angle and commute the left endpoints of the final chord",
+          "result": "failed",
+          "verifier_evidence": "source-order release session replayed all 71 existing blocks, then main_candidate_file_after_759 failed because exact CongA definition clause 5 still required the swapped first extensions to have the second angle's opposite arm lengths",
+          "diagnosis": "One-sided angle reversal changes which comparison-arm length each first-angle extension must realize; it is not mere witness reordering.",
+          "next_change": "defer one-sided commutativity until the ray replacement and angle transitivity layer is available"
+        }
+      ],
+      "accepted_litex": null,
+      "reusable_lesson": "Exact witness-based CongA distinguishes simultaneous two-angle reversal from reversing only one angle; the latter needs genuine geometric transport.",
+      "status": "blocked_by_missing_ray_transport"
+    },
+    {
+      "id": "B042",
+      "source_order": 38,
+      "intent": "Prove uniqueness of segment construction on a fixed ray",
+      "dependencies": ["segment congruence algebra", "five_segment", "congruence identity"],
+      "attempts": [
+        {
+          "candidate": "Compare the two candidate extensions with a degenerate five-segment configuration whose conclusion is Cong(x,y,y,y)",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 71 existing blocks and main_candidate_file_after_759 returned ok=true in 0.163 seconds",
+          "diagnosis": "Transitivity first gives Cong(a,x,a,y); reflexive side facts complete five-segment, and congruence identity collapses the resulting degenerate segment.",
+          "next_change": "materialize and reuse it for uniqueness of central reflection"
+        }
+      ],
+      "accepted_litex": "thm segment_extension_unique(...): q!=a, Bet(q,a,x), Cong(a,x,b,c), Bet(q,a,y), and Cong(a,y,b,c) imply x=y",
+      "reusable_lesson": "Construction uniqueness is a compact five-segment consequence and should be exposed before midpoint or reflection uniqueness.",
+      "status": "materialized"
+    },
+    {
+      "id": "B043",
+      "source_order": 39,
+      "intent": "Construct the reflection of an arbitrary point through a center",
+      "dependencies": ["Tarski segment construction", "segment_congruence_symmetric", "is_midpoint", "is_point_reflection"],
+      "attempts": [
+        {
+          "candidate": "Extend the ray from the point through the center by a copy of the point-center segment, then fold the resulting betweenness and congruence into midpoint and point reflection",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 72 existing blocks and main_candidate_file_after_780 returned ok=true in 0.204 seconds",
+          "diagnosis": "The primitive segment-construction axiom already has exactly the orientation needed for a central-reflection witness.",
+          "next_change": "materialize and prove reflection uniqueness from B042"
+        }
+      ],
+      "accepted_litex": "thm point_reflection_exists(...): every point and center admit a reflected point whose center is their midpoint",
+      "reusable_lesson": "Central reflection existence is a direct public wrapper around segment construction; no continuity or plane dimension is required.",
+      "status": "materialized"
+    },
+    {
+      "id": "B044",
+      "source_order": 40,
+      "intent": "Prove uniqueness of central reflection",
+      "dependencies": ["B042 segment_extension_unique", "midpoint projections", "decidable point equality"],
+      "attempts": [
+        {
+          "candidate": "Split on point=center; collapse each degenerate midpoint with congruence identity, otherwise apply fixed-ray segment-extension uniqueness",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 73 existing blocks and main_candidate_file_after_793 returned ok=true in 0.213 seconds",
+          "diagnosis": "The nondegenerate branch is exactly construction uniqueness; the center-fixed branch needs only endpoint commutation, symmetry, and congruence identity.",
+          "next_change": "materialize as the first complete existence-and-uniqueness construction interface"
+        }
+      ],
+      "accepted_litex": "thm point_reflection_unique(...): two reflections of the same point through the same center are equal",
+      "reusable_lesson": "Handle degenerate central reflection explicitly; then the general uniqueness statement cleanly reduces to fixed-ray segment construction.",
+      "status": "materialized"
+    },
+    {
+      "id": "B045",
+      "source_order": 41,
+      "intent": "Expose the center as a fixed point of central reflection",
+      "dependencies": ["point_is_own_degenerate_midpoint", "is_point_reflection"],
+      "attempts": [
+        {
+          "candidate": "Reuse the degenerate midpoint theorem and fold point reflection",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 74 existing blocks and main_candidate_file_after_823 returned ok=true in 0.074 seconds",
+          "diagnosis": "The fixed-center fact is definition-level once degenerate midpoint is public.",
+          "next_change": "materialize beside reflection involutivity"
+        }
+      ],
+      "accepted_litex": "thm point_reflection_fixes_center(...): the reflection of the center through itself is itself",
+      "reusable_lesson": "Small construction laws should reuse public relational interfaces rather than unfold primitive Bet and Cong again.",
+      "status": "materialized"
+    },
+    {
+      "id": "B046",
+      "source_order": 42,
+      "intent": "Prove central reflection is involutive as a relation",
+      "dependencies": ["point_reflection_is_midpoint", "midpoint_symmetric"],
+      "attempts": [
+        {
+          "candidate": "Project the midpoint relation, swap its endpoints, and fold the reverse point reflection",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 74 existing blocks and main_candidate_file_after_823 returned ok=true in 0.132 seconds",
+          "diagnosis": "Relational involutivity is exactly symmetry of midpoint and needs neither uniqueness nor decidable equality.",
+          "next_change": "materialize as the reusable two-step reflection law"
+        }
+      ],
+      "accepted_litex": "thm point_reflection_involutive(...): if reflected_point is the reflection of point through center, then point is the reflection of reflected_point through center",
+      "reusable_lesson": "Keep involutivity relational: it is stronger in assumptions and simpler than selecting a reflection function.",
+      "status": "materialized"
+    },
+    {
+      "id": "B047",
+      "source_order": 43,
+      "intent": "Add the source-aligned upper-dimension plane extension",
+      "dependencies": ["TarskiNeutralWithDecidableEqualitySetting", "are_collinear"],
+      "attempts": [
+        {
+          "candidate": "Nest a Tarski2DSetting whose only new law says three points equidistant from two distinct points are collinear",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 76 existing blocks and main_candidate_file_after_838 returned ok=true in 0.001 seconds",
+          "diagnosis": "The upper-dimension law composes cleanly as a one-law setting extension and can reuse the exact collinearity predicate.",
+          "next_change": "materialize before adding the Euclidean branch"
+        }
+      ],
+      "accepted_litex": "setting Tarski2DSetting([TarskiNeutralWithDecidableEqualitySetting]): upper-dimension implies collinearity",
+      "reusable_lesson": "Dimension belongs in a nested assumption bundle, not in the neutral point/Bet/Cong core.",
+      "status": "materialized"
+    },
+    {
+      "id": "B048",
+      "source_order": 44,
+      "intent": "Add the source-aligned Euclidean branch above the plane setting",
+      "dependencies": ["B047 Tarski2DSetting", "is_between"],
+      "attempts": [
+        {
+          "candidate": "Nest a TarskiEuclidean2DSetting carrying only the SST Euclid witness axiom",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 77 existing blocks and main_candidate_file_after_849 returned ok=true in 0.001 seconds",
+          "diagnosis": "The Euclidean choice is now a visible one-law extension; all earlier neutral theorems remain independent of it.",
+          "next_change": "materialize and add parallel theorems only under this setting"
+        }
+      ],
+      "accepted_litex": "setting TarskiEuclidean2DSetting([Tarski2DSetting]): the SST Euclid axiom supplies the two intersection witnesses",
+      "reusable_lesson": "Keep Euclid's postulate at the top of the hierarchy so neutral and two-dimensional dependencies remain auditable.",
+      "status": "materialized"
+    },
+    {
+      "id": "B049",
+      "source_order": 45,
+      "intent": "Name the common-point predicate needed by Chapter 12 strict parallelism",
+      "dependencies": ["are_collinear"],
+      "attempts": [
+        {
+          "candidate": "Package the existential point collinear with both line pairs as a concrete predicate",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 78 existing blocks and main_candidate_file_after_859 returned ok=true in 0.007 seconds",
+          "diagnosis": "Naming the existential keeps the negated no-intersection clause atomic in the strict-parallel definition.",
+          "next_change": "materialize before defining Par_strict"
+        }
+      ],
+      "accepted_litex": "prop lines_have_common_point(...): there exists a point collinear with each line pair",
+      "reusable_lesson": "Negated existential geometry conditions are more stable in Litex when the existential is exposed as an atomic concrete predicate.",
+      "status": "materialized"
+    },
+    {
+      "id": "B050",
+      "source_order": 46,
+      "intent": "Implement GeoCoq Definition 12.2 strict parallelism",
+      "dependencies": ["are_coplanar", "B049 lines_have_common_point"],
+      "attempts": [
+        {
+          "candidate": "Require both line pairs nondegenerate and coplanar, then negate the named common-point predicate",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 79 existing blocks and main_candidate_file_after_864 returned ok=true in 0.004 seconds",
+          "diagnosis": "The public predicate preserves all four clauses of GeoCoq Par_strict without coordinates or slope.",
+          "next_change": "materialize before defining the inclusive Par relation"
+        }
+      ],
+      "accepted_litex": "prop are_strictly_parallel(...): two nondegenerate coplanar lines have no common point",
+      "reusable_lesson": "Strict parallelism is dimension-free at the definition level; Euclid's axiom is needed for later existence and uniqueness results, not for the predicate itself.",
+      "status": "materialized"
+    },
+    {
+      "id": "B051",
+      "source_order": 47,
+      "intent": "Name the coincident-line branch of GeoCoq Definition 12.3",
+      "dependencies": ["are_collinear"],
+      "attempts": [
+        {
+          "candidate": "Require both line pairs nondegenerate and both first-line endpoints collinear with the second line",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 80 existing blocks and main_candidate_file_after_870 returned ok=true in 0.002 seconds",
+          "diagnosis": "The named branch is propositionally the second disjunct of GeoCoq Par and keeps the final relation atomic on each side of its disjunction.",
+          "next_change": "materialize and define inclusive parallelism"
+        }
+      ],
+      "accepted_litex": "prop are_coincident_nondegenerate_lines(...): the two nondegenerate line pairs denote the same line",
+      "reusable_lesson": "GeoCoq's inclusive parallel relation treats coincident nondegenerate lines as parallel; expose that branch explicitly to avoid silently using a stricter convention.",
+      "status": "materialized"
+    },
+    {
+      "id": "B052",
+      "source_order": 48,
+      "intent": "Implement GeoCoq Definition 12.3 inclusive parallelism",
+      "dependencies": ["B050 are_strictly_parallel", "B051 are_coincident_nondegenerate_lines"],
+      "attempts": [
+        {
+          "candidate": "Define parallelism as strict parallelism or the named coincident nondegenerate-line branch",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 81 existing blocks and main_candidate_file_after_876 returned ok=true in 0.002 seconds",
+          "diagnosis": "The Litex interface now matches GeoCoq Par rather than silently choosing only Par_strict.",
+          "next_change": "materialize and add branch-independent projection theorems"
+        }
+      ],
+      "accepted_litex": "prop are_parallel(...): strict parallelism or coincident nondegenerate lines",
+      "reusable_lesson": "Keep strict and inclusive parallel notions separate because elementary geometry texts vary on whether a line is parallel to itself.",
+      "status": "materialized"
+    },
+    {
+      "id": "B053",
+      "source_order": 49,
+      "intent": "Expose nondegeneracy shared by both branches of inclusive parallelism",
+      "dependencies": ["B052 are_parallel"],
+      "attempts": [
+        {
+          "candidate": "Eliminate the Par disjunction and unfold either strict-parallel or coincident-line branch",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 82 existing blocks and main_candidate_file_after_879 returned ok=true in 0.020 seconds",
+          "diagnosis": "Both exact GeoCoq Par branches carry the same two endpoint inequalities.",
+          "next_change": "materialize as the first inclusive-parallel projection"
+        }
+      ],
+      "accepted_litex": "thm parallel_lines_are_nondegenerate(...): Par implies both endpoint pairs are distinct",
+      "reusable_lesson": "Branch-independent facts about a disjunctive relation should be exposed once so downstream proofs do not repeat case analysis.",
+      "status": "materialized"
+    },
+    {
+      "id": "B054",
+      "source_order": 50,
+      "intent": "Expose the coplanarity and no-intersection clauses of strict parallelism",
+      "dependencies": ["B050 are_strictly_parallel"],
+      "attempts": [
+        {
+          "candidate": "Unfold Par_strict and project its final two clauses",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 82 existing blocks and main_candidate_file_after_879 returned ok=true in 0.013 seconds",
+          "diagnosis": "The theorem is a stable definition-use interface for later parallel incidence proofs.",
+          "next_change": "materialize beside the inclusive nondegeneracy projection"
+        }
+      ],
+      "accepted_litex": "thm strict_parallel_lines_are_coplanar_and_disjoint(...): Par_strict implies coplanarity and no common point",
+      "reusable_lesson": "Keep the no-intersection result at the named predicate level; consumers can unfold the existential only when they need an explicit contradiction.",
+      "status": "materialized"
+    },
+    {
+      "id": "B055",
+      "source_order": 51,
+      "intent": "Name the existential conclusion of the SST Euclid axiom for stable theorem use",
+      "dependencies": ["is_between"],
+      "attempts": [
+        {
+          "candidate": "Package the two intersection witnesses and their three betweenness clauses as one concrete proposition",
+          "result": "success",
+          "verifier_evidence": "source-order release session inserted main_candidate_file_after_849 before the Euclidean setting and returned ok=true; every following block also replayed successfully",
+          "diagnosis": "As with inner Pasch, an atomic result predicate gives the existential axiom a stable callable surface without changing its mathematical content.",
+          "next_change": "refactor TarskiEuclidean2DSetting to conclude this predicate, then add its projection theorem"
+        }
+      ],
+      "accepted_litex": "prop euclid_intersection_witness_exists(...): the two Euclid-axiom intersections exist with the three required betweenness facts",
+      "reusable_lesson": "Wrap existential conclusions used through settings in an atomic predicate when anonymous universal-to-existential matching is unstable.",
+      "status": "materialized"
+    },
+    {
+      "id": "B056",
+      "source_order": 52,
+      "intent": "Give the Euclidean setting a stable callable existential result",
+      "dependencies": ["B055 euclid_intersection_witness_exists", "Tarski2DSetting"],
+      "attempts": [
+        {
+          "candidate": "Probe a nested Euclidean setting whose conclusion is the atomic witness predicate instead of an anonymous existential",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 85 existing blocks and TarskiEuclidean2DSettingAtomicProbe after line 908 returned ok=true",
+          "diagnosis": "The refactored conclusion is definitionally the same existential but becomes a stable named premise for theorem selection.",
+          "next_change": "replace the direct existential conclusion in the production setting and verify its public projection theorem"
+        }
+      ],
+      "accepted_litex": "TarskiEuclidean2DSetting concludes euclid_intersection_witness_exists(Point,Bet,p1,p2,p3,p5)",
+      "reusable_lesson": "Changing only the packaging of a setting conclusion can improve proof ergonomics without strengthening the axiom boundary.",
+      "status": "materialized"
+    },
+    {
+      "id": "B057",
+      "source_order": 53,
+      "intent": "Expose the Euclidean setting law as a callable theorem",
+      "dependencies": ["B056 TarskiEuclidean2DSetting atomic conclusion"],
+      "attempts": [
+        {
+          "candidate": "Instantiate the named Euclid witness proposition under five theorem parameters with collision-free names",
+          "result": "success",
+          "verifier_evidence": "source-order release session replayed all 85 production blocks and main_candidate_file_after_908 returned ok=true in 0.111 seconds",
+          "diagnosis": "The atomic conclusion is now selected directly from the Euclidean setting and can later be eliminated into two concrete points.",
+          "next_change": "materialize as the Euclidean branch tracer"
+        }
+      ],
+      "accepted_litex": "thm euclid_postulate_supplies_intersections(...): the SST premise pattern yields the named pair of intersections",
+      "reusable_lesson": "A public tracer theorem makes a setting's added law easy to cite and makes the exact branch dependency visible in proof traces.",
+      "status": "materialized"
+    },
+    {
+      "id": "B058",
+      "source_order": 54,
+      "intent": "Prove reflexivity of triangle congruence",
+      "dependencies": ["segment_congruence_reflexive", "are_triangles_congruent"],
+      "attempts": [{"candidate": "Fold the three reflexive side congruences", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_918 returned ok=true in 0.127 seconds", "diagnosis": "Cong3 reflexivity is componentwise segment reflexivity.", "next_change": "materialize with the symmetric and transitive laws"}],
+      "accepted_litex": "thm triangle_congruence_reflexive(...)",
+      "reusable_lesson": "Keep triangle congruence algebra thin over segment congruence algebra.",
+      "status": "materialized"
+    },
+    {
+      "id": "B059",
+      "source_order": 55,
+      "intent": "Prove symmetry of triangle congruence",
+      "dependencies": ["triangle_congruence_has_three_sides", "segment_congruence_symmetric"],
+      "attempts": [{"candidate": "Project and reverse all three side congruences", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_918 returned ok=true in 0.131 seconds", "diagnosis": "Cong3 symmetry is componentwise and needs no geometric construction.", "next_change": "materialize"}],
+      "accepted_litex": "thm triangle_congruence_symmetric(...)",
+      "reusable_lesson": "Expose the whole-triangle symmetry once so consumers do not repeat three side reversals.",
+      "status": "materialized"
+    },
+    {
+      "id": "B060",
+      "source_order": 56,
+      "intent": "Prove transitivity of triangle congruence",
+      "dependencies": ["triangle_congruence_has_three_sides", "segment_congruence_transitive"],
+      "attempts": [{"candidate": "Project both Cong3 facts and compose corresponding sides", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_918 returned ok=true in 0.207 seconds", "diagnosis": "Cong3 transitivity is three independent uses of segment transitivity.", "next_change": "materialize"}],
+      "accepted_litex": "thm triangle_congruence_transitive(...)",
+      "reusable_lesson": "Triangle congruence now forms a checked equivalence relation under the neutral setting.",
+      "status": "materialized"
+    },
+    {
+      "id": "B061",
+      "source_order": 57,
+      "intent": "Prove a nonvertex point lies on its own ray",
+      "dependencies": ["between_trivial", "is_out_on_ray"],
+      "attempts": [{"candidate": "Use non-strict Bet(vertex,point,point) as the ordered ray witness", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_950 returned ok=true in 0.043 seconds", "diagnosis": "Tarski's non-strict betweenness makes ray reflexivity immediate once the point differs from the vertex.", "next_change": "materialize"}],
+      "accepted_litex": "thm out_on_ray_reflexive(...)",
+      "reusable_lesson": "Ray reflexivity needs its explicit nondegeneracy premise because Out excludes the vertex.",
+      "status": "materialized"
+    },
+    {
+      "id": "B062",
+      "source_order": 58,
+      "intent": "Prove symmetry of the same-ray relation",
+      "dependencies": ["out_on_ray_is_nondegenerate_and_ordered"],
+      "attempts": [{"candidate": "Swap the endpoint inequalities and the two betweenness alternatives", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_950 returned ok=true in 0.024 seconds", "diagnosis": "Out symmetry is direct disjunction algebra.", "next_change": "materialize"}],
+      "accepted_litex": "thm out_on_ray_symmetric(...)",
+      "reusable_lesson": "Same-ray orientation is symmetric even though each betweenness alternative is oriented.",
+      "status": "materialized"
+    },
+    {
+      "id": "B063",
+      "source_order": 59,
+      "intent": "Project collinearity from a same-ray fact",
+      "dependencies": ["out_on_ray_is_nondegenerate_and_ordered", "between_symmetric", "are_collinear"],
+      "attempts": [{"candidate": "Eliminate the two ray orders; the reverse order is converted by betweenness symmetry", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_950 returned ok=true in 0.065 seconds", "diagnosis": "Either Out ordering supplies one of the three exact collinearity disjuncts.", "next_change": "materialize"}],
+      "accepted_litex": "thm out_on_ray_implies_collinear(...)",
+      "reusable_lesson": "Downstream incidence proofs should consume this projection instead of unfolding Out repeatedly.",
+      "status": "materialized"
+    },
+    {
+      "id": "B064",
+      "source_order": 60,
+      "intent": "Project nondegeneracy and incidence from perpendicularity at a point",
+      "dependencies": ["is_perpendicular_at"],
+      "attempts": [{"candidate": "Unfold Perp_at and expose its first four clauses", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_985 returned ok=true in 0.030 seconds", "diagnosis": "The projection is definition-level and preserves the universal right-angle clause for separate use.", "next_change": "materialize before the existential perpendicular-line projection"}],
+      "accepted_litex": "thm perpendicular_at_has_nondegenerate_lines_and_incidence(...)",
+      "reusable_lesson": "Perpendicular incidence consumers should not repeatedly unfold the universal right-angle part of Perp_at.",
+      "status": "materialized"
+    },
+    {
+      "id": "B065",
+      "source_order": 61,
+      "intent": "Project line nondegeneracy from existential perpendicularity",
+      "dependencies": ["perpendicular_lines_have_intersection", "B064 perpendicular_at_has_nondegenerate_lines_and_incidence"],
+      "attempts": [
+        {"candidate": "Eliminate the intersection witness and cite the new Perp_at projection before it was materialized", "result": "failed", "verifier_evidence": "source-order session reported perpendicular_at_has_nondegenerate_lines_and_incidence was not yet defined", "diagnosis": "The candidate was mathematically complete but source-order-invalid.", "next_change": "materialize B064 first and replay"},
+        {"candidate": "Replay the same proof after B064 enters the source environment", "result": "success", "verifier_evidence": "source-order release session main_candidate_file_after_995 returned ok=true in 0.065 seconds", "diagnosis": "The existential line relation inherits both endpoint inequalities from any Perp_at witness.", "next_change": "materialize"}
+      ],
+      "accepted_litex": "thm perpendicular_lines_are_nondegenerate(...)",
+      "reusable_lesson": "A valid dependency must be materialized before a later source-order proof can cite it; successful isolated probes do not alter the environment.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B006", "B007", "B008", "B009", "B013", "B014", "B015", "B016", "B017", "B018", "B019", "B020", "B021", "B022", "B023", "B024", "B025", "B026", "B027", "B028", "B029", "B031", "B032", "B033", "B034", "B035", "B036", "B037", "B038", "B039", "B040", "B042", "B043", "B044", "B045", "B046", "B047", "B048", "B049", "B050", "B051", "B052", "B053", "B054", "B055", "B056", "B057", "B058", "B059", "B060", "B061", "B062", "B063", "B064", "B065"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/14_tarski_geometry_from_axioms/main.lit",
+    "file_gate_result": "top-level ok=true, result=success, exit code 0 after the elementary-geometry core checkpoint through B065",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/14_tarski_geometry_from_axioms",
+    "module_gate_result": "top-level ok=true, result=success, exit code 0 after Litex, Lean, Chapter 12, documentation, acceptance, ledger, and journal synchronization"
+  },
+  "liveness_audit": [
+    {
+      "probe": "B010",
+      "change": "Delete the explicit derived relation line from segment_congruence_symmetric",
+      "result": "success",
+      "action": "Materialize the shorter proof"
+    },
+    {
+      "probe": "B011",
+      "change": "Also delete the segment_congruence_reflexive theorem selection from symmetry",
+      "result": "failed: the definition clause (c, d, a, b) in Cong remained unknown",
+      "action": "Keep the theorem selection because it is a live mathematical dependency"
+    },
+    {
+      "probe": "B012",
+      "change": "Delete the explicit derived relation line from segment_congruence_reflexive",
+      "result": "success",
+      "action": "Materialize the shorter proof"
+    },
+    {
+      "probe": "B030",
+      "change": "Delete the final five_segment theorem selection from isosceles_triangle_has_equal_base_angles",
+      "result": "failed: the Cong(a_ext,c_ext,d_ext,f_ext) clause of the exact angle-congruence witness remained unknown",
+      "action": "Keep the final five-segment application because it is a live mathematical dependency"
+    },
+    {
+      "probe": "B036",
+      "change": "Before registering either SAS theorem, attempt to fold Cong3 from exact CongA and only the two supplied adjacent-side congruences",
+      "result": "failed as required: definition clause 2, Cong(a,c,a2,c2), remained unverified after all 64 pre-SAS blocks replayed successfully",
+      "action": "Keep the explicit side_angle_side_gives_third_side citation in triangle_congruence_sas"
+    },
+    {
+      "probe": "B057",
+      "change": "Replace TarskiEuclidean2DSetting by Tarski2DSetting in the Euclid intersection tracer while keeping the same incidence premises",
+      "result": "failed as required: euclid_intersection_witness_exists remained an unknown atomic fact after all 86 production blocks replayed successfully",
+      "action": "Keep the Euclidean setting on euclid_postulate_supplies_intersections; the upper-dimension plane law alone does not justify the witness"
+    }
+  ]
+}

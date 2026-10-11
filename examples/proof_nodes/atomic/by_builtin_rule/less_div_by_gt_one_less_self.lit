@@ -1,0 +1,7 @@
+# Node: atomic.ByBuiltinRule.Less.DivByGtOneLessSelf
+# Run: litex -f examples/proof_nodes/atomic/by_builtin_rule/less_div_by_gt_one_less_self.lit
+
+forall a R+, b R+:
+    1 < b
+    =>:
+        a / b < a

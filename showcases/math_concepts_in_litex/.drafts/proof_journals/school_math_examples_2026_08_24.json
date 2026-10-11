@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "superseded_by": "showcases/math_concepts_in_litex/.drafts/proof_journals/school_math_examples_inline_2026_08_24.json",
+  "lifecycle_note": "The verified examples submodule recorded here was later flattened into main.lit at the user's request on 2026-08-24.",
+  "target": "showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit and examples/",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/1_middle_school_math_in_nutshell/main.lit",
+  "proof_spine": [
+    "Expose symmetric difference as a set-valued construction in main.",
+    "Use only qualified main interfaces in the examples submodule.",
+    "Verify one concrete application per mathematical direction."
+  ],
+  "blocks": [
+    {
+      "id": "S001",
+      "source_order": 1,
+      "intent": "Expose symmetric difference as a callable set-valued construction.",
+      "dependencies": ["power_set(R)", "union", "set_minus"],
+      "attempts": [
+        {
+          "candidate": "have fn symmetric_difference(A, B set) set = union(set_minus(A, B), set_minus(B, A))",
+          "result": "failed",
+          "verifier_evidence": "ParseError: set is not a valid identifier in this have-fn parameter/return position.",
+          "diagnosis": "The construction needs an exact element carrier rather than the broad set surface.",
+          "next_change": "Use power_set(R) for both inputs and the result."
+        },
+        {
+          "candidate": "Define symmetric_difference over power_set(R) and immediately assert membership without exposing the definition equation.",
+          "result": "failed",
+          "verifier_evidence": "The definition verified, but direct membership was unknown inside the same transaction.",
+          "diagnosis": "The caller must materialize the defining equality before membership transport.",
+          "next_change": "Commit the definition separately, then expose its concrete defining equality in the use block."
+        },
+        {
+          "candidate": "have fn symmetric_difference(A, B power_set(R)) power_set(R) = union(set_minus(A, B), set_minus(B, A))",
+          "result": "passed",
+          "verifier_evidence": "Session block S003 returned ok=true.",
+          "diagnosis": "The exact real-set carrier makes the set-valued interface well-defined.",
+          "next_change": "Use the committed interface in a separate example block."
+        }
+      ],
+      "accepted_litex": "have fn symmetric_difference(A, B power_set(R)) power_set(R) = union(set_minus(A, B), set_minus(B, A))",
+      "reusable_lesson": "A reusable set-valued construction needs an exact power-set carrier; materialize its defining equality before concrete membership transport.",
+      "status": "accepted_unmaterialized"
+    },
+    {
+      "id": "S002",
+      "source_order": 2,
+      "intent": "Show that a concrete element belongs to a symmetric difference by following the construction.",
+      "dependencies": ["S001", "set difference membership", "union membership"],
+      "attempts": [
+        {
+          "candidate": "Expose the concrete defining equality, prove 1 belongs to the left set difference and its union, then transport membership to symmetric_difference.",
+          "result": "passed",
+          "verifier_evidence": "Session block S004 returned ok=true.",
+          "diagnosis": "The short calculation follows the public construction without a wrapper theorem.",
+          "next_change": "Materialize this shape in examples/sets_and_logic.lit with main:: qualification."
+        },
+        {
+          "candidate": "Delete the intermediate union-membership fact while retaining the definition equation and set-difference membership.",
+          "result": "failed",
+          "verifier_evidence": "Real-context liveness block L001 could not prove final membership in main::symmetric_difference.",
+          "diagnosis": "The union-membership line is the smallest verified bridge between the builtin set difference and the named result.",
+          "next_change": "Retain the bridge in the reader-facing example."
+        }
+      ],
+      "accepted_litex": "symmetric_difference({1, 2}, {2, 3}) = union(set_minus({1, 2}, {2, 3}), set_minus({2, 3}, {1, 2}))\n1 $in set_minus({1, 2}, {2, 3})\n1 $in union(set_minus({1, 2}, {2, 3}), set_minus({2, 3}, {1, 2}))\n1 $in symmetric_difference({1, 2}, {2, 3})",
+      "reusable_lesson": "One explicit definition equation is the smallest reader-visible bridge from the named construction to builtin set membership.",
+      "status": "materialized"
+    },
+    {
+      "id": "S003",
+      "source_order": 3,
+      "intent": "Read both coordinates of the conjugate of 3+4i.",
+      "dependencies": ["main::complex_conjugate", "native re", "native img"],
+      "attempts": [
+        {
+          "candidate": "After the conjugate equality, assert re(main::complex_conjugate(3 + 4*i)) = 3 directly.",
+          "result": "failed",
+          "verifier_evidence": "Clean file gate line 3: the outer re application was unknown.",
+          "diagnosis": "The stored conjugate equality was not rewritten automatically under re.",
+          "next_change": "Materialize the canonical a + b*i representation and bridge the outer coordinate application explicitly."
+        },
+        {
+          "candidate": "Use 3 - 4*i as the intermediate coordinate representation.",
+          "result": "failed",
+          "verifier_evidence": "Clean file gate line 5: re(3 - 4*i) = 3 was unknown.",
+          "diagnosis": "Native complex coordinate rules consume the canonical a + b*i representation.",
+          "next_change": "Write 3 + (-4)*i, then lift the stored conjugate equality through re and img."
+        },
+        {
+          "candidate": "Expose re/img of 3 + (-4)*i and use equality chains through that canonical representation.",
+          "result": "passed",
+          "verifier_evidence": "Registered complex_numbers.lit runner exited 0 with top-level ok=true.",
+          "diagnosis": "One canonical inner representation supplies the required outer-function bridge.",
+          "next_change": "Keep the bridge because both shorter clean-file candidates failed."
+        }
+      ],
+      "accepted_litex": "main::complex_conjugate(3 + 4 * i) = re(3 + 4 * i) - img(3 + 4 * i) * i = 3 + (-4) * i\nre(3 + (-4) * i) = 3\nimg(3 + (-4) * i) = -4\nre(main::complex_conjugate(3 + 4 * i)) = re(3 + (-4) * i) = 3\nimg(main::complex_conjugate(3 + 4 * i)) = img(3 + (-4) * i) = -4",
+      "reusable_lesson": "Normalize complex coordinates to a + b*i before lifting an equality through re or img.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["S001", "S002", "S003"],
+    "file_gate_command": "target/release/litex -compact -runner -f each registered main/examples file",
+    "file_gate_result": "main.lit, all eleven examples files, and the complete showcase module exited 0 with top-level ok=true"
+  }
+}

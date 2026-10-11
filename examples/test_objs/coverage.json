@@ -1,0 +1,3681 @@
+{
+  "schema_version": 1,
+  "ast_source": "src/ast/obj.rs",
+  "objects": [
+    {
+      "name": "identifier_plain",
+      "ast_paths": [
+        "Obj::Identifier::Plain"
+      ],
+      "positive_file": "identifier_plain.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/identifier_plain__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/identifier_plain__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/identifier_plain__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "fn_obj",
+      "ast_paths": [
+        "Obj::FnObj"
+      ],
+      "positive_file": "fn_obj.lit",
+      "helper_paths": [
+        "FnObjHead::Identifier",
+        "FnObjHead::AnonymousFnLiteral",
+        "FnObjHead::FieldAccess",
+        "FnObjHead::InstantiatedTemplateObj",
+        "FnObjHead::Object"
+      ],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P11",
+        "P12",
+        "P13",
+        "P14",
+        "P15",
+        "P16",
+        "P17",
+        "P18",
+        "P19",
+        "P20",
+        "P21"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/fn_obj__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/fn_obj__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/fn_obj__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/fn_obj__n04.lit"
+        },
+        {
+          "id": "N05",
+          "file": "negative/fn_obj__n05.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "number",
+      "ast_paths": [
+        "Obj::Literal::Number"
+      ],
+      "positive_file": "number.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P101",
+        "P102"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/number__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/number__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/number__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "imaginary_unit",
+      "ast_paths": [
+        "Obj::Literal::ImaginaryUnit"
+      ],
+      "positive_file": "imaginary_unit.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P101",
+        "P102",
+        "P103"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/imaginary_unit__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/imaginary_unit__n02.lit"
+        },
+        {
+          "id": "N101",
+          "file": "negative/imaginary_unit__n101.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "euler_number",
+      "ast_paths": [
+        "Obj::Literal::EulerNumber"
+      ],
+      "positive_file": "euler_number.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/euler_number__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/euler_number__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "pi",
+      "ast_paths": [
+        "Obj::Literal::Pi"
+      ],
+      "positive_file": "pi.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/pi__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/pi__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "add",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Add"
+      ],
+      "positive_file": "add.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/add__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/add__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "sub",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Sub"
+      ],
+      "positive_file": "sub.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/sub__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/sub__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "neg",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Neg"
+      ],
+      "positive_file": "neg.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/neg__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/neg__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "mul",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Mul"
+      ],
+      "positive_file": "mul.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/mul__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/mul__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "div",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Div"
+      ],
+      "positive_file": "div.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P101",
+        "P91"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/div__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/div__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/div__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/div__n04.lit"
+        },
+        {
+          "id": "N101",
+          "file": "negative/div__n101.lit"
+        },
+        {
+          "id": "N102",
+          "file": "negative/div__n102.lit"
+        },
+        {
+          "id": "N103",
+          "file": "negative/div__n103.lit"
+        },
+        {
+          "id": "N91",
+          "file": "negative/div__n91.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "pow",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Pow"
+      ],
+      "positive_file": "pow.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P04",
+        "P91",
+        "P92",
+        "P121",
+        "P141",
+        "P142",
+        "P143",
+        "P144",
+        "P145",
+        "P146",
+        "P147",
+        "P148",
+        "P149",
+        "P150",
+        "P151",
+        "P152",
+        "P153",
+        "P154",
+        "P155",
+        "P156"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/pow__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/pow__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/pow__n03.lit"
+        },
+        {
+          "id": "N141",
+          "file": "negative/pow__n141.lit"
+        },
+        {
+          "id": "N142",
+          "file": "negative/pow__n142.lit"
+        },
+        {
+          "id": "N143",
+          "file": "negative/pow__n143.lit"
+        },
+        {
+          "id": "N144",
+          "file": "negative/pow__n144.lit"
+        },
+        {
+          "id": "N145",
+          "file": "negative/pow__n145.lit"
+        },
+        {
+          "id": "N146",
+          "file": "negative/pow__n146.lit"
+        },
+        {
+          "id": "N147",
+          "file": "negative/pow__n147.lit"
+        },
+        {
+          "id": "N148",
+          "file": "negative/pow__n148.lit"
+        },
+        {
+          "id": "N149",
+          "file": "negative/pow__n149.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "abs",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Abs"
+      ],
+      "positive_file": "abs.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/abs__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/abs__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "min",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Min"
+      ],
+      "positive_file": "min.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P06",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/min__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/min__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "max",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Max"
+      ],
+      "positive_file": "max.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P06",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/max__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/max__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "floor",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Floor"
+      ],
+      "positive_file": "floor.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121",
+        "P122",
+        "P123",
+        "P200"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/floor__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/floor__n02.lit"
+        },
+        {
+          "id": "N121",
+          "file": "negative/floor__n121.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "ceil",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Ceil"
+      ],
+      "positive_file": "ceil.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121",
+        "P122",
+        "P123",
+        "P200"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/ceil__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/ceil__n02.lit"
+        },
+        {
+          "id": "N121",
+          "file": "negative/ceil__n121.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "sign",
+      "ast_paths": [
+        "Obj::ArithmeticOperator::Sign"
+      ],
+      "positive_file": "sign.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P121",
+        "P122",
+        "P123"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/sign__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/sign__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "mod",
+      "ast_paths": [
+        "Obj::IntegerOperator::Mod"
+      ],
+      "positive_file": "mod.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P121"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/mod__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/mod__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/mod__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "quot",
+      "ast_paths": [
+        "Obj::IntegerOperator::Quot"
+      ],
+      "positive_file": "quot.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P121"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/quot__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/quot__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/quot__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/quot__n04.lit"
+        },
+        {
+          "id": "N05",
+          "file": "negative/quot__n05.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "gcd",
+      "ast_paths": [
+        "Obj::IntegerOperator::Gcd"
+      ],
+      "positive_file": "gcd.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121",
+        "P122",
+        "P200"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/gcd__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/gcd__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/gcd__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "lcm",
+      "ast_paths": [
+        "Obj::IntegerOperator::Lcm"
+      ],
+      "positive_file": "lcm.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/lcm__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/lcm__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "factorial",
+      "ast_paths": [
+        "Obj::IntegerOperator::Factorial"
+      ],
+      "positive_file": "factorial.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/factorial__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/factorial__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/factorial__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "sin",
+      "ast_paths": [
+        "Obj::TrigOperator::Sin"
+      ],
+      "positive_file": "sin.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P05",
+        "P06",
+        "P04",
+        "P91",
+        "P92"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/sin__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/sin__n02.lit"
+        },
+        {
+          "id": "N91",
+          "file": "negative/sin__n91.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "cos",
+      "ast_paths": [
+        "Obj::TrigOperator::Cos"
+      ],
+      "positive_file": "cos.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P05",
+        "P06",
+        "P04",
+        "P91",
+        "P92"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/cos__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/cos__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "tan",
+      "ast_paths": [
+        "Obj::TrigOperator::Tan"
+      ],
+      "positive_file": "tan.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P05",
+        "P02",
+        "P03",
+        "P04",
+        "P91",
+        "P92",
+        "P93",
+        "P200"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/tan__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/tan__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/tan__n03.lit"
+        },
+        {
+          "id": "N91",
+          "file": "negative/tan__n91.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "cot",
+      "ast_paths": [
+        "Obj::TrigOperator::Cot"
+      ],
+      "positive_file": "cot.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P04",
+        "P02",
+        "P03",
+        "P91",
+        "P92",
+        "P200"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/cot__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/cot__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/cot__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "arcsin",
+      "ast_paths": [
+        "Obj::TrigOperator::Arcsin"
+      ],
+      "positive_file": "arcsin.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/arcsin__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/arcsin__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/arcsin__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/arcsin__n04.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "arccos",
+      "ast_paths": [
+        "Obj::TrigOperator::Arccos"
+      ],
+      "positive_file": "arccos.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/arccos__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/arccos__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/arccos__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/arccos__n04.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "arctan",
+      "ast_paths": [
+        "Obj::TrigOperator::Arctan"
+      ],
+      "positive_file": "arctan.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/arctan__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/arctan__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "arccot",
+      "ast_paths": [
+        "Obj::TrigOperator::Arccot"
+      ],
+      "positive_file": "arccot.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/arccot__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/arccot__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "exp",
+      "ast_paths": [
+        "Obj::ExpLogOperator::Exp"
+      ],
+      "positive_file": "exp.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/exp__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/exp__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "ln",
+      "ast_paths": [
+        "Obj::ExpLogOperator::Ln"
+      ],
+      "positive_file": "ln.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/ln__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/ln__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/ln__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/ln__n04.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "log",
+      "ast_paths": [
+        "Obj::ExpLogOperator::Log"
+      ],
+      "positive_file": "log.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121",
+        "P122",
+        "P123",
+        "P124"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/log__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/log__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/log__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/log__n04.lit"
+        },
+        {
+          "id": "N05",
+          "file": "negative/log__n05.lit"
+        },
+        {
+          "id": "N121",
+          "file": "negative/log__n121.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "sqrt",
+      "ast_paths": [
+        "Obj::ExpLogOperator::Sqrt"
+      ],
+      "positive_file": "sqrt.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P121",
+        "P122",
+        "P123",
+        "P124",
+        "P125",
+        "P126",
+        "P127"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/sqrt__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/sqrt__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/sqrt__n03.lit"
+        },
+        {
+          "id": "N121",
+          "file": "negative/sqrt__n121.lit"
+        },
+        {
+          "id": "N122",
+          "file": "negative/sqrt__n122.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "real_part",
+      "ast_paths": [
+        "Obj::ComplexOperator::RealPart"
+      ],
+      "positive_file": "real_part.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121",
+        "P122",
+        "P123"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/real_part__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/real_part__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "imaginary_part",
+      "ast_paths": [
+        "Obj::ComplexOperator::ImaginaryPart"
+      ],
+      "positive_file": "imaginary_part.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P121",
+        "P122",
+        "P123"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/imaginary_part__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/imaginary_part__n02.lit"
+        },
+        {
+          "id": "N121",
+          "file": "negative/imaginary_part__n121.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "complex_abs",
+      "ast_paths": [
+        "Obj::ComplexOperator::ComplexAbs"
+      ],
+      "positive_file": "complex_abs.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P91",
+        "P92",
+        "P93",
+        "P94",
+        "P95",
+        "P96",
+        "P97",
+        "P98",
+        "P99"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/complex_abs__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/complex_abs__n02.lit"
+        },
+        {
+          "id": "N91",
+          "file": "negative/complex_abs__n91.lit"
+        },
+        {
+          "id": "N92",
+          "file": "negative/complex_abs__n92.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "union",
+      "ast_paths": [
+        "Obj::SetOperator::Union"
+      ],
+      "positive_file": "union.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/union__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/union__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "intersect",
+      "ast_paths": [
+        "Obj::SetOperator::Intersect"
+      ],
+      "positive_file": "intersect.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/intersect__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/intersect__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "set_minus",
+      "ast_paths": [
+        "Obj::SetOperator::SetMinus"
+      ],
+      "positive_file": "set_minus.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/set_minus__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/set_minus__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "family_union",
+      "ast_paths": [
+        "Obj::SetOperator::FamilyUnion"
+      ],
+      "positive_file": "family_union.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/family_union__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/family_union__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "family_intersect",
+      "ast_paths": [
+        "Obj::SetOperator::FamilyIntersect"
+      ],
+      "positive_file": "family_intersect.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P05",
+        "P06",
+        "P07",
+        "P04",
+        "P01",
+        "P02",
+        "P03"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/family_intersect__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/family_intersect__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/family_intersect__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/family_intersect__n04.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "power_set",
+      "ast_paths": [
+        "Obj::SetOperator::PowerSet"
+      ],
+      "positive_file": "power_set.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/power_set__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/power_set__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "index_union",
+      "ast_paths": [
+        "Obj::SetOperator::IndexUnion"
+      ],
+      "positive_file": "index_union.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P04",
+        "P05",
+        "P06",
+        "P02"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/index_union__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/index_union__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/index_union__n03.lit"
+        },
+        {
+          "id": "N_EMPTY",
+          "file": "negative/index_union__empty_index.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "index_intersect",
+      "ast_paths": [
+        "Obj::SetOperator::IndexIntersect"
+      ],
+      "positive_file": "index_intersect.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P04",
+        "P05",
+        "P06",
+        "P02"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/index_intersect__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/index_intersect__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/index_intersect__n03.lit"
+        },
+        {
+          "id": "N_EMPTY",
+          "file": "negative/index_intersect__empty_index.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/index_intersect__n04.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "index_cart",
+      "ast_paths": [
+        "Obj::SetOperator::IndexCart"
+      ],
+      "positive_file": "index_cart.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/index_cart__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/index_cart__n02.lit"
+        },
+        {
+          "id": "N_EMPTY",
+          "file": "negative/index_cart__empty_index.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "list_set",
+      "ast_paths": [
+        "Obj::SetFormer::ListSet"
+      ],
+      "positive_file": "list_set.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/list_set__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/list_set__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/list_set__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "set_builder",
+      "ast_paths": [
+        "Obj::SetFormer::SetBuilder"
+      ],
+      "positive_file": "set_builder.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/set_builder__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/set_builder__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/set_builder__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "range",
+      "ast_paths": [
+        "Obj::SetFormer::Range"
+      ],
+      "positive_file": "range.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P05",
+        "P07",
+        "P04",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/range__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/range__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "closed_range",
+      "ast_paths": [
+        "Obj::SetFormer::ClosedRange"
+      ],
+      "positive_file": "closed_range.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P05",
+        "P06",
+        "P07",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/closed_range__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/closed_range__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "finite_seq_set",
+      "ast_paths": [
+        "Obj::SetFormer::FiniteSeqSet"
+      ],
+      "positive_file": "finite_seq_set.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/finite_seq_set__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/finite_seq_set__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/finite_seq_set__n03.lit"
+        }
+      ],
+      "gaps": [],
+      "indexing_contract": "2026-10-02: seq uses N+; finite_seq of length n uses indices 1..n; historical baselines below predate that decision."
+    },
+    {
+      "name": "seq_set",
+      "ast_paths": [
+        "Obj::SetFormer::SeqSet"
+      ],
+      "positive_file": "seq_set.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P05",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/seq_set__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/seq_set__n02.lit"
+        }
+      ],
+      "gaps": [],
+      "indexing_contract": "2026-10-02: seq uses N+; finite_seq of length n uses indices 1..n; historical baselines below predate that decision."
+    },
+    {
+      "name": "cart",
+      "ast_paths": [
+        "Obj::ProductShape::Cart"
+      ],
+      "positive_file": "cart.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P05",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/cart__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/cart__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/cart__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/cart__n04.lit"
+        },
+        {
+          "id": "N05",
+          "file": "negative/cart__n05.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "tuple",
+      "ast_paths": [
+        "Obj::ProductShape::Tuple"
+      ],
+      "positive_file": "tuple.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/tuple__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/tuple__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "cart_dim",
+      "ast_paths": [],
+      "positive_file": null,
+      "helper_paths": [],
+      "positive_cases": [],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/cart_dim__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/cart_dim__n02.lit"
+        }
+      ],
+      "gaps": [],
+      "retired": true,
+      "retired_reason": "User removed tuple/cart dimension and constructor-factor projection interfaces; retain syntax-rejection fixtures, not positive obligations.",
+      "removed_ast_paths": [
+        "Obj::ProductShape::CartDim"
+      ]
+    },
+    {
+      "name": "tuple_dim",
+      "ast_paths": [],
+      "positive_file": null,
+      "helper_paths": [],
+      "positive_cases": [],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/tuple_dim__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/tuple_dim__n02.lit"
+        }
+      ],
+      "gaps": [],
+      "retired": true,
+      "retired_reason": "User removed tuple/cart dimension and constructor-factor projection interfaces; retain syntax-rejection fixtures, not positive obligations.",
+      "removed_ast_paths": [
+        "Obj::ProductShape::TupleDim"
+      ]
+    },
+    {
+      "name": "proj",
+      "ast_paths": [],
+      "positive_file": null,
+      "helper_paths": [],
+      "positive_cases": [],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/proj__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/proj__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/proj__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/proj__n04.lit"
+        }
+      ],
+      "gaps": [],
+      "retired": true,
+      "retired_reason": "User removed tuple/cart dimension and constructor-factor projection interfaces; retain syntax-rejection fixtures, not positive obligations.",
+      "removed_ast_paths": [
+        "Obj::ProductShape::Proj"
+      ]
+    },
+    {
+      "name": "obj_at_index",
+      "ast_paths": [],
+      "positive_file": null,
+      "helper_paths": [],
+      "positive_cases": [],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/obj_at_index__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/obj_at_index__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/obj_at_index__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/obj_at_index__n04.lit"
+        },
+        {
+          "id": "N05",
+          "file": "negative/obj_at_index__n05.lit"
+        }
+      ],
+      "gaps": [],
+      "removed_ast_paths": [
+        "Obj::ProductShape::ObjAtIndex"
+      ],
+      "retired": true,
+      "retired_reason": "ObjAtIndex AST removed by explicit authorization; all six correct coordinate goals moved to fn_obj P10–P15; original negative fixtures retained."
+    },
+    {
+      "name": "fn_set",
+      "ast_paths": [
+        "Obj::FunctionSpace::FnSet"
+      ],
+      "positive_file": "fn_set.lit",
+      "helper_paths": [
+        "FnSetSpace::Set"
+      ],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/fn_set__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/fn_set__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/fn_set__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "anonymous_fn",
+      "ast_paths": [
+        "Obj::FunctionSpace::AnonymousFn"
+      ],
+      "positive_file": "anonymous_fn.lit",
+      "helper_paths": [
+        "FnSetSpace::Anon"
+      ],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P90"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/anonymous_fn__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/anonymous_fn__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/anonymous_fn__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/anonymous_fn__n04.lit"
+        }
+      ],
+      "gaps": [],
+      "valid_domain_control": "P90"
+    },
+    {
+      "name": "fn_range",
+      "ast_paths": [
+        "Obj::FunctionSpace::FnRange"
+      ],
+      "positive_file": "fn_range.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/fn_range__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/fn_range__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "sum",
+      "ast_paths": [
+        "Obj::IteratedOperator::Sum"
+      ],
+      "positive_file": "sum.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P101",
+        "P102",
+        "P103",
+        "P104",
+        "P105",
+        "P106",
+        "P107",
+        "P108",
+        "P109",
+        "P110"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/sum__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/sum__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/sum__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/sum__n04.lit"
+        },
+        {
+          "id": "N101",
+          "file": "negative/sum__n101.lit"
+        },
+        {
+          "id": "N102",
+          "file": "negative/sum__n102.lit"
+        },
+        {
+          "id": "N103",
+          "file": "negative/sum__n103.lit"
+        },
+        {
+          "id": "N104",
+          "file": "negative/sum__n104.lit"
+        },
+        {
+          "id": "N105",
+          "file": "negative/sum__n105.lit"
+        },
+        {
+          "id": "N106",
+          "file": "negative/sum__n106.lit"
+        },
+        {
+          "id": "N107",
+          "file": "negative/sum__n107.lit"
+        },
+        {
+          "id": "N108",
+          "file": "negative/sum__n108.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "product",
+      "ast_paths": [
+        "Obj::IteratedOperator::Product"
+      ],
+      "positive_file": "product.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P101",
+        "P102",
+        "P103",
+        "P104",
+        "P105"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/product__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/product__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/product__n03.lit"
+        },
+        {
+          "id": "N101",
+          "file": "negative/product__n101.lit"
+        },
+        {
+          "id": "N102",
+          "file": "negative/product__n102.lit"
+        },
+        {
+          "id": "N103",
+          "file": "negative/product__n103.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "sum_of_finite_set",
+      "ast_paths": [
+        "Obj::IteratedOperator::SumOfFiniteSet"
+      ],
+      "positive_file": "sum_of_finite_set.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P90",
+        "P101",
+        "P102",
+        "P103",
+        "P104",
+        "P105",
+        "P106"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/sum_of_finite_set__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/sum_of_finite_set__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/sum_of_finite_set__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/sum_of_finite_set__n04.lit"
+        },
+        {
+          "id": "N101",
+          "file": "negative/sum_of_finite_set__n101.lit"
+        },
+        {
+          "id": "N102",
+          "file": "negative/sum_of_finite_set__n102.lit"
+        },
+        {
+          "id": "N103",
+          "file": "negative/sum_of_finite_set__n103.lit"
+        },
+        {
+          "id": "N104",
+          "file": "negative/sum_of_finite_set__n104.lit"
+        }
+      ],
+      "gaps": [],
+      "valid_domain_control": "P90"
+    },
+    {
+      "name": "product_of_finite_set",
+      "ast_paths": [
+        "Obj::IteratedOperator::ProductOfFiniteSet"
+      ],
+      "positive_file": "product_of_finite_set.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P90",
+        "P101",
+        "P102",
+        "P103",
+        "P104",
+        "P105"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/product_of_finite_set__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/product_of_finite_set__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/product_of_finite_set__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/product_of_finite_set__n04.lit"
+        },
+        {
+          "id": "N101",
+          "file": "negative/product_of_finite_set__n101.lit"
+        },
+        {
+          "id": "N102",
+          "file": "negative/product_of_finite_set__n102.lit"
+        },
+        {
+          "id": "N103",
+          "file": "negative/product_of_finite_set__n103.lit"
+        }
+      ],
+      "gaps": [],
+      "valid_domain_control": "P90"
+    },
+    {
+      "name": "reduce",
+      "ast_paths": [
+        "Obj::IteratedOperator::Reduce"
+      ],
+      "positive_file": "reduce.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/reduce__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/reduce__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/reduce__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "finite_set_reduce",
+      "ast_paths": [
+        "Obj::IteratedOperator::FiniteSetReduce"
+      ],
+      "positive_file": "finite_set_reduce.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P90"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/finite_set_reduce__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/finite_set_reduce__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/finite_set_reduce__n03.lit"
+        }
+      ],
+      "gaps": [],
+      "valid_domain_control": "P90"
+    },
+    {
+      "name": "finite_set_size",
+      "ast_paths": [
+        "Obj::FiniteSetStat::FiniteSetSize"
+      ],
+      "positive_file": "finite_set_size.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P06",
+        "P07",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/finite_set_size__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/finite_set_size__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/finite_set_size__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "finite_set_max",
+      "ast_paths": [
+        "Obj::FiniteSetStat::FiniteSetMax"
+      ],
+      "positive_file": "finite_set_max.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P90",
+        "P200"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/finite_set_max__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/finite_set_max__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/finite_set_max__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/finite_set_max__n04.lit"
+        },
+        {
+          "id": "N05",
+          "file": "negative/finite_set_max__n05.lit"
+        }
+      ],
+      "gaps": [],
+      "valid_domain_control": "P90"
+    },
+    {
+      "name": "finite_set_min",
+      "ast_paths": [
+        "Obj::FiniteSetStat::FiniteSetMin"
+      ],
+      "positive_file": "finite_set_min.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P90",
+        "P200"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/finite_set_min__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/finite_set_min__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/finite_set_min__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/finite_set_min__n04.lit"
+        },
+        {
+          "id": "N05",
+          "file": "negative/finite_set_min__n05.lit"
+        }
+      ],
+      "gaps": [],
+      "valid_domain_control": "P90"
+    },
+    {
+      "name": "struct_obj",
+      "ast_paths": [
+        "Obj::StructAndFieldAccessObj::StructObj"
+      ],
+      "positive_file": "struct_obj.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/struct_obj__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/struct_obj__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/struct_obj__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "field_access",
+      "ast_paths": [
+        "Obj::StructAndFieldAccessObj::FieldAccess"
+      ],
+      "positive_file": "field_access.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/field_access__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/field_access__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/field_access__n03.lit"
+        },
+        {
+          "id": "N04",
+          "file": "negative/field_access__n04.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "instantiated_template_obj",
+      "ast_paths": [
+        "Obj::InstantiatedTemplateObj"
+      ],
+      "positive_file": "instantiated_template_obj.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/instantiated_template_obj__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/instantiated_template_obj__n02.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/instantiated_template_obj__n03.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_n",
+      "ast_paths": [
+        "Obj::StandardSet::N"
+      ],
+      "positive_file": "standard_set_n.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_n__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_n__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_n_pos",
+      "ast_paths": [
+        "Obj::StandardSet::NPos"
+      ],
+      "positive_file": "standard_set_n_pos.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_n_pos__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_n_pos__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_z",
+      "ast_paths": [
+        "Obj::StandardSet::Z"
+      ],
+      "positive_file": "standard_set_z.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_z__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_z__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_q",
+      "ast_paths": [
+        "Obj::StandardSet::Q"
+      ],
+      "positive_file": "standard_set_q.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_q__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_q__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_r",
+      "ast_paths": [
+        "Obj::StandardSet::R"
+      ],
+      "positive_file": "standard_set_r.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_r__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_r__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_c",
+      "ast_paths": [
+        "Obj::StandardSet::C"
+      ],
+      "positive_file": "standard_set_c.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_c__n01.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_q_pos",
+      "ast_paths": [
+        "Obj::StandardSet::QPos"
+      ],
+      "positive_file": "standard_set_q_pos.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_q_pos__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_q_pos__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_r_pos",
+      "ast_paths": [
+        "Obj::StandardSet::RPos"
+      ],
+      "positive_file": "standard_set_r_pos.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_r_pos__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_r_pos__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_q_neg",
+      "ast_paths": [
+        "Obj::StandardSet::QNeg"
+      ],
+      "positive_file": "standard_set_q_neg.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_q_neg__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_q_neg__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_z_neg",
+      "ast_paths": [
+        "Obj::StandardSet::ZNeg"
+      ],
+      "positive_file": "standard_set_z_neg.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_z_neg__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_z_neg__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_r_neg",
+      "ast_paths": [
+        "Obj::StandardSet::RNeg"
+      ],
+      "positive_file": "standard_set_r_neg.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_r_neg__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_r_neg__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_q_star",
+      "ast_paths": [
+        "Obj::StandardSet::QStar"
+      ],
+      "positive_file": "standard_set_q_star.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_q_star__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_q_star__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_z_star",
+      "ast_paths": [
+        "Obj::StandardSet::ZStar"
+      ],
+      "positive_file": "standard_set_z_star.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_z_star__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_z_star__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_r_star",
+      "ast_paths": [
+        "Obj::StandardSet::RStar"
+      ],
+      "positive_file": "standard_set_r_star.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_r_star__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_r_star__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "standard_set_c_star",
+      "ast_paths": [
+        "Obj::StandardSet::CStar"
+      ],
+      "positive_file": "standard_set_c_star.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/standard_set_c_star__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/standard_set_c_star__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "one_side_interval_lower_open",
+      "ast_paths": [
+        "Obj::SetFormer::OneSideInfinityIntervalObj::LowerOpen"
+      ],
+      "positive_file": "one_side_interval_lower_open.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/one_side_interval_lower_open__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/one_side_interval_lower_open__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "one_side_interval_lower_closed",
+      "ast_paths": [
+        "Obj::SetFormer::OneSideInfinityIntervalObj::LowerClosed"
+      ],
+      "positive_file": "one_side_interval_lower_closed.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/one_side_interval_lower_closed__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/one_side_interval_lower_closed__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "one_side_interval_upper_open",
+      "ast_paths": [
+        "Obj::SetFormer::OneSideInfinityIntervalObj::UpperOpen"
+      ],
+      "positive_file": "one_side_interval_upper_open.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/one_side_interval_upper_open__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/one_side_interval_upper_open__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "one_side_interval_upper_closed",
+      "ast_paths": [
+        "Obj::SetFormer::OneSideInfinityIntervalObj::UpperClosed"
+      ],
+      "positive_file": "one_side_interval_upper_closed.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/one_side_interval_upper_closed__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/one_side_interval_upper_closed__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "interval_open_open",
+      "ast_paths": [
+        "Obj::SetFormer::IntervalObj::LeftOpenRightOpen"
+      ],
+      "positive_file": "interval_open_open.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/interval_open_open__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/interval_open_open__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "interval_open_closed",
+      "ast_paths": [
+        "Obj::SetFormer::IntervalObj::LeftOpenRightClosed"
+      ],
+      "positive_file": "interval_open_closed.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/interval_open_closed__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/interval_open_closed__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "interval_closed_open",
+      "ast_paths": [
+        "Obj::SetFormer::IntervalObj::LeftClosedRightOpen"
+      ],
+      "positive_file": "interval_closed_open.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/interval_closed_open__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/interval_closed_open__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "interval_closed_closed",
+      "ast_paths": [
+        "Obj::SetFormer::IntervalObj::LeftClosedRightClosed"
+      ],
+      "positive_file": "interval_closed_closed.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/interval_closed_closed__n01.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/interval_closed_closed__n02.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "identifier_with_export_file_id",
+      "ast_paths": [
+        "Obj::Identifier::WithExportFileId"
+      ],
+      "positive_file": "identifier_with_export_file_id/main.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P06",
+        "P07",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/identifier_with_export_file_id__n01/main.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/identifier_with_export_file_id__n02/main.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/identifier_with_export_file_id__n03/main.lit"
+        }
+      ],
+      "gaps": []
+    },
+    {
+      "name": "identifier_with_mod_and_export_file_id",
+      "ast_paths": [
+        "Obj::Identifier::WithModAndExportFileId"
+      ],
+      "positive_file": "identifier_with_mod_and_export_file_id/main.lit",
+      "helper_paths": [],
+      "positive_cases": [
+        "P01",
+        "P02",
+        "P03",
+        "P06",
+        "P07",
+        "P04",
+        "P05"
+      ],
+      "negative_cases": [
+        {
+          "id": "N01",
+          "file": "negative/identifier_with_mod_and_export_file_id__n01/main.lit"
+        },
+        {
+          "id": "N02",
+          "file": "negative/identifier_with_mod_and_export_file_id__n02/main.lit"
+        },
+        {
+          "id": "N03",
+          "file": "negative/identifier_with_mod_and_export_file_id__n03/main.lit"
+        }
+      ],
+      "gaps": []
+    }
+  ],
+  "workflow_gaps": [],
+  "auxiliary_files": [
+    "absolute_value_bars.lit",
+    "fixtures/values/base.lit",
+    "fixtures/values/other.lit",
+    "identifier_with_export_file_id/base.lit",
+    "identifier_with_export_file_id/other.lit"
+  ],
+  "resolved_during_task": [
+    {
+      "object": "instantiated_template_obj",
+      "case": "P04",
+      "code": "template<S set>:\n    have fn identity(x S) S = x\nlet f = \\identity<R>\nf(2) = 2",
+      "former_phase": "search_proof",
+      "resolution": "Concurrent source update made the same callable-template alias code pass. Promoted to the positive corpus."
+    },
+    {
+      "object": "union",
+      "case": "P01",
+      "code": "sketch:\n    by extension union({1}, {2}) = {1, 2}\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "intersect",
+      "case": "P01",
+      "code": "sketch:\n    by extension:\n        ? intersect({1, 2}, {2, 3}) = {2}\n        claim:\n            ? forall x intersect({1, 2}, {2, 3}):\n                x $in {2}\n            x $in {1, 2}\n            x $in {2, 3}\n            x = 1 or x = 2\n            by cases:\n                ? x $in {2}\n                case x = 1:\n                    1 $in {2, 3}\n                    impossible 1 $in {2, 3}\n                case x = 2:\n                    x $in {2}\n        forall x {2}:\n            x $in intersect({1, 2}, {2, 3})\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "set_minus",
+      "case": "P01",
+      "code": "sketch:\n    by extension:\n        ? set_minus({1, 2}, {2}) = {1}\n        claim:\n            ? forall x set_minus({1, 2}, {2}):\n                x $in {1}\n            x $in {1, 2}\n            not x $in {2}\n            x = 1 or x = 2\n            by cases:\n                ? x $in {1}\n                case x = 1:\n                    x $in {1}\n                case x = 2:\n                    not 2 $in {2}\n                    impossible not 2 $in {2}\n        forall x {1}:\n            x $in set_minus({1, 2}, {2})\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "list_set",
+      "case": "P04",
+      "code": "sketch:\n    by extension {1, 2} = {2, 1}\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "list_set",
+      "case": "P06",
+      "code": "sketch:\n    by contra:\n        ? {1} != {2}\n        1 $in {1}\n        1 $in {2}\n        impossible 1 $in {2}\n    {1} $in {{1}, {2}}\n",
+      "former_phase": "well_defined",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "list_set",
+      "case": "P07",
+      "code": "sketch:\n    by contra:\n        ? (1, 2) != (2, 1)\n        1 = (1, 2)[1] = (2, 1)[1] = 2\n        impossible 1 = 2\n    (1, 2) $in {(1, 2), (2, 1)}\n",
+      "former_phase": "well_defined",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "tuple",
+      "case": "P04",
+      "code": "sketch:\n    ((1, 2), 3)[1] = (1, 2)\n    ((1, 2), 3)[1][2] = 2\n",
+      "former_phase": "well_defined",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "tuple",
+      "case": "P06",
+      "code": "sketch:\n    by contra:\n        ? (1, 2) != (2, 1)\n        1 = (1, 2)[1] = (2, 1)[1] = 2\n        impossible 1 = 2\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "obj_at_index",
+      "case": "P04",
+      "code": "sketch:\n    ((1, 2), 3)[1] = (1, 2)\n    ((1, 2), 3)[1][2] = 2\n",
+      "former_phase": "well_defined",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "obj_at_index",
+      "case": "P06",
+      "code": "sketch:\n    (2 + 3, 4 * 2)[2] = 4 * 2 = 8\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "fn_obj",
+      "case": "P05",
+      "code": "sketch:\n    have fn f(x R) R = x + 1\n    f(1) = 2\n    f(f(1)) = f(2) = 3\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "fn_obj",
+      "case": "P06",
+      "code": "sketch:\n    have fn f(x R) fn(y R) R = fn(y R) R {x + y}\n    f(2) = fn(y R) R {2 + y}\n    f(2)(3) = fn(y R) R {2 + y}(3) = 2 + 3 = 5\n",
+      "former_phase": "have_fn_equal",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "anonymous_fn",
+      "case": "P06",
+      "code": "sketch:\n    let y = 3\n    fn(x R) R {x + y}(2) = 2 + y = 2 + 3 = 5\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "cart_dim",
+      "case": "P04",
+      "code": "sketch:\n    let product_space = cart(R, Z)\n    cart_dim(product_space) = 2\n",
+      "former_phase": "well_defined",
+      "resolution": "fixture_builtin_name_collision; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "family_union",
+      "case": "P02",
+      "code": "sketch:\n    by extension:\n        ? family_union({{1}}) = {1}\n        {1} $in {{1}}\n        claim:\n            ? forall x family_union({{1}}):\n                x $in {1}\n            obtain A from exist A {{1}} st {x $in A}\n            A = {1}\n            x $in {1}\n        forall x {1}:\n            x $in family_union({{1}})\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "fn_range",
+      "case": "P02",
+      "code": "sketch:\n    have fn identity(x R) R = x\n    by extension:\n        ? fn_range(fn(x R) R {x}) = R\n        claim:\n            ? forall y R:\n                y $in fn_range(fn(x R) R {x})\n            identity(y) = y\n            identity(y) $in fn_range(identity)\n            fn_range(identity) = fn_range(fn(x R) R {x})\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "struct_obj",
+      "case": "P01",
+      "code": "sketch:\n    struct Point:\n        x R\n        y R\n    have p &Point = (1, 2)\n    p.x = p[1] = 1\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "struct_obj",
+      "case": "P02",
+      "code": "sketch:\n    struct Pair<S set>:\n        first S\n        second S\n    have p &Pair<N> = (1, 2)\n    p.second = p[2] = 2\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "field_access",
+      "case": "P01",
+      "code": "sketch:\n    struct Point:\n        x R\n        y R\n    have p &Point = (1, 2)\n    p.x = p[1] = 1\n    p.y = p[2] = 2\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "real_part",
+      "case": "P04",
+      "code": "sketch:\n    re(-2 - i) = re(-2) - re(i) = -2 - 0 = -2\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "real_part",
+      "case": "P06",
+      "code": "sketch:\n    i * i = -1\n    re(i * i) = re(-1) = -1\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "imaginary_part",
+      "case": "P04",
+      "code": "sketch:\n    img(-2 - i) = img(-2) - img(i) = 0 - 1 = -1\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "standard_set_r_pos",
+      "case": "P03",
+      "code": "sketch:\n    sqrt(2) > 0\n    sqrt(2) $in R+\n",
+      "former_phase": "search_proof",
+      "resolution": "explicit_checked_proof; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "finite_set_reduce",
+      "case": "P02",
+      "code": "sketch:\n    finite_set_reduce({2}, fn(x Z) Z {x}, fn(a, b Z) Z {a + b}, 0) = 2\n",
+      "former_phase": "search_proof",
+      "resolution": "already_recovered_unchanged_source; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "finite_set_reduce",
+      "case": "P03",
+      "code": "sketch:\n    finite_set_reduce({1, 2}, fn(x Z) Z {x}, fn(a, b Z) Z {a + b}, 0) = 3\n",
+      "former_phase": "search_proof",
+      "resolution": "already_recovered_unchanged_source; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "finite_set_reduce",
+      "case": "P04",
+      "code": "sketch:\n    finite_set_reduce({2, 1}, fn(x Z) Z {x}, fn(a, b Z) Z {a + b}, 0) = 3\n",
+      "former_phase": "search_proof",
+      "resolution": "already_recovered_unchanged_source; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "finite_set_reduce",
+      "case": "P05",
+      "code": "sketch:\n    finite_set_reduce({1, 2}, fn(x Z) Z {x}, fn(a, b Z) Z {a + b}, 10) = 13\n",
+      "former_phase": "search_proof",
+      "resolution": "already_recovered_unchanged_source; 2026-10-03 F authoring journal, same mathematical target, no new trust",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "finite_set_reduce",
+      "case": "N01",
+      "code": "# Must reject: finite_set_reduce N01\nlet r = finite_set_reduce({1, 2}, fn(x Z) Z {x}, fn(a, b Z) Z {a - b}, 0)\n",
+      "former_phase": "success",
+      "resolution": "already recovered: unordered subtraction correctly rejects; negative fixture retained",
+      "journal": "proof_journals/f_authoring_repairs_2026-10-03.json"
+    },
+    {
+      "object": "pow",
+      "case": "P04",
+      "code": "sketch:\n    2^(-3) = 1 / 8\n",
+      "original_source": "# Intended valid regression: pow P04\n2^(-3) = 1 / 8\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "pow.lit"
+    },
+    {
+      "object": "min",
+      "case": "P05",
+      "code": "sketch:\n    min(1 / 3, 1 / 2) = 1 / 3\n",
+      "original_source": "# Intended valid regression: min P05\nmin(1 / 3, 1 / 2) = 1 / 3\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "min.lit"
+    },
+    {
+      "object": "max",
+      "case": "P05",
+      "code": "sketch:\n    max(1 / 3, 1 / 2) = 1 / 2\n",
+      "original_source": "# Intended valid regression: max P05\nmax(1 / 3, 1 / 2) = 1 / 2\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "max.lit"
+    },
+    {
+      "object": "sin",
+      "case": "P04",
+      "code": "sketch:\n    sin(-pi / 2) = -1\n",
+      "original_source": "# Intended valid regression: sin P04\nsin(-pi / 2) = -1\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "sin.lit"
+    },
+    {
+      "object": "cos",
+      "case": "P04",
+      "code": "sketch:\n    cos(-pi) = -1\n",
+      "original_source": "# Intended valid regression: cos P04\ncos(-pi) = -1\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "cos.lit"
+    },
+    {
+      "object": "tan",
+      "case": "P02",
+      "code": "sketch:\n    tan(pi) = 0\n",
+      "original_source": "# Intended valid regression: tan P02\ntan(pi) = 0\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "tan.lit"
+    },
+    {
+      "object": "tan",
+      "case": "P03",
+      "code": "sketch:\n    tan(pi / 4) = 1\n",
+      "original_source": "# Intended valid regression: tan P03\ntan(pi / 4) = 1\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "tan.lit"
+    },
+    {
+      "object": "tan",
+      "case": "P04",
+      "code": "sketch:\n    tan(-pi / 4) = -1\n",
+      "original_source": "# Intended valid regression: tan P04\ntan(-pi / 4) = -1\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "tan.lit"
+    },
+    {
+      "object": "cot",
+      "case": "P02",
+      "code": "sketch:\n    cot(pi / 4) = 1\n",
+      "original_source": "# Intended valid regression: cot P02\ncot(pi / 4) = 1\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "cot.lit"
+    },
+    {
+      "object": "cot",
+      "case": "P03",
+      "code": "sketch:\n    cot(-pi / 4) = -1\n",
+      "original_source": "# Intended valid regression: cot P03\ncot(-pi / 4) = -1\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "cot.lit"
+    },
+    {
+      "object": "complex_abs",
+      "case": "P03",
+      "code": "sketch:\n    C_abs(3 + 4 * i) = 5\n",
+      "original_source": "# Intended valid regression: complex_abs P03\nC_abs(3 + 4 * i) = 5\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "complex_abs.lit"
+    },
+    {
+      "object": "complex_abs",
+      "case": "P04",
+      "code": "sketch:\n    C_abs(-3) = 3\n",
+      "original_source": "# Intended valid regression: complex_abs P04\nC_abs(-3) = 3\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "complex_abs.lit"
+    },
+    {
+      "object": "complex_abs",
+      "case": "P05",
+      "code": "sketch:\n    C_abs(-i) = 1\n",
+      "original_source": "# Intended valid regression: complex_abs P05\nC_abs(-i) = 1\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "complex_abs.lit"
+    },
+    {
+      "object": "complex_abs",
+      "case": "P06",
+      "code": "sketch:\n    forall z C:\n        C_abs(z) >= 0\n",
+      "original_source": "# Intended valid regression: complex_abs P06\nforall z C:\n    C_abs(z) >= 0\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local Rust exact numeric/periodic/modulus repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/exact_numeric_periodic_modulus_2026-10-03.json",
+      "acceptance_file": "complex_abs.lit"
+    },
+    {
+      "object": "arctan",
+      "case": "P02",
+      "code": "(-pi)/2 $in R\npi/2 $in R\npi/4 $in R\ncos(pi/4)!=0\ntan(pi/4)=1\n(-pi)/2<pi/4\npi/4<pi/2\narctan(1)=arctan(tan(pi/4))=pi/4",
+      "original_source": "# Intended valid regression: arctan P02\narctan(1) = pi / 4\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "arctan.lit"
+    },
+    {
+      "object": "arctan",
+      "case": "P03",
+      "code": "(-pi)/2 $in R\npi/2 $in R\n(-pi)/4 $in R\ncos(-pi/4)!=0\ntan(-pi/4)=-1\n(-pi)/2<(-pi)/4\n(-pi)/4<pi/2\narctan(-1)=arctan(tan(-pi/4))=(-pi)/4",
+      "original_source": "# Intended valid regression: arctan P03\narctan(-1) = -pi / 4\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "arctan.lit"
+    },
+    {
+      "object": "arccot",
+      "case": "P02",
+      "code": "0 $in R\npi $in R\npi/4 $in R\nsin(pi/4)!=0\ncot(pi/4)=1\n0<pi/4\npi/4<pi\narccot(1)=arccot(cot(pi/4))=pi/4",
+      "original_source": "# Intended valid regression: arccot P02\narccot(1) = pi / 4\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "arccot.lit"
+    },
+    {
+      "object": "arccot",
+      "case": "P04",
+      "code": "0 $in R\npi $in R\n3*pi/4 $in R\nsin(3*pi/4)!=0\ncot(3*pi/4)=-1\n0<3*pi/4\n3*pi/4<pi\narccot(-1)=arccot(cot(3*pi/4))=3*pi/4",
+      "original_source": "# Intended valid regression: arccot P04\narccot(-1) = 3 * pi / 4\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "arccot.lit"
+    },
+    {
+      "object": "log",
+      "case": "P05",
+      "code": "0 $in R\n1/2 $in R\n1/2>0\n1/2!=1\n(1/2)^(-3)=8\nlog(1/2,8)=log(1/2,(1/2)^(-3))=-3",
+      "original_source": "# Intended valid regression: log P05\nlog(1 / 2, 8) = -3\n",
+      "former_phase": "search_proof",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "log.lit"
+    },
+    {
+      "object": "log",
+      "case": "P06",
+      "code": "0 $in R\ne $in R\ne>1\ne!=1\ne>0\nlog(e,e)=1",
+      "original_source": "# Intended valid regression: log P06\nlog(e, e) = 1\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "log.lit"
+    },
+    {
+      "object": "finite_set_max",
+      "case": "P04",
+      "code": "finite_set_max({1/3,1/2})=1/2",
+      "original_source": "# Intended valid regression: finite_set_max P04\nfinite_set_max({1 / 3, 1 / 2}) = 1 / 2\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "finite_set_max.lit"
+    },
+    {
+      "object": "finite_set_min",
+      "case": "P04",
+      "code": "finite_set_min({1/3,1/2})=1/3",
+      "original_source": "# Intended valid regression: finite_set_min P04\nfinite_set_min({1 / 3, 1 / 2}) = 1 / 3\n",
+      "former_phase": "well_defined",
+      "resolution": "checked local rational-extremum certificate, principal inverse proof, or positive-nonunit log repair; unchanged mathematics, no trust",
+      "journal": "proof_journals/remaining_elementary_gaps_2026-10-03.json",
+      "acceptance_file": "finite_set_min.lit"
+    }
+  ]
+}

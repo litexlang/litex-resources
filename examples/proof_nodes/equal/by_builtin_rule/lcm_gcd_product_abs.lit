@@ -1,0 +1,6 @@
+# Node: equal.ByBuiltinRule.LcmGcdProductAbs
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/lcm_gcd_product_abs.lit
+
+have a Z*
+have b Z*
+lcm(a, b) * gcd(a, b) = |a * b|

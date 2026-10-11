@@ -1,0 +1,8 @@
+# Assuming i = 0 makes its square both -1 and 0.
+# Run: target/release/litex -strict -f examples/stmt_nodes/by/by_contra_imaginary_unit.lit
+
+by contra:
+    ? i != 0
+    i * i = -1
+    i * i = 0 * 0 = 0
+    impossible i * i != 0

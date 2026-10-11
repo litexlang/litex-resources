@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.ProductModFactorZero
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/product_mod_factor_zero.lit
+
+forall a Z, b Z:
+    a != 0
+    =>:
+        (a * b) % a = 0

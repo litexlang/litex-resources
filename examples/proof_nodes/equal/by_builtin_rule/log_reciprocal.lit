@@ -1,0 +1,7 @@
+# Node: equal.ByBuiltinRule.LogReciprocal
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/log_reciprocal.lit
+
+have x R+
+0 < x
+1 < 2
+log(2, 1 / x) = 0 - log(2, x)

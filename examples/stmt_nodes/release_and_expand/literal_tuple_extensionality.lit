@@ -1,0 +1,18 @@
+# Before: native tuple equality used tuple_dim(a) and a[1]/a[2].
+# Now: both accurate full domains and all coordinates are checked before
+# equality is released. The first proof keeps its original a=(1,2) target.
+# Boundary: a different length or last coordinate cannot be omitted.
+# Evidence: current release -strict -f this file; literal_tuple_extensionality.
+
+claim:
+    ? forall a cart({1},{2}):
+        a=(1,2)
+    release thm tuple_equal_from_coordinates(a,(1,2))
+
+sketch:
+    have a cart({1},{2},{3})
+    release thm tuple_equal_from_coordinates(a,(1,2,3))
+
+sketch:
+    have a cart({1},{2})
+    release thm tuple_equal_from_coordinates((1,2),a)

@@ -1,0 +1,49 @@
+# Field paths produced by substitution use the same flat path as source syntax.
+# Before: these direct struct consequences failed because substitution retained
+# (action.scalars).combine / (action.scalars).unit as nested receiver objects.
+# claim:
+#     ? forall action &ScalarAction, a, b, x R:
+#         action.act(action.scalars.combine(a, b), x) = action.act(a, action.act(b, x))
+#     release struct def action
+# Boundary: missing fields and another action's scalar operations are not licensed.
+# Gate: target/release/litex -strict -f examples/stmt_nodes/definition/struct_nested_field_instantiation.lit
+struct ScalarOperations:
+    unit R
+    combine fn(x, y R) R
+    <=>:
+        unit = 1
+
+struct ScalarAction:
+    scalars &ScalarOperations
+    act fn(a, x R) R
+    <=>:
+        forall a, b, x R:
+            act(scalars.combine(a, b), x) = act(a, act(b, x))
+
+claim:
+    ? forall action &ScalarAction, a, b, x R:
+        action.act(action.scalars.combine(a, b), x) = action.act(a, action.act(b, x))
+    release struct def action
+
+claim:
+    ? forall action &ScalarAction:
+        action.scalars.unit = 1
+    release struct def action.scalars
+
+# Releasing a nested parameterized scalar structure also flattens substitutions
+# of plain field identifiers, both callable heads and their zero arguments.
+struct ScalarIdentity<S nonempty_set>:
+    zero S
+    add fn(x, y S) S
+    <=>:
+        forall x S:
+            add(zero, x) = x
+
+struct IdentityCarrier<S nonempty_set>:
+    scalars &ScalarIdentity<S>
+    element S
+
+claim:
+    ? forall S nonempty_set, carrier &IdentityCarrier<S>:
+        carrier.scalars.add(carrier.scalars.zero, carrier.scalars.zero) = carrier.scalars.zero
+    release struct def carrier.scalars

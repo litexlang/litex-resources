@@ -1,0 +1,14 @@
+# Parent equality WD requires an integer nonzero modulus.
+# The unselected lcm operand is allowed to be zero.
+forall a,b Z*:
+    lcm(a,b)%|a|=0
+    lcm(a,b)%|b|=0
+    0=lcm(a,b)%|a|
+    0=lcm(a,b)%|b|
+forall a Z*,b Z:
+    lcm(a,b)%|a|=0
+forall a Z,b Z*:
+    lcm(a,b)%|b|=0
+forall a Z*:
+    lcm(a,0)%|a|=0
+    lcm(0,a)%|a|=0

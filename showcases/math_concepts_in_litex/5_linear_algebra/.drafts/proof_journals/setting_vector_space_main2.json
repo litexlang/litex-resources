@@ -1,0 +1,464 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/5_linear_algebra/main2.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/5_linear_algebra/main2.lit",
+  "proof_spine": [
+    "Bundle field operations and laws as an ambient FieldSetting.",
+    "Extend that context with vector operations and vector-space laws.",
+    "Bundle two spaces over one field, then add the linear-map laws.",
+    "Cancel T(0) from T(0) + T(0) = T(0) to prove T(0) = 0.",
+    "Use zero preservation and scalar preservation to prove the kernel is a subspace.",
+    "Instantiate the settings with the real plane and the x-axis projection."
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Declare the scalar field as an ambient setting.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "setting FieldSetting(K nonempty_set, scalar_zero, scalar_one K, scalar_add fn(x, y K) K, scalar_neg fn(x K) K, scalar_mul fn(x, y K) K, scalar_inv fn(x K) K): ...",
+          "result": "accepted",
+          "verifier_evidence": "session block B001 returned ok:true",
+          "diagnosis": "The direct setting header and field-law conditions are accepted.",
+          "next_change": "Proceed to vector-space laws and the nested setting."
+        }
+      ],
+      "accepted_litex": "setting FieldSetting(K nonempty_set, scalar_zero, scalar_one K, scalar_add fn(x, y K) K, scalar_neg fn(x K) K, scalar_mul fn(x, y K) K, scalar_inv fn(x K) K):\n    scalar_zero != scalar_one\n    forall x, y, z K:\n        scalar_add(scalar_add(x, y), z) = scalar_add(x, scalar_add(y, z))\n        scalar_mul(scalar_mul(x, y), z) = scalar_mul(x, scalar_mul(y, z))\n        scalar_mul(x, scalar_add(y, z)) = scalar_add(scalar_mul(x, y), scalar_mul(x, z))\n    forall x, y K:\n        scalar_add(x, y) = scalar_add(y, x)\n        scalar_mul(x, y) = scalar_mul(y, x)\n    forall x K:\n        scalar_add(scalar_zero, x) = x\n        scalar_add(x, scalar_neg(x)) = scalar_zero\n        scalar_mul(scalar_one, x) = x\n    forall x K:\n        x != scalar_zero\n        =>:\n            scalar_mul(x, scalar_inv(x)) = scalar_one",
+      "reusable_lesson": "A setting may directly carry the complete field-law prefix without asserting a global field object.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Define the vector-space laws on supplied operations as a mathematical predicate.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "prop has_vector_space_laws(K, V, scalar_one, scalar_add, scalar_mul, zero_V, add_V, smul_V): ...",
+          "result": "accepted",
+          "verifier_evidence": "session block B002 returned ok:true",
+          "diagnosis": "The carrier-generic law predicate is well-defined.",
+          "next_change": "Use it as the shared condition of VectorSpaceSetting."
+        }
+      ],
+      "accepted_litex": "prop has_vector_space_laws(K, V nonempty_set, scalar_one K, scalar_add fn(x, y K) K, scalar_mul fn(x, y K) K, zero_V V, add_V fn(x, y V) V, smul_V fn(a K, x V) V):\n    forall x, y, z V:\n        add_V(add_V(x, y), z) = add_V(x, add_V(y, z))\n    forall x, y V:\n        add_V(x, y) = add_V(y, x)\n    forall x V:\n        add_V(zero_V, x) = x\n        exist y V st {add_V(x, y) = zero_V}\n    forall a, b K, x V:\n        smul_V(scalar_mul(a, b), x) = smul_V(a, smul_V(b, x))\n        smul_V(scalar_add(a, b), x) = add_V(smul_V(a, x), smul_V(b, x))\n    forall a K, x, y V:\n        smul_V(a, add_V(x, y)) = add_V(smul_V(a, x), smul_V(a, y))\n    forall x V:\n        smul_V(scalar_one, x) = x",
+      "reusable_lesson": "Separating the vector laws from the ambient setting lets one shared field support both source and target spaces without duplicating the law text.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Compose one field bundle with one vector carrier and its operations.",
+      "dependencies": ["B001 FieldSetting", "B002 has_vector_space_laws"],
+      "attempts": [
+        {
+          "candidate": "setting VectorSpaceSetting([FieldSetting(...)], V, zero_V, add_V, smul_V): $has_vector_space_laws(...) ",
+          "result": "accepted",
+          "verifier_evidence": "session block B003 returned ok:true and displayed the expected flattened parameter prefix",
+          "diagnosis": "Nested setting bundles correctly prepend the field laws and retain the vector-law predicate.",
+          "next_change": "Expose field/vector-space judgments and the two-space setting."
+        }
+      ],
+      "accepted_litex": "setting VectorSpaceSetting([FieldSetting(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv)], V nonempty_set, zero_V V, add_V fn(x, y V) V, smul_V fn(a K, x V) V):\n    $has_vector_space_laws(K, V, scalar_one, scalar_add, scalar_mul, zero_V, add_V, smul_V)",
+      "reusable_lesson": "A nested setting is an elaboration-only shared prefix; its field operations remain direct binders rather than projected fields.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "source_order": 4,
+      "intent": "Expose the field setting as an assertable judgment.",
+      "dependencies": ["B001 FieldSetting"],
+      "attempts": [{
+        "candidate": "prop is_field_in_setting([FieldSetting])",
+        "result": "accepted",
+        "verifier_evidence": "session block B004 returned ok:true",
+        "diagnosis": "A concrete prop header expands the setting into its flat parameters and laws.",
+        "next_change": "Add the analogous vector-space judgment."
+      }],
+      "accepted_litex": "prop is_field_in_setting([FieldSetting])",
+      "reusable_lesson": "An empty explicit prop body can expose exactly the conditions carried by a setting.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "source_order": 5,
+      "intent": "Expose the vector-space setting as an assertable judgment.",
+      "dependencies": ["B003 VectorSpaceSetting"],
+      "attempts": [{
+        "candidate": "prop is_vector_space_in_setting([VectorSpaceSetting])",
+        "result": "accepted",
+        "verifier_evidence": "session block B005 returned ok:true",
+        "diagnosis": "The vector-space judgment preserves the field prefix and vector-law condition.",
+        "next_change": "Create the shared-field two-space setting."
+      }],
+      "accepted_litex": "prop is_vector_space_in_setting([VectorSpaceSetting])",
+      "reusable_lesson": "The prop is a judgment on supplied operations; it does not turn the ambient setting into a first-class object.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "source_order": 6,
+      "intent": "Bind two vector spaces over one shared field.",
+      "dependencies": ["B001 FieldSetting", "B002 has_vector_space_laws"],
+      "attempts": [{
+        "candidate": "setting VectorSpacesSetting([FieldSetting(...)], V, W, source operations, target operations): two vector-law facts",
+        "result": "accepted",
+        "verifier_evidence": "session block B006 returned ok:true and flattened exactly one field prefix",
+        "diagnosis": "The paired setting shares one scalar system while keeping source and target operations distinct.",
+        "next_change": "Extend the pair with a map and its preservation laws."
+      }],
+      "accepted_litex": "setting VectorSpacesSetting([FieldSetting(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv)], V, W nonempty_set, zero_V V, add_V fn(x, y V) V, smul_V fn(a K, x V) V, zero_W W, add_W fn(x, y W) W, smul_W fn(a K, x W) W):\n    $has_vector_space_laws(K, V, scalar_one, scalar_add, scalar_mul, zero_V, add_V, smul_V)\n    $has_vector_space_laws(K, W, scalar_one, scalar_add, scalar_mul, zero_W, add_W, smul_W)",
+      "reusable_lesson": "When explicit setting arguments cannot reuse outer binders, a purpose-built paired setting is the checkable shared-field interface.",
+      "status": "materialized"
+    },
+    {
+      "id": "B007",
+      "source_order": 7,
+      "intent": "Extend the two-space context with a linear map.",
+      "dependencies": ["B006 VectorSpacesSetting"],
+      "attempts": [{
+        "candidate": "setting LinearMapSetting([VectorSpacesSetting], T): addition and scalar preservation",
+        "result": "accepted",
+        "verifier_evidence": "session block B007 returned ok:true",
+        "diagnosis": "The map laws elaborate after the complete shared-field source/target prefix.",
+        "next_change": "Expose the map setting as a judgment."
+      }],
+      "accepted_litex": "setting LinearMapSetting([VectorSpacesSetting], T fn(v V) W):\n    forall u, v V:\n        T(add_V(u, v)) = add_W(T(u), T(v))\n    forall a K, v V:\n        T(smul_V(a, v)) = smul_W(a, T(v))",
+      "reusable_lesson": "The theorem context now reads directly in source and target operations, with no record projections or field-equality premise.",
+      "status": "materialized"
+    },
+    {
+      "id": "B008",
+      "source_order": 8,
+      "intent": "Expose linearity as a relation on the ambient map setting.",
+      "dependencies": ["B007 LinearMapSetting"],
+      "attempts": [{
+        "candidate": "prop is_linear_map_in_setting([LinearMapSetting])",
+        "result": "accepted",
+        "verifier_evidence": "session block B008 returned ok:true",
+        "diagnosis": "The relation expands to the complete flat ABI while the source stays setting-oriented.",
+        "next_change": "Prove cancellation in one vector-space setting."
+      }],
+      "accepted_litex": "prop is_linear_map_in_setting([LinearMapSetting])",
+      "reusable_lesson": "Settings shorten theorem binders; props remain the assertable mathematical judgments consumed by concrete examples.",
+      "status": "materialized"
+    },
+    {
+      "id": "B009",
+      "source_order": 9,
+      "intent": "Prove left cancellation from the ambient additive-group laws.",
+      "dependencies": ["B003 VectorSpaceSetting"],
+      "attempts": [{
+        "candidate": "thm setting_add_left_cancel: forall [VectorSpaceSetting], x, y, z V: ...",
+        "result": "failed",
+        "verifier_evidence": "DefineParamsError at theorem header: duplicate Forall free parameter `x` in nested scope",
+        "diagnosis": "The setting expansion already uses x/y/z inside stored parameter and law scopes; the extra theorem binders need distinct names.",
+        "next_change": "Rename the theorem vectors to p, q, and r without changing the proof."
+      }, {
+        "candidate": "thm setting_add_left_cancel: forall [VectorSpaceSetting], p, q, r V: ...",
+        "result": "accepted",
+        "verifier_evidence": "session block B009R returned ok:true",
+        "diagnosis": "Fresh theorem binder names avoid the setting-expansion collision; the one-chain cancellation proof verifies.",
+        "next_change": "Use cancellation to derive scalar-times-zero and map-zero preservation."
+      }],
+      "accepted_litex": "thm setting_add_left_cancel:\n    ? forall [VectorSpaceSetting], p, q, r V:\n        add_V(p, q) = add_V(p, r)\n        =>:\n            q = r\n    obtain inverse_p from exist inverse_p V st {add_V(p, inverse_p) = zero_V}\n    add_V(inverse_p, p) = add_V(p, inverse_p) = zero_V\n    q = add_V(zero_V, q) = add_V(add_V(inverse_p, p), q) = add_V(inverse_p, add_V(p, q)) = add_V(inverse_p, add_V(p, r)) = add_V(add_V(inverse_p, p), r) = add_V(zero_V, r) = r",
+      "reusable_lesson": "The additive inverse can stay local: one existence elimination plus one equality chain proves cancellation without publishing a negation selector.",
+      "status": "materialized"
+    },
+    {
+      "id": "B010",
+      "source_order": 10,
+      "intent": "Prove that every scalar sends vector zero to vector zero.",
+      "dependencies": ["B003 VectorSpaceSetting", "B009 setting_add_left_cancel"],
+      "attempts": [{
+        "candidate": "thm setting_scalar_times_zero_vector under [VectorSpaceSetting]",
+        "result": "accepted",
+        "verifier_evidence": "session block B010 returned ok:true",
+        "diagnosis": "Distributivity gives q = q + q and the setting cancellation theorem closes q = 0.",
+        "next_change": "Prove the tracer T(0)=0 in the two-space map context."
+      }],
+      "accepted_litex": "thm setting_scalar_times_zero_vector:\n    ? forall [VectorSpaceSetting], coefficient K:\n        smul_V(coefficient, zero_V) = zero_V\n    have q V = smul_V(coefficient, zero_V)\n    add_V(zero_V, zero_V) = zero_V\n    smul_V(coefficient, add_V(zero_V, zero_V)) = smul_V(coefficient, zero_V) = q\n    smul_V(coefficient, add_V(zero_V, zero_V)) = add_V(smul_V(coefficient, zero_V), smul_V(coefficient, zero_V)) = add_V(q, q)\n    q = add_V(q, q)\n    add_V(q, zero_V) = add_V(zero_V, q) = q\n    add_V(q, q) = add_V(q, zero_V)\n    by thm setting_add_left_cancel(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv, V, zero_V, add_V, smul_V, q, q, zero_V) => q = zero_V",
+      "reusable_lesson": "A theorem under a setting still has a flat callable ABI; explicit theorem calls pass the expanded parameters in setting order.",
+      "status": "materialized"
+    },
+    {
+      "id": "B011",
+      "source_order": 11,
+      "intent": "Tracer: prove that a linear map sends source zero to target zero.",
+      "dependencies": ["B007 LinearMapSetting", "B009 setting_add_left_cancel"],
+      "attempts": [{
+        "candidate": "thm setting_linear_map_sends_zero_to_zero under [LinearMapSetting]",
+        "result": "accepted",
+        "verifier_evidence": "session block B011 returned ok:true",
+        "diagnosis": "Linearity gives T(0)+T(0)=T(0), and target-space cancellation gives T(0)=0.",
+        "next_change": "Define subspace/kernel and prove the kernel closure theorem."
+      }],
+      "accepted_litex": "thm setting_linear_map_sends_zero_to_zero:\n    ? forall [LinearMapSetting]:\n        T(zero_V) = zero_W\n    add_V(zero_V, zero_V) = zero_V\n    T(add_V(zero_V, zero_V)) = add_W(T(zero_V), T(zero_V))\n    add_W(T(zero_V), T(zero_V)) = T(add_V(zero_V, zero_V)) = T(zero_V)\n    add_W(T(zero_V), zero_W) = add_W(zero_W, T(zero_V)) = T(zero_V)\n    add_W(T(zero_V), T(zero_V)) = add_W(T(zero_V), zero_W)\n    by thm setting_add_left_cancel(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv, W, zero_W, add_W, smul_W, T(zero_V), T(zero_V), zero_W) => T(zero_V) = zero_W",
+      "reusable_lesson": "The setting version removes record projections and the separate source.field = target.field compatibility premise; the shared field is fixed by the binder itself.",
+      "status": "materialized"
+    },
+    {
+      "id": "B012",
+      "source_order": 12,
+      "intent": "Define the subspace judgment in a vector-space setting.",
+      "dependencies": ["B003 VectorSpaceSetting"],
+      "attempts": [{
+        "candidate": "prop is_subspace_in_setting([VectorSpaceSetting], U power_set(V)): closure laws",
+        "result": "accepted",
+        "verifier_evidence": "session block B012 returned ok:true",
+        "diagnosis": "The supplied subset judgment inherits the ambient field/vector laws and adds exactly the closure clauses.",
+        "next_change": "Define the kernel set construction."
+      }],
+      "accepted_litex": "prop is_subspace_in_setting([VectorSpaceSetting], U power_set(V)):\n    zero_V $in U\n    forall p, q V:\n        p $in U\n        q $in U\n        =>:\n            add_V(p, q) $in U\n    forall coefficient K, p V:\n        p $in U\n        =>:\n            smul_V(coefficient, p) $in U",
+      "reusable_lesson": "Use a setting bundle for the ambient algebra and an ordinary prop parameter for the subset being tested.",
+      "status": "materialized"
+    },
+    {
+      "id": "B013",
+      "source_order": 13,
+      "intent": "Construct the kernel as an actual subset of the source carrier.",
+      "dependencies": [],
+      "attempts": [{
+        "candidate": "template<V, W, zero_W, T>: have setting_linear_kernel = {v: T(v)=zero_W}",
+        "result": "accepted",
+        "verifier_evidence": "session block B013 returned ok:true",
+        "diagnosis": "The set-valued construction is well-defined independently of the ambient laws.",
+        "next_change": "Prove this set satisfies the setting subspace judgment."
+      }],
+      "accepted_litex": "template<V, W set, zero_W W, T fn(v V) W>:\n    have setting_linear_kernel power_set(V) = {v V: T(v) = zero_W}",
+      "reusable_lesson": "A setting is not a replacement for a mathematical value: the kernel remains a template-scoped set construction because callers use it as a set.",
+      "status": "materialized"
+    },
+    {
+      "id": "B014",
+      "source_order": 14,
+      "intent": "Prove that the kernel of a linear map is a subspace of its source.",
+      "dependencies": ["B010 setting_scalar_times_zero_vector", "B011 setting_linear_map_sends_zero_to_zero", "B012 is_subspace_in_setting", "B013 setting_linear_kernel"],
+      "attempts": [{
+        "candidate": "thm setting_linear_map_kernel_is_subspace under [LinearMapSetting]",
+        "result": "accepted",
+        "verifier_evidence": "session block B014 returned ok:true",
+        "diagnosis": "Zero, addition, and scalar closure follow directly from the map laws and the two zero lemmas.",
+        "next_change": "Materialize the complete abstract spine and run a clean file checkpoint."
+      }],
+      "accepted_litex": "thm setting_linear_map_kernel_is_subspace:\n    ? forall [LinearMapSetting]:\n        $is_subspace_in_setting(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv, V, zero_V, add_V, smul_V, \\setting_linear_kernel<V, W, zero_W, T>)\n    by thm setting_linear_map_sends_zero_to_zero(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv, V, W, zero_V, add_V, smul_V, zero_W, add_W, smul_W, T) => T(zero_V) = zero_W\n    \\setting_linear_kernel<V, W, zero_W, T> = {candidate V: T(candidate) = zero_W}\n    by thm set_builder_member(zero_V, {candidate V: T(candidate) = zero_W}) => zero_V $in {candidate V: T(candidate) = zero_W}\n    zero_V $in \\setting_linear_kernel<V, W, zero_W, T>\n    claim:\n        ? forall kernel_left, kernel_right V:\n            kernel_left $in \\setting_linear_kernel<V, W, zero_W, T>\n            kernel_right $in \\setting_linear_kernel<V, W, zero_W, T>\n            =>:\n                add_V(kernel_left, kernel_right) $in \\setting_linear_kernel<V, W, zero_W, T>\n        kernel_left $in {candidate V: T(candidate) = zero_W}\n        T(kernel_left) = zero_W\n        kernel_right $in {candidate V: T(candidate) = zero_W}\n        T(kernel_right) = zero_W\n        T(add_V(kernel_left, kernel_right)) = add_W(T(kernel_left), T(kernel_right)) = add_W(zero_W, zero_W) = zero_W\n        by thm set_builder_member(add_V(kernel_left, kernel_right), {candidate V: T(candidate) = zero_W}) => add_V(kernel_left, kernel_right) $in {candidate V: T(candidate) = zero_W}\n        add_V(kernel_left, kernel_right) $in \\setting_linear_kernel<V, W, zero_W, T>\n    claim:\n        ? forall coefficient K, kernel_vector V:\n            kernel_vector $in \\setting_linear_kernel<V, W, zero_W, T>\n            =>:\n                smul_V(coefficient, kernel_vector) $in \\setting_linear_kernel<V, W, zero_W, T>\n        kernel_vector $in {candidate V: T(candidate) = zero_W}\n        T(kernel_vector) = zero_W\n        by thm setting_scalar_times_zero_vector(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv, W, zero_W, add_W, smul_W, coefficient) => smul_W(coefficient, zero_W) = zero_W\n        T(smul_V(coefficient, kernel_vector)) = smul_W(coefficient, T(kernel_vector)) = smul_W(coefficient, zero_W) = zero_W\n        by thm set_builder_member(smul_V(coefficient, kernel_vector), {candidate V: T(candidate) = zero_W}) => smul_V(coefficient, kernel_vector) $in {candidate V: T(candidate) = zero_W}\n        smul_V(coefficient, kernel_vector) $in \\setting_linear_kernel<V, W, zero_W, T>\n    by def $is_subspace_in_setting(K, scalar_zero, scalar_one, scalar_add, scalar_neg, scalar_mul, scalar_inv, V, zero_V, add_V, smul_V, \\setting_linear_kernel<V, W, zero_W, T>)",
+      "reusable_lesson": "The kernel proof keeps the set as a value while the algebra stays in settings; this separates construction from ambient context cleanly.",
+      "status": "materialized"
+    },
+    {
+      "id": "B015",
+      "source_order": 15,
+      "intent": "Define standalone real scalar operations for the setting example.",
+      "dependencies": [],
+      "attempts": [{
+        "candidate": "setting_real_inv/add/neg/mul function group",
+        "result": "accepted",
+        "verifier_evidence": "session block B015 returned ok:true",
+        "diagnosis": "The concrete scalar operations are checked without constructing a field record.",
+        "next_change": "Prove their field laws."
+      }],
+      "accepted_litex": "have fn setting_real_inv(x R) R by cases:\n    case x = 0: 0\n    case x != 0: 1 / x\n\nhave fn setting_real_add(x, y R) R = x + y\nhave fn setting_real_neg(x R) R = -x\nhave fn setting_real_mul(x, y R) R = x * y",
+      "reusable_lesson": "Concrete operations can instantiate a setting through their ordinary function values; no packaged object is needed.",
+      "status": "materialized"
+    },
+    {
+      "id": "B016",
+      "source_order": 16,
+      "intent": "Verify that the standalone real operations satisfy FieldSetting.",
+      "dependencies": ["B004 is_field_in_setting", "B015 real operation group"],
+      "attempts": [{
+        "candidate": "thm setting_real_numbers_form_field with four local field-law claims",
+        "result": "accepted",
+        "verifier_evidence": "session block B016 returned ok:true",
+        "diagnosis": "The ordinary real identities fold into the setting-derived field judgment.",
+        "next_change": "Define and verify the real coordinate plane operations."
+      }],
+      "accepted_litex": "thm setting_real_numbers_form_field:\n    ? forall:\n        $is_field_in_setting(R, 0, 1, setting_real_add, setting_real_neg, setting_real_mul, setting_real_inv)\n    0 != 1\n    claim:\n        ? forall x R:\n            x != 0\n            =>:\n                setting_real_mul(x, setting_real_inv(x)) = 1\n        setting_real_inv(x) = 1 / x\n        setting_real_mul(x, setting_real_inv(x)) = x * setting_real_inv(x) = x * (1 / x) = 1\n    claim:\n        ? forall x, y, z R:\n            setting_real_add(setting_real_add(x, y), z) = setting_real_add(x, setting_real_add(y, z))\n            setting_real_mul(setting_real_mul(x, y), z) = setting_real_mul(x, setting_real_mul(y, z))\n            setting_real_mul(x, setting_real_add(y, z)) = setting_real_add(setting_real_mul(x, y), setting_real_mul(x, z))\n        setting_real_add(x, y) = x + y\n        setting_real_add(y, z) = y + z\n        setting_real_add(setting_real_add(x, y), z) = setting_real_add(x, y) + z = (x + y) + z = x + (y + z) = x + setting_real_add(y, z) = setting_real_add(x, setting_real_add(y, z))\n        setting_real_mul(x, y) = x * y\n        setting_real_mul(x, z) = x * z\n        setting_real_mul(y, z) = y * z\n        setting_real_mul(setting_real_mul(x, y), z) = setting_real_mul(x, y) * z = (x * y) * z = x * (y * z) = x * setting_real_mul(y, z) = setting_real_mul(x, setting_real_mul(y, z))\n        setting_real_mul(x, setting_real_add(y, z)) = x * setting_real_add(y, z) = x * (y + z) = x * y + x * z\n        setting_real_add(setting_real_mul(x, y), setting_real_mul(x, z)) = setting_real_mul(x, y) + setting_real_mul(x, z) = x * y + x * z\n        setting_real_mul(x, setting_real_add(y, z)) = setting_real_add(setting_real_mul(x, y), setting_real_mul(x, z))\n    claim:\n        ? forall x, y R:\n            setting_real_add(x, y) = setting_real_add(y, x)\n            setting_real_mul(x, y) = setting_real_mul(y, x)\n        setting_real_add(x, y) = x + y = y + x = setting_real_add(y, x)\n        setting_real_mul(x, y) = x * y = y * x = setting_real_mul(y, x)\n    claim:\n        ? forall x R:\n            setting_real_add(0, x) = x\n            setting_real_add(x, setting_real_neg(x)) = 0\n            setting_real_mul(1, x) = x\n        setting_real_add(0, x) = 0 + x = x\n        setting_real_neg(x) = -x\n        setting_real_add(x, setting_real_neg(x)) = x + setting_real_neg(x) = x + (-x) = 0\n        setting_real_mul(1, x) = 1 * x = x\n    by def $is_field_in_setting(R, 0, 1, setting_real_add, setting_real_neg, setting_real_mul, setting_real_inv)",
+      "reusable_lesson": "A concrete theorem can certify a complete setting-derived judgment by proving the stored setting conditions and folding the prop once.",
+      "status": "materialized"
+    },
+    {
+      "id": "B017",
+      "source_order": 17,
+      "intent": "Define coordinatewise addition and scalar multiplication on the real plane.",
+      "dependencies": [],
+      "attempts": [{
+        "candidate": "setting_plane_add and setting_plane_smul",
+        "result": "accepted",
+        "verifier_evidence": "session block B017 returned ok:true",
+        "diagnosis": "Both coordinate operations return cart(R,R) directly.",
+        "next_change": "Prove the vector-space law predicate for these operations."
+      }],
+      "accepted_litex": "have fn setting_plane_add(u, v cart(R, R)) cart(R, R) = (u[1] + v[1], u[2] + v[2])\nhave fn setting_plane_smul(coefficient R, v cart(R, R)) cart(R, R) = (coefficient * v[1], coefficient * v[2])",
+      "reusable_lesson": "Coordinate space appears only as an instance of the earlier carrier-generic setting interface.",
+      "status": "materialized"
+    },
+    {
+      "id": "B018A",
+      "source_order": 18,
+      "intent": "Expose the concrete real addition and multiplication values for later nested claims.",
+      "dependencies": ["B015 real operation group"],
+      "attempts": [{
+        "candidate": "thm setting_real_operation_values",
+        "result": "accepted",
+        "verifier_evidence": "session block B018A returned ok:true",
+        "diagnosis": "The top-level theorem stores both concrete evaluation facts for explicit replay.",
+        "next_change": "Cite this theorem in the plane scalar-law proof."
+      }],
+      "accepted_litex": "thm setting_real_operation_values:\n    ? forall x, y R:\n        setting_real_add(x, y) = x + y\n        setting_real_mul(x, y) = x * y\n    setting_real_add(x, y) = x + y\n    setting_real_mul(x, y) = x * y",
+      "reusable_lesson": "Keep a concrete adapter only where a failed real-context replay proves it is needed; the abstract Setting API remains direct-operation based.",
+      "status": "materialized"
+    },
+    {
+      "id": "B018",
+      "source_order": 19,
+      "intent": "Verify the real plane against the vector-space setting.",
+      "dependencies": ["B005 is_vector_space_in_setting", "B016 real field theorem", "B017 plane operations"],
+      "attempts": [{
+        "candidate": "setting_real_plane_is_vector_space with direct replay of setting_real_mul(a,b)=a*b inside a nested claim",
+        "result": "failed",
+        "verifier_evidence": "VerifyError in B018 at setting_real_mul(a, b) = a * b; well-definedness succeeded but the atomic fact was unknown",
+        "diagnosis": "The earlier checked function definition is callable, but its defining equality did not replay automatically inside this deeper theorem subclaim.",
+        "next_change": "Add a narrow real-operation values theorem and cite it in the scalar-law claim."
+      }, {
+        "candidate": "setting_real_plane_is_vector_space with by thm setting_real_operation_values(a, b) in the scalar-law claim",
+        "result": "accepted",
+        "verifier_evidence": "session block B018R returned ok:true",
+        "diagnosis": "The explicit adapter supplies the two concrete scalar evaluations needed by the nested coordinate calculation.",
+        "next_change": "Materialize this accepted theorem with the concrete projection blocks."
+      }],
+      "accepted_litex": "The verbatim accepted B018R theorem is materialized as `thm setting_real_plane_is_vector_space` in main2.lit at the next checkpoint.",
+      "reusable_lesson": "Definition callability and definition-equality replay are distinct; one narrow adapter theorem is the verified bridge for the deeper coordinate claim.",
+      "status": "materialized"
+    },
+    {
+      "id": "B019",
+      "source_order": 20,
+      "intent": "Define the x-axis projection as a concrete endomorphism of the real plane.",
+      "dependencies": [],
+      "attempts": [{
+        "candidate": "have fn setting_projection_x_axis(v cart(R,R)) = (v[1],0)",
+        "result": "accepted",
+        "verifier_evidence": "session block B019 returned ok:true",
+        "diagnosis": "The coordinate projection is a checked function value.",
+        "next_change": "Prove it satisfies the linear-map setting judgment."
+      }],
+      "accepted_litex": "have fn setting_projection_x_axis(v cart(R, R)) cart(R, R) = (v[1], 0)",
+      "reusable_lesson": "The concrete map is introduced only after the field and vector-space interfaces verify.",
+      "status": "materialized"
+    },
+    {
+      "id": "B020A",
+      "source_order": 21,
+      "intent": "Expose concrete plane-operation evaluations for later theorem scopes.",
+      "dependencies": ["B017 plane operations"],
+      "attempts": [{
+        "candidate": "thm setting_plane_operation_values",
+        "result": "accepted",
+        "verifier_evidence": "session block B020A returned ok:true",
+        "diagnosis": "The theorem stores addition and scalar-multiplication values for explicit replay.",
+        "next_change": "Add the analogous projection-value adapter."
+      }],
+      "accepted_litex": "thm setting_plane_operation_values:\n    ? forall coefficient R, u, v cart(R, R):\n        setting_plane_add(u, v) = (u[1] + v[1], u[2] + v[2])\n        setting_plane_smul(coefficient, u) = (coefficient * u[1], coefficient * u[2])\n    setting_plane_add(u, v) = (u[1] + v[1], u[2] + v[2])\n    setting_plane_smul(coefficient, u) = (coefficient * u[1], coefficient * u[2])",
+      "reusable_lesson": "Concrete adapter facts are replay bridges, not replacements for the abstract Setting interface.",
+      "status": "materialized"
+    },
+    {
+      "id": "B020B",
+      "source_order": 22,
+      "intent": "Expose the concrete projection value for later theorem scopes.",
+      "dependencies": ["B019 projection function"],
+      "attempts": [{
+        "candidate": "thm setting_projection_x_axis_value",
+        "result": "accepted",
+        "verifier_evidence": "session block B020B returned ok:true",
+        "diagnosis": "The coordinate formula is stored as a reusable explicit theorem fact.",
+        "next_change": "Retry linearity using explicit adapter calls."
+      }],
+      "accepted_litex": "thm setting_projection_x_axis_value:\n    ? forall u cart(R, R):\n        setting_projection_x_axis(u) = (u[1], 0)\n    setting_projection_x_axis(u) = (u[1], 0)",
+      "reusable_lesson": "One value theorem supplies the exact representation needed by both preservation calculations.",
+      "status": "materialized"
+    },
+    {
+      "id": "B020",
+      "source_order": 23,
+      "intent": "Prove that the x-axis projection satisfies the linear-map setting.",
+      "dependencies": ["B008 is_linear_map_in_setting", "B018 real-plane theorem", "B019 projection function"],
+      "attempts": [{
+        "candidate": "setting_projection_x_axis_is_linear with direct setting_plane_add replay inside its nested claim",
+        "result": "failed",
+        "verifier_evidence": "VerifyError in B020 at setting_plane_add(u,v) = (u[1]+v[1],u[2]+v[2]); well-definedness succeeded but the atomic fact was unknown",
+        "diagnosis": "The same checked-definition replay boundary appears one theorem layer later for the plane operations.",
+        "next_change": "Expose narrow plane-operation and projection-value adapters, then cite them in the two preservation claims."
+      }, {
+        "candidate": "setting_projection_x_axis_is_linear with plane/projection adapter calls but no explicit projected-coordinate facts",
+        "result": "failed",
+        "verifier_evidence": "VerifyError in B020R at plane_add(projection(u),projection(v)) = (u[1]+v[1],0)",
+        "diagnosis": "The adapter supplied both function values, but rewriting their tuple coordinates inside the outer addition still required explicit coordinate bridges.",
+        "next_change": "State projection(u)[1/2] and projection(v)[1/2] explicitly before the outer operation calculation."
+      }, {
+        "candidate": "setting_projection_x_axis_is_linear with explicit projected-coordinate facts followed by one direct tuple equality",
+        "result": "failed",
+        "verifier_evidence": "VerifyError in B020R2 at plane_add(projection(u),projection(v)) = (u[1]+v[1],0)",
+        "diagnosis": "The coordinate facts were available, but the verifier did not synthesize their congruence through both tuple coordinates and the outer equality in one step.",
+        "next_change": "Expose the two scalar coordinate sums and use an equality chain through the unreduced tuple before reaching the final tuple."
+      }, {
+        "candidate": "setting_projection_x_axis_is_linear with scalar coordinate-sum facts and equality chains through the unreduced tuples",
+        "result": "accepted",
+        "verifier_evidence": "session block B020R3 returned ok:true",
+        "diagnosis": "The explicit congruence bridge is sufficient for both addition and scalar preservation.",
+        "next_change": "Use the abstract kernel theorem and exhibit a concrete nonzero kernel vector."
+      }],
+      "accepted_litex": "The verbatim accepted B020R3 theorem is materialized as `thm setting_projection_x_axis_is_linear` in main2.lit at the next checkpoint.",
+      "reusable_lesson": "For nested concrete coordinate computations, expose scalar coordinate consequences before asking the verifier to identify the surrounding tuple equality.",
+      "status": "materialized"
+    },
+    {
+      "id": "B021",
+      "source_order": 24,
+      "intent": "Instantiate the abstract kernel-subspace theorem for the x-axis projection.",
+      "dependencies": ["B014 setting_linear_map_kernel_is_subspace", "B020 setting_projection_x_axis_is_linear"],
+      "attempts": [{
+        "candidate": "setting_projection_kernel_is_subspace by the concrete linearity theorem and the abstract kernel theorem",
+        "result": "accepted",
+        "verifier_evidence": "session block B021 returned ok:true",
+        "diagnosis": "The Setting-derived linear-map judgment supplies exactly the hypotheses of the carrier-generic kernel theorem.",
+        "next_change": "Exhibit a nonzero vector in this concrete kernel."
+      }],
+      "accepted_litex": "thm setting_projection_kernel_is_subspace:\n    ? forall:\n        $is_subspace_in_setting(R, 0, 1, setting_real_add, setting_real_neg, setting_real_mul, setting_real_inv, cart(R, R), (0, 0), setting_plane_add, setting_plane_smul, \\setting_linear_kernel<cart(R, R), cart(R, R), (0, 0), setting_projection_x_axis>)\n    by thm setting_projection_x_axis_is_linear()\n    by thm setting_linear_map_kernel_is_subspace(R, 0, 1, setting_real_add, setting_real_neg, setting_real_mul, setting_real_inv, cart(R, R), cart(R, R), (0, 0), setting_plane_add, setting_plane_smul, (0, 0), setting_plane_add, setting_plane_smul, setting_projection_x_axis)",
+      "reusable_lesson": "A concrete instance consumes the abstract Setting theorem by passing the flattened operations, while its source still reads as a named setting judgment.",
+      "status": "materialized"
+    },
+    {
+      "id": "B022",
+      "source_order": 25,
+      "intent": "Exhibit a nonzero vertical vector in the concrete projection kernel.",
+      "dependencies": ["B013 setting_linear_kernel", "B020B setting_projection_x_axis_value"],
+      "attempts": [{
+        "candidate": "theorem with a direct ground membership goal",
+        "result": "failed",
+        "verifier_evidence": "ParseError in B022: theorem goal must be a single forall fact",
+        "diagnosis": "Even a closed concrete theorem must wrap its fact in `forall:`.",
+        "next_change": "Wrap the ground membership fact in an empty forall binder."
+      }, {
+        "candidate": "theorem with the ground membership fact under `forall:`",
+        "result": "accepted",
+        "verifier_evidence": "session block B022R returned ok:true",
+        "diagnosis": "The projection value and set-builder membership theorem prove the concrete kernel witness directly.",
+        "next_change": "Materialize the accepted concrete prefix and run a clean checkpoint."
+      }],
+      "accepted_litex": "thm setting_vertical_vector_lies_in_projection_kernel:\n    ? forall:\n        (0, 7) $in \\setting_linear_kernel<cart(R, R), cart(R, R), (0, 0), setting_projection_x_axis>\n    by thm setting_projection_x_axis_value((0, 7)) => setting_projection_x_axis((0, 7)) = (0, 0)\n    \\setting_linear_kernel<cart(R, R), cart(R, R), (0, 0), setting_projection_x_axis> = {candidate cart(R, R): setting_projection_x_axis(candidate) = (0, 0)}\n    by thm set_builder_member((0, 7), {candidate cart(R, R): setting_projection_x_axis(candidate) = (0, 0)}) => (0, 7) $in {candidate cart(R, R): setting_projection_x_axis(candidate) = (0, 0)}\n    (0, 7) $in \\setting_linear_kernel<cart(R, R), cart(R, R), (0, 0), setting_projection_x_axis>",
+      "reusable_lesson": "The abstract kernel construction remains usable as a concrete set; Setting controls the surrounding algebra, not set membership syntax.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B006", "B007", "B008", "B009", "B010", "B011", "B012", "B013", "B014", "B015", "B016", "B017", "B018A", "B018", "B019", "B020A", "B020B", "B020", "B021", "B022"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/5_linear_algebra/main2.lit",
+    "file_gate_result": "exit 0; top-level ok:true after full materialization",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/5_linear_algebra",
+    "module_gate_result": "exit 0; top-level ok:true"
+  }
+}

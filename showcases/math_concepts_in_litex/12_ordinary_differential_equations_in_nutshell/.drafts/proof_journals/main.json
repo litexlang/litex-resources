@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/12_ordinary_differential_equations_in_nutshell/main.lit",
+  "proof_spine": ["quadratic candidate family", "epsilon-delta derivative", "ODE solution relation", "initial value selects the parameter"],
+  "blocks": [
+    {"id": "FILE", "status": "accepted", "classification": "proof", "note": "Release runner verified y'=2x and y(0)=1."},
+    {"id": "O204", "intent": "Generalize the derivative proof to a lambda-selected quadratic family.", "result": "failed", "verifier_evidence": "The proved pointwise lambda fact did not fold back into derivative_delta_controlled for the same function representation.", "diagnosis": "function representation bridge; no trust added"},
+    {"id": "O204c", "intent": "Keep the checked IVP solution and add a candidate family whose parameter is selected by the initial value.", "accepted_litex": "thm quadratic_initial_value_selects_parameter: ? forall c, y0 R: quadratic_solution(c, 0) = y0 => c = y0", "status": "accepted_materialized"},
+    {"id": "O206", "intent": "Use selected theorem results inside the ODE witness.", "accepted_litex": "by thm ode_solution_has_derivative(x) => $has_derivative_at(ode_solution, x, 2 * x)", "status": "accepted_materialized"}
+  ],
+  "materialization": {"block_ids": ["FILE", "O204c", "O206"], "file_gate_result": "file and module release runners passed; full 14-module collection gate passed"}
+}

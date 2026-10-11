@@ -1,0 +1,35 @@
+# Stmt + known_strategy peel: binary package and checked explicit releases for a 4-fold sum.
+# Automatic recursive strategy application is a separate open capability; this proof
+# preserves the original mathematical conclusion using the existing binary axiom.
+# abstract_prop so by-definition cannot short-circuit to builtin PosAddPosIsPos.
+# Quantified premises seed only the four atomic facts (no intermediate sums).
+# Run: litex -f examples/stmt_nodes/definition/def_strategy_peel_sum.lit
+
+abstract_prop is_pos(x)
+
+axiom pos_add_binary:
+    ? forall a, b R:
+        $is_pos(a)
+        $is_pos(b)
+        =>:
+            $is_pos(a + b)
+
+strategy peel_pos_add:
+    ? forall a, b R:
+        $is_pos(a)
+        $is_pos(b)
+        =>:
+            $is_pos(a + b)
+    $is_pos(a + b)
+
+claim:
+    ? forall a, b, c, d R:
+        $is_pos(a)
+        $is_pos(b)
+        $is_pos(c)
+        $is_pos(d)
+        =>:
+            $is_pos(a + b + c + d)
+    release thm pos_add_binary(a, b)
+    release thm pos_add_binary(a + b, c)
+    release thm pos_add_binary(a + b + c, d)

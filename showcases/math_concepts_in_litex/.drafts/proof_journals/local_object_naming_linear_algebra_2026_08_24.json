@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+  "proof_spine": [
+    "Name the additive inverse of x once as nx.",
+    "Use the inverse law and associativity to add nx to both sides.",
+    "Read off y = z without replaying the template instantiation."
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Make the instantiated additive inverse a local mathematical atom.",
+      "dependencies": ["VectorSpaceSetting", "vector_neg_spec"],
+      "attempts": [
+        {
+          "id": "B001-A1",
+          "candidate_is_literal": true,
+          "candidate": "thm add_left_cancel:\n    ? forall [VectorSpaceSetting], x, y, z V:\n        space.add(x, y) = space.add(x, z)\n        =>:\n            y = z\n    let nx = \\vector_neg<K, field, V, space>(x)\n    by thm vector_neg_spec(K, field, V, space, x) => space.add(x, nx) = space.zero\n    space.add(nx, x) = space.add(x, nx) = space.zero\n    space.add(nx, space.add(x, y)) = space.add(space.add(nx, x), y)\n    space.add(space.add(nx, x), y) = space.add(space.zero, y) = y\n    space.add(nx, space.add(x, z)) = space.add(space.add(nx, x), z)\n    space.add(space.add(nx, x), z) = space.add(space.zero, z) = z\n    y = space.add(nx, space.add(x, y)) = space.add(nx, space.add(x, z)) = z",
+          "result": "failed",
+          "failed_phase": "verify_process",
+          "verifier_evidence": "verify_process: selected fact `space.add(x, nx) = space.zero` is not verified after theorem application",
+          "diagnosis": "The theorem selection does not rewrite its result through the new local equality.",
+          "next_change": "Select the theorem's canonical result once, then connect the named value with one equality chain."
+        },
+        {
+          "id": "B001-A2",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "    by thm vector_neg_spec(K, field, V, space, x) => space.add(x, nx) = space.zero\n",
+              "new": "    by thm vector_neg_spec(K, field, V, space, x) => space.add(x, \\vector_neg<K, field, V, space>(x)) = space.zero\n    space.add(x, nx) = space.add(x, \\vector_neg<K, field, V, space>(x)) = space.zero\n"
+            }
+          ],
+          "result": "accepted",
+          "verifier_evidence": "persistent registered session returned ok: true",
+          "diagnosis": "One canonical theorem result plus one local-name equality bridge is sufficient.",
+          "next_change": "Materialize the accepted theorem."
+        }
+      ],
+      "accepted_litex": "thm add_left_cancel:\n    ? forall [VectorSpaceSetting], x, y, z V:\n        space.add(x, y) = space.add(x, z)\n        =>:\n            y = z\n    let nx = \\vector_neg<K, field, V, space>(x)\n    by thm vector_neg_spec(K, field, V, space, x) => space.add(x, \\vector_neg<K, field, V, space>(x)) = space.zero\n    space.add(x, nx) = space.add(x, \\vector_neg<K, field, V, space>(x)) = space.zero\n    space.add(nx, x) = space.add(x, nx) = space.zero\n    space.add(nx, space.add(x, y)) = space.add(space.add(nx, x), y)\n    space.add(space.add(nx, x), y) = space.add(space.zero, y) = y\n    space.add(nx, space.add(x, z)) = space.add(space.add(nx, x), z)\n    space.add(space.add(nx, x), z) = space.add(space.zero, z) = z\n    y = space.add(nx, space.add(x, y)) = space.add(nx, space.add(x, z)) = z",
+      "reusable_lesson": "A local name can replace repeated instantiated objects after one explicit canonical-result-to-alias equality bridge.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+    "file_gate_result": "exit 0; top-level ok: true"
+  }
+}

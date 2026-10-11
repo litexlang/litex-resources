@@ -1,0 +1,8 @@
+# Historical syntax negative: t[i] is retired and fails at parse.
+# This does not assert that a function-valued coordinate is non-callable.
+# Run: litex -f examples/wd_negative/obj_at_index_applied.lit
+# expect exit != 0
+
+let t = (fn(x R) R {x}, 1)
+have a R = 1
+t[1](a) = a

@@ -1,0 +1,680 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+  "proof_spine": [
+    "define the positive Newton iteration and residual gap g_n = |x_n^2 - 2|",
+    "prove the exact recurrence 4*x_n^2*g_(n+1) = g_n^2",
+    "deduce the per-step quadratic contraction g_(n+1) <= g_n^2/4",
+    "derive and apply the closed-form double-exponential bound"
+  ],
+  "blocks": [
+    {
+      "id": "FILE",
+      "status": "accepted",
+      "classification": "proof",
+      "note": "Cold file and module runners succeeded for the recursive gap-contraction development."
+    },
+    {
+      "id": "R204",
+      "intent": "State the flagship theorem through the named residual interface.",
+      "result": "failed",
+      "verifier_evidence": "The residual and Newton definition equalities did not rewrite together inside the outer product."
+    },
+    {
+      "id": "R204b",
+      "intent": "Add only the two inner-expression bridges and prove the residual identity.",
+      "accepted_litex": "thm newton_sqrt_two_residual_identity: ? forall x R: x != 0 => 4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) = square_root_two_residual(x)^2",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R205",
+      "intent": "Compare two residual magnitudes directly.",
+      "result": "failed",
+      "verifier_evidence": "abs did not rewrite from a positive rational value without explicit positivity."
+    },
+    {
+      "id": "R205b",
+      "intent": "Expose positivity, then show the third residual is smaller than the second.",
+      "accepted_litex": "abs(square_root_two_residual(17 / 12)) = 1 / 144 < 1 / 4 = abs(square_root_two_residual(3 / 2))",
+      "status": "superseded_by_sequence_bound"
+    },
+    {
+      "id": "R301",
+      "source_order": 1,
+      "intent": "Replace the guarded scalar update with a positive Newton-step interface, then define the iterate and gap.",
+      "dependencies": [],
+      "attempts": [],
+      "accepted_litex": "have fn newton_sqrt_two(x R+) R+ = (x + 2 / x) / 2; have fn sqrt_two_newton_iterate(n N) R+ by induc n from 0: ...; have fn sqrt_two_newton_gap(n N) R = abs(square_root_two_residual(sqrt_two_newton_iterate(n)))",
+      "reusable_lesson": "A positive codomain carries the nonzero invariant needed by recursive Newton iteration.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R302",
+      "source_order": 2,
+      "intent": "Retain the exact residual identity on the stronger positive domain.",
+      "dependencies": [
+        "R301"
+      ],
+      "attempts": [],
+      "accepted_litex": "thm newton_sqrt_two_residual_identity: ? forall x R+: 4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) = square_root_two_residual(x)^2",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R303",
+      "source_order": 3,
+      "intent": "Show every positive Newton step has nonnegative residual.",
+      "dependencies": [
+        "R302"
+      ],
+      "attempts": [
+        {
+          "candidate": "Infer residual nonnegativity directly from a positive factor times the residual.",
+          "result": "failed",
+          "verifier_evidence": "square_root_two_residual(newton_sqrt_two(x)) >= 0 remained unknown",
+          "diagnosis": "factor-sign cancellation needed an explicit division bridge",
+          "next_change": "divide the nonnegative product by the positive factor"
+        }
+      ],
+      "accepted_litex": "thm newton_sqrt_two_residual_nonnegative: ? forall x R+: square_root_two_residual(newton_sqrt_two(x)) >= 0",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R304",
+      "source_order": 4,
+      "intent": "State the exact one-step law using absolute residual gaps.",
+      "dependencies": [
+        "R302",
+        "R303"
+      ],
+      "attempts": [],
+      "accepted_litex": "thm newton_sqrt_two_one_step_gap_identity: ? forall x R+: 4 * x^2 * abs(square_root_two_residual(newton_sqrt_two(x))) = abs(square_root_two_residual(x))^2",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R305",
+      "source_order": 5,
+      "intent": "Prove a positive Newton step is greater than one.",
+      "dependencies": [
+        "R301"
+      ],
+      "attempts": [],
+      "accepted_litex": "thm newton_sqrt_two_greater_than_one: ? forall x R+: newton_sqrt_two(x) > 1",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R306",
+      "source_order": 6,
+      "intent": "Expose the recursive sequence's successor equation.",
+      "dependencies": [
+        "R301"
+      ],
+      "attempts": [
+        {
+          "candidate": "Omit the contextual equality after proving n+1-1=n.",
+          "result": "failed_on_cold_replay",
+          "verifier_evidence": "the successor conclusion was not reconstructed in a clean file runner",
+          "diagnosis": "the persistent session contained earlier probe facts",
+          "next_change": "retain the lifted newton_sqrt_two equality and final chain"
+        }
+      ],
+      "accepted_litex": "thm sqrt_two_newton_iterate_step: ? forall n N: sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n))",
+      "reusable_lesson": "Treat a persistent-session liveness reduction as provisional until the exact materialized file passes from a cold runner.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R307",
+      "source_order": 7,
+      "intent": "Prove every iterate from x0=1 stays at least one.",
+      "dependencies": [
+        "R305",
+        "R306"
+      ],
+      "attempts": [],
+      "accepted_litex": "thm sqrt_two_newton_iterate_at_least_one: ? forall n N: sqrt_two_newton_iterate(n) >= 1",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R308",
+      "source_order": 8,
+      "intent": "Lift the scalar gap identity to consecutive sequence indices.",
+      "dependencies": [
+        "R304",
+        "R306"
+      ],
+      "attempts": [
+        {
+          "candidate": "Rewrite the two gap definitions and cite the scalar identity directly.",
+          "result": "failed",
+          "verifier_evidence": "the outer-product equality remained unknown",
+          "diagnosis": "definition equalities did not rewrite under the outer product",
+          "next_change": "add the two lifted contextual equalities"
+        }
+      ],
+      "accepted_litex": "thm sqrt_two_newton_gap_step_identity: ? forall n N: 4 * sqrt_two_newton_iterate(n)^2 * sqrt_two_newton_gap(n + 1) = sqrt_two_newton_gap(n)^2",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R309",
+      "source_order": 9,
+      "intent": "Turn the exact identity into a uniform quadratic contraction.",
+      "dependencies": [
+        "R307",
+        "R308"
+      ],
+      "attempts": [
+        {
+          "candidate": "Infer iterate(n)^2 >= 1 directly from iterate(n) >= 1.",
+          "result": "failed",
+          "verifier_evidence": "sqrt_two_newton_iterate(n)^2 >= 1 remained unknown",
+          "diagnosis": "square monotonicity needed a difference-of-squares bridge",
+          "next_change": "factor iterate(n)^2 - 1"
+        },
+        {
+          "candidate": "Use the factored square comparison but state gap nonnegativity directly.",
+          "result": "failed",
+          "verifier_evidence": "sqrt_two_newton_gap(n + 1) >= 0 remained unknown",
+          "diagnosis": "absolute-value nonnegativity did not fold through the named gap definition",
+          "next_change": "expose the gap definition before the sign fact"
+        }
+      ],
+      "accepted_litex": "thm sqrt_two_newton_gap_contracts_quadratically: ? forall n N: sqrt_two_newton_gap(n + 1) <= sqrt_two_newton_gap(n)^2 / 4",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R310",
+      "source_order": 10,
+      "intent": "Define and verify the closed-form double-exponential comparison sequence.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "Normalize the complete bound-step identity in one symbolic equality.",
+          "result": "failed",
+          "verifier_evidence": "4*(1/4)^(2^(n+1)) = (4*(1/4)^(2^n))^2/4 remained unknown",
+          "diagnosis": "the outer scalar algebra needed a local atom",
+          "next_change": "name t=(1/4)^(2^n) and normalize through t"
+        }
+      ],
+      "accepted_litex": "have fn sqrt_two_newton_gap_bound(n N) R+ = 4 * (1 / 4)^(2^n); thm sqrt_two_newton_gap_bound_step: ? forall n N: sqrt_two_newton_gap_bound(n + 1) = sqrt_two_newton_gap_bound(n)^2 / 4",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R311",
+      "source_order": 11,
+      "intent": "Prove the gap is bounded by 4*(1/4)^(2^n).",
+      "dependencies": [
+        "R309",
+        "R310"
+      ],
+      "attempts": [],
+      "accepted_litex": "thm sqrt_two_newton_gap_double_exponential_bound: ? forall n N: sqrt_two_newton_gap(n) <= sqrt_two_newton_gap_bound(n)",
+      "reusable_lesson": "Normalize the contraction and comparison sequence to the same square-over-four recurrence, then compare squares through a difference-of-squares factorization.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R312",
+      "source_order": 12,
+      "intent": "Package several concrete checkpoints into one claim.",
+      "dependencies": [
+        "R301"
+      ],
+      "attempts": [
+        {
+          "candidate": "Use one claim with several atomic conclusions.",
+          "result": "failed",
+          "verifier_evidence": "unexpected indentation while parsing the multi-conclusion claim",
+          "diagnosis": "the compact claim surface was not suitable here",
+          "next_change": "publish independent checked equalities"
+        }
+      ],
+      "status": "not_materialized"
+    },
+    {
+      "id": "R313",
+      "source_order": 13,
+      "intent": "Expose the closed form directly as the public decay theorem.",
+      "dependencies": [
+        "R311"
+      ],
+      "attempts": [],
+      "accepted_litex": "thm sqrt_two_newton_gap_decays_double_exponentially: ? forall n N: sqrt_two_newton_gap(n) <= 4 * (1 / 4)^(2^n)",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R314",
+      "source_order": 14,
+      "intent": "Show the first four values of the proved comparison bound.",
+      "dependencies": [
+        "R310"
+      ],
+      "attempts": [],
+      "accepted_litex": "sqrt_two_newton_gap_bound(0)=1; ...; sqrt_two_newton_gap_bound(3)=1/16384",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R315",
+      "source_order": 15,
+      "intent": "Reduce redundant proof echoes without losing proof liveness.",
+      "dependencies": [
+        "R305",
+        "R306",
+        "R307",
+        "R308",
+        "R309",
+        "R310",
+        "R311",
+        "R313"
+      ],
+      "attempts": [
+        {
+          "candidate": "Shorten each theorem independently in the persistent session.",
+          "result": "accepted_provisionally",
+          "verifier_evidence": "all reduced blocks passed in session"
+        },
+        {
+          "candidate": "Replay the exact reduced file from a cold runner.",
+          "result": "partially_failed",
+          "verifier_evidence": "R306 needed its contextual successor equality restored"
+        }
+      ],
+      "reusable_lesson": "The file runner, not accumulated session state, decides materialized proof liveness.",
+      "status": "accepted_materialized_after_cold_replay"
+    },
+    {
+      "id": "R316",
+      "source_order": 16,
+      "intent": "Retain three exact updates while replacing isolated residual comparisons with the sequence theorem.",
+      "dependencies": [
+        "R301"
+      ],
+      "attempts": [
+        {
+          "candidate": "Evaluate the recursive iterate and gap definitions directly at small indices.",
+          "result": "failed",
+          "verifier_evidence": "recursive and named definitions did not automatically unfold through the requested equalities",
+          "diagnosis": "the direct scalar Newton calls are the clearer executable checkpoints",
+          "next_change": "keep direct update equalities and publish bound values"
+        }
+      ],
+      "accepted_litex": "newton_sqrt_two(1)=3/2; newton_sqrt_two(3/2)=17/12; newton_sqrt_two(17/12)=577/408",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R401",
+      "source_order": 5,
+      "intent": "Collapse all proof-only public theorems into one reader-facing gap-bound theorem.",
+      "dependencies": [
+        "R301"
+      ],
+      "attempts": [
+        {
+          "candidate": "One theorem with local one-step, invariant, contraction, and induction claims using n in every local universal.",
+          "result": "failed",
+          "verifier_evidence": "ParseError: name n is already active in this scope and cannot be rebound",
+          "diagnosis": "the outer theorem binder and nested universal shared the same active name",
+          "next_change": "rename nested induction binders to k without changing the mathematics"
+        },
+        {
+          "candidate": "Use k for nested universals and fold the residual definitions directly inside the outer scaled product.",
+          "result": "failed",
+          "verifier_evidence": "the first chain step under 4*x^2 remained unknown",
+          "diagnosis": "definition equalities do not rewrite through the outer multiplication automatically",
+          "next_change": "restore only the inner residual/Newton expression bridge before the scaled calculation"
+        },
+        {
+          "candidate": "Keep the scalar bridge but fold the named gap definitions directly into the scaled recurrence.",
+          "result": "failed",
+          "verifier_evidence": "4*iterate(k)^2*gap(k+1)=gap(k)^2 remained unknown",
+          "diagnosis": "both named gaps need contextual equalities under multiplication and squaring",
+          "next_change": "add exactly the two lifted gap equalities inside the local contraction claim"
+        },
+        {
+          "candidate": "Add the two contextual gap equalities and close the scaled recurrence locally.",
+          "result": "failed",
+          "verifier_evidence": "gap(k+1)>=0 remained unknown",
+          "diagnosis": "absolute-value nonnegativity does not fold through the named gap automatically",
+          "next_change": "expose the absolute value's sign before folding it into gap nonnegativity"
+        },
+        {
+          "candidate": "Expose gap nonnegativity in both the contraction and final induction.",
+          "result": "failed",
+          "verifier_evidence": "the equality from (1/4)^(2^n*2) to t^2 remained unknown",
+          "diagnosis": "the local atom t still needs the explicit unsimplified power expression as a bridge",
+          "next_change": "retain ((1/4)^(2^n))^2 before rewriting it to t^2"
+        },
+        {
+          "candidate": "Put every supporting universal claim inside one reader-facing theorem.",
+          "result": "performance_blocked",
+          "verifier_evidence": "The persistent session did not return after more than three minutes and was interrupted.",
+          "diagnosis": "Collapsing the proof text also collapses verifier checkpoints and makes replay impractically slow.",
+          "next_change": "Keep the accepted fine-grained proof blocks but move them out of the reader-facing entry file."
+        },
+        {
+          "candidate": "Use one top-level anonymous universal claim for the combined step-gap argument.",
+          "result": "performance_blocked",
+          "verifier_evidence": "The persistent session again ran for more than three minutes and was interrupted.",
+          "diagnosis": "Anonymous packaging does not recover the useful theorem boundaries.",
+          "next_change": "Separate definitions, proof details, and the small application into registered modules."
+        },
+        {
+          "candidate": "Split the showcase into iteration definitions, a checked proof module, and a tiny main example.",
+          "result": "accepted",
+          "verifier_evidence": "Definition file, proof file, main file, and full module runners all returned ok=true.",
+          "diagnosis": "The split preserves the complete proof while reducing main.lit from 153 lines to 11.",
+          "next_change": "Use this three-file presentation boundary for the published showcase."
+        }
+      ],
+      "status": "accepted_materialized",
+      "accepted_litex": "newton_iteration.lit defines the iteration and gap; gap_bound.lit proves sqrt_two_newton_gap_bound; main.lit contains only two updates and the n=2 bound application",
+      "reusable_lesson": "Presentation simplicity and proof granularity are separate concerns: keep verifier-friendly lemmas in a proof module and expose one short checked application in main."
+    },
+    {
+      "id": "R402",
+      "source_order": 6,
+      "intent": "Apply the proved sequence bound in one small numerical checkpoint.",
+      "dependencies": [
+        "R401",
+        "proof::sqrt_two_newton_gap_bound"
+      ],
+      "attempts": [],
+      "accepted_litex": "by thm proof::sqrt_two_newton_gap_bound(2) => iteration::sqrt_two_newton_gap(2) <= iteration::sqrt_two_newton_gap_bound(2); iteration::sqrt_two_newton_gap_bound(2) = 1 / 64; iteration::sqrt_two_newton_gap(2) <= 1 / 64",
+      "reusable_lesson": "A showcase entry can cite one proved bound, evaluate it, and finish with the concrete inequality.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R501",
+      "source_order": 1,
+      "intent": "Merge the definitions, complete gap-bound proof, and small numerical application into the single registered main.lit file.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "Remove the two helper files from litex.config before deleting their physical paths, then start -session -before main.lit.",
+          "result": "failed",
+          "verifier_evidence": "startup_error: configured folder contains unexported Litex module path gap_bound.lit; every direct child .lit file must appear in [export]",
+          "diagnosis": "A module cannot leave the old .lit files physically present but unexported during the transition.",
+          "next_change": "Delete the two superseded files after preserving their content, then restart the one-file session."
+        },
+        {
+          "candidate": "Replay the merged source with both the comparison function and the global theorem named sqrt_two_newton_gap_bound.",
+          "result": "failed",
+          "verifier_evidence": "NameAlreadyUsedError: name sqrt_two_newton_gap_bound is already used in this scope as object.",
+          "diagnosis": "The split modules had separate namespaces; a single Litex module cannot reuse one name for the bound function and its theorem.",
+          "next_change": "Keep the function name and rename the theorem to sqrt_two_newton_gap_is_bounded."
+        },
+        {
+          "candidate": "Use sqrt_two_newton_gap_bound for the comparison function and sqrt_two_newton_gap_is_bounded for the global theorem, all in main.lit.",
+          "result": "accepted",
+          "verifier_evidence": "Twenty source-order blocks returned ok=true in one persistent -session -before main.lit process.",
+          "diagnosis": "The single namespace is sound once the function/theorem name collision is removed.",
+          "next_change": "Materialize the accepted single-file source."
+        }
+      ],
+      "status": "accepted_materialized",
+      "accepted_litex": "have fn square_root_two_residual(x R) R = x^2 - 2\nhave fn newton_sqrt_two(x R+) R+ = (x + 2 / x) / 2\n\nhave fn sqrt_two_newton_iterate(n N) R+ by induc n from 0:\n    case n = 0: 1\n    case n > 0: newton_sqrt_two(sqrt_two_newton_iterate(n - 1))\n\nhave fn sqrt_two_newton_gap(n N) R = abs(square_root_two_residual(sqrt_two_newton_iterate(n)))\nhave fn sqrt_two_newton_gap_bound(n N) R+ = 4 * (1 / 4)^(2^n)\n\nthm sqrt_two_newton_iterate_step:\n    ? forall n N:\n        sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n))\n    n + 1 > 0\n    sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n + 1 - 1))\n    n + 1 - 1 = n\n    newton_sqrt_two(sqrt_two_newton_iterate(n + 1 - 1)) = newton_sqrt_two(sqrt_two_newton_iterate(n))\n    sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n))\n\nthm newton_sqrt_two_residual_identity:\n    ? forall x R+:\n        4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) = square_root_two_residual(x)^2\n    square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2\n    square_root_two_residual(x) = x^2 - 2\n    newton_sqrt_two(x) = (x + 2 / x) / 2\n    newton_sqrt_two(x)^2 - 2 = ((x + 2 / x) / 2)^2 - 2\n    square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2 = ((x + 2 / x) / 2)^2 - 2\n    square_root_two_residual(x)^2 = (x^2 - 2)^2\n    4 * x^2 * (((x + 2 / x) / 2)^2 - 2) = (x^2 - 2)^2\n    4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) = 4 * x^2 * (((x + 2 / x) / 2)^2 - 2) = (x^2 - 2)^2 = square_root_two_residual(x)^2\n\nthm newton_sqrt_two_residual_nonnegative:\n    ? forall x R+:\n        square_root_two_residual(newton_sqrt_two(x)) >= 0\n    by thm newton_sqrt_two_residual_identity(x) => 4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) = square_root_two_residual(x)^2\n    4 * x^2 > 0\n    4 * x^2 != 0\n    square_root_two_residual(x)^2 >= 0\n    4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) >= 0\n    (4 * x^2 * square_root_two_residual(newton_sqrt_two(x))) / (4 * x^2) >= 0\n    square_root_two_residual(newton_sqrt_two(x)) = (4 * x^2 * square_root_two_residual(newton_sqrt_two(x))) / (4 * x^2) >= 0\n\nthm newton_sqrt_two_one_step_gap_identity:\n    ? forall x R+:\n        4 * x^2 * abs(square_root_two_residual(newton_sqrt_two(x))) = abs(square_root_two_residual(x))^2\n    by thm newton_sqrt_two_residual_identity(x) => 4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) = square_root_two_residual(x)^2\n    by thm newton_sqrt_two_residual_nonnegative(x) => square_root_two_residual(newton_sqrt_two(x)) >= 0\n    abs(square_root_two_residual(newton_sqrt_two(x))) = square_root_two_residual(newton_sqrt_two(x))\n    abs(square_root_two_residual(x))^2 = square_root_two_residual(x)^2\n    4 * x^2 * abs(square_root_two_residual(newton_sqrt_two(x))) = 4 * x^2 * square_root_two_residual(newton_sqrt_two(x)) = square_root_two_residual(x)^2 = abs(square_root_two_residual(x))^2\n\nthm newton_sqrt_two_greater_than_one:\n    ? forall x R+:\n        newton_sqrt_two(x) > 1\n    newton_sqrt_two(x) = (x + 2 / x) / 2\n    newton_sqrt_two(x) - 1 = ((x - 1)^2 + 1) / (2 * x)\n    (x - 1)^2 >= 0\n    (x - 1)^2 + 1 > 0\n    2 * x > 0\n    ((x - 1)^2 + 1) / (2 * x) > 0\n\nthm sqrt_two_newton_iterate_at_least_one:\n    ? forall n N:\n        sqrt_two_newton_iterate(n) >= 1\n    by induc n from 0:\n        ? sqrt_two_newton_iterate(n) >= 1\n        ? from n = 0:\n            sqrt_two_newton_iterate(0) = 1\n        ? induc:\n            by thm sqrt_two_newton_iterate_step(n) => sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n))\n            by thm newton_sqrt_two_greater_than_one(sqrt_two_newton_iterate(n)) => newton_sqrt_two(sqrt_two_newton_iterate(n)) > 1\n\nthm sqrt_two_newton_gap_step_identity:\n    ? forall n N:\n        4 * sqrt_two_newton_iterate(n)^2 * sqrt_two_newton_gap(n + 1) = sqrt_two_newton_gap(n)^2\n    by thm sqrt_two_newton_iterate_step(n) => sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n))\n    sqrt_two_newton_gap(n + 1) = abs(square_root_two_residual(sqrt_two_newton_iterate(n + 1))) = abs(square_root_two_residual(newton_sqrt_two(sqrt_two_newton_iterate(n))))\n    sqrt_two_newton_gap(n) = abs(square_root_two_residual(sqrt_two_newton_iterate(n)))\n    4 * sqrt_two_newton_iterate(n)^2 * sqrt_two_newton_gap(n + 1) = 4 * sqrt_two_newton_iterate(n)^2 * abs(square_root_two_residual(newton_sqrt_two(sqrt_two_newton_iterate(n))))\n    sqrt_two_newton_gap(n)^2 = abs(square_root_two_residual(sqrt_two_newton_iterate(n)))^2\n    by thm newton_sqrt_two_one_step_gap_identity(sqrt_two_newton_iterate(n)) => 4 * sqrt_two_newton_iterate(n)^2 * abs(square_root_two_residual(newton_sqrt_two(sqrt_two_newton_iterate(n)))) = abs(square_root_two_residual(sqrt_two_newton_iterate(n)))^2\n\nthm sqrt_two_newton_gap_contracts_quadratically:\n    ? forall n N:\n        sqrt_two_newton_gap(n + 1) <= sqrt_two_newton_gap(n)^2 / 4\n    by thm sqrt_two_newton_iterate_at_least_one(n) => sqrt_two_newton_iterate(n) >= 1\n    sqrt_two_newton_iterate(n) - 1 >= 0\n    sqrt_two_newton_iterate(n) + 1 > 0\n    (sqrt_two_newton_iterate(n) - 1) * (sqrt_two_newton_iterate(n) + 1) >= 0\n    sqrt_two_newton_iterate(n)^2 - 1 = (sqrt_two_newton_iterate(n) - 1) * (sqrt_two_newton_iterate(n) + 1) >= 0\n    sqrt_two_newton_iterate(n)^2 >= 1\n    sqrt_two_newton_gap(n + 1) = abs(square_root_two_residual(sqrt_two_newton_iterate(n + 1)))\n    abs(square_root_two_residual(sqrt_two_newton_iterate(n + 1))) >= 0\n    sqrt_two_newton_gap(n + 1) >= 0\n    4 * sqrt_two_newton_gap(n + 1) <= 4 * sqrt_two_newton_iterate(n)^2 * sqrt_two_newton_gap(n + 1)\n    by thm sqrt_two_newton_gap_step_identity(n) => 4 * sqrt_two_newton_iterate(n)^2 * sqrt_two_newton_gap(n + 1) = sqrt_two_newton_gap(n)^2\n    4 * sqrt_two_newton_gap(n + 1) <= sqrt_two_newton_gap(n)^2\n\nthm sqrt_two_newton_gap_bound_step:\n    ? forall n N:\n        sqrt_two_newton_gap_bound(n + 1) = sqrt_two_newton_gap_bound(n)^2 / 4\n    have t R+ = (1 / 4)^(2^n)\n    sqrt_two_newton_gap_bound(n) = 4 * (1 / 4)^(2^n) = 4 * t\n    2^(n + 1) = 2^n * 2\n    (1 / 4)^(2^(n + 1)) = (1 / 4)^(2^n * 2) = ((1 / 4)^(2^n))^2 = t^2\n    sqrt_two_newton_gap_bound(n + 1) = 4 * (1 / 4)^(2^(n + 1)) = 4 * t^2\n    sqrt_two_newton_gap_bound(n)^2 / 4 = (4 * t)^2 / 4 = 16 * t^2 / 4 = 4 * t^2\n\nthm sqrt_two_newton_gap_is_bounded:\n    ? forall n N:\n        sqrt_two_newton_gap(n) <= sqrt_two_newton_gap_bound(n)\n    by induc n from 0:\n        ? sqrt_two_newton_gap(n) <= sqrt_two_newton_gap_bound(n)\n        ? from n = 0:\n            sqrt_two_newton_iterate(0) = 1\n            square_root_two_residual(1) = -1\n            sqrt_two_newton_gap(0) = abs(square_root_two_residual(sqrt_two_newton_iterate(0))) = abs(-1) = 1\n            sqrt_two_newton_gap_bound(0) = 4 * (1 / 4)^(2^0) = 4 * (1 / 4) = 1\n        ? induc:\n            sqrt_two_newton_gap(n) = abs(square_root_two_residual(sqrt_two_newton_iterate(n)))\n            abs(square_root_two_residual(sqrt_two_newton_iterate(n))) >= 0\n            sqrt_two_newton_gap(n) >= 0\n            sqrt_two_newton_gap_bound(n) > 0\n            sqrt_two_newton_gap_bound(n) - sqrt_two_newton_gap(n) >= 0\n            sqrt_two_newton_gap_bound(n) + sqrt_two_newton_gap(n) >= 0\n            (sqrt_two_newton_gap_bound(n) - sqrt_two_newton_gap(n)) * (sqrt_two_newton_gap_bound(n) + sqrt_two_newton_gap(n)) >= 0\n            sqrt_two_newton_gap_bound(n)^2 - sqrt_two_newton_gap(n)^2 = (sqrt_two_newton_gap_bound(n) - sqrt_two_newton_gap(n)) * (sqrt_two_newton_gap_bound(n) + sqrt_two_newton_gap(n)) >= 0\n            sqrt_two_newton_gap(n)^2 <= sqrt_two_newton_gap_bound(n)^2\n            sqrt_two_newton_gap(n)^2 / 4 <= sqrt_two_newton_gap_bound(n)^2 / 4\n            by thm sqrt_two_newton_gap_contracts_quadratically(n) => sqrt_two_newton_gap(n + 1) <= sqrt_two_newton_gap(n)^2 / 4\n            by thm sqrt_two_newton_gap_bound_step(n) => sqrt_two_newton_gap_bound(n + 1) = sqrt_two_newton_gap_bound(n)^2 / 4\n            sqrt_two_newton_gap(n + 1) <= sqrt_two_newton_gap(n)^2 / 4 <= sqrt_two_newton_gap_bound(n)^2 / 4 = sqrt_two_newton_gap_bound(n + 1)\n\nnewton_sqrt_two(1) = 3 / 2\nnewton_sqrt_two(3 / 2) = 17 / 12\n\nby thm sqrt_two_newton_gap_is_bounded(2) => sqrt_two_newton_gap(2) <= sqrt_two_newton_gap_bound(2)\nsqrt_two_newton_gap_bound(2) = 1 / 64\nsqrt_two_newton_gap(2) <= 1 / 64\n",
+      "reusable_lesson": "When merging Litex modules, audit names that were previously separated by namespaces; keep data-producing functions and propositions distinctly named."
+    },
+    {
+      "id": "R601",
+      "source_order": 2,
+      "intent": "Test whether the successor equation and scaled residual identity are definition-folding proofs.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "State the successor theorem with no proof body and let the recursive definition close it automatically.",
+          "result": "failed",
+          "verifier_evidence": "UnknownError: cannot prove sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n)).",
+          "diagnosis": "The stored positive recursive clause produces the index (n + 1) - 1; equality under the enclosing function is not normalized automatically to n.",
+          "next_change": "Test literal by def on the equality, then retain only the smallest explicit index bridge if equality is outside by def's supported target class."
+        },
+        {
+          "candidate": "Prove the successor equality with by def applied directly to the equality.",
+          "result": "failed",
+          "verifier_evidence": "by def: the equality has no supported builtin definition.",
+          "diagnosis": "Current by def introduces positive predicates and supported builtin definitions; it is not a generic function-unfolding tactic for equality.",
+          "next_change": "Test the residual identity separately, distinguishing definitional subexpressions from its algebraic outer equality."
+        },
+        {
+          "candidate": "State the scaled residual theorem with no proof body.",
+          "result": "failed",
+          "verifier_evidence": "UnknownError: cannot prove the outer scaled residual equality.",
+          "diagnosis": "Unfolding the two functions leaves a nontrivial rational-polynomial identity; the definition clauses alone are insufficient.",
+          "next_change": "Confirm that by def rejects the equality target, then retain explicit definition bridges plus the algebraic identity."
+        },
+        {
+          "candidate": "Apply by def directly to the scaled residual equality.",
+          "result": "failed",
+          "verifier_evidence": "by def: the scaled equality has no supported builtin definition.",
+          "diagnosis": "by def is definition introduction for positive predicates and selected builtin definitions, not general equality simplification.",
+          "next_change": "No source edit for this diagnostic; distinguish definitional equalities from the algebraic theorem in the explanation."
+        }
+      ],
+      "status": "completed_diagnostic",
+      "reusable_lesson": "A function equation can be mathematically definitional without being a legal by def target. Recursive successor equations may still need explicit index normalization; an outer residual identity additionally needs field algebra."
+    },
+    {
+      "id": "R701",
+      "source_order": 1,
+      "intent": "Make the residual-convergence spine visible before the supporting proof machinery while preserving the existing mathematical interfaces.",
+      "dependencies": [
+        "R501",
+        "R601"
+      ],
+      "attempts": [
+        {
+          "candidate": "Send literal try blocks directly to the current machine-readable session stdin.",
+          "result": "failed",
+          "verifier_evidence": "protocol_error: expected run, artifacts, or close",
+          "diagnosis": "The current session protocol requires run <id> <utf8-byte-count> framing around each literal try block.",
+          "next_change": "Keep the same process and resend each source-order block as one framed run request."
+        },
+        {
+          "candidate": "Replay the reorganized single-file source in 23 framed source-order try blocks.",
+          "result": "accepted",
+          "verifier_evidence": "Every unique source block returned ok=true; the only duplicate-name response came from resending the recursive definition after its first framed request had already committed.",
+          "diagnosis": "Moving the concrete preview before the proof machinery and adding three direct residual evaluations preserves the existing theorem environment.",
+          "next_change": "Materialize the accepted reader-facing organization and run the clean file gate."
+        }
+      ],
+      "accepted_litex": "newton_sqrt_two(1) = 3 / 2\nnewton_sqrt_two(3 / 2) = 17 / 12\nsquare_root_two_residual(1) = -1\nsquare_root_two_residual(3 / 2) = 1 / 4\nsquare_root_two_residual(17 / 12) = 1 / 144",
+      "reusable_lesson": "A showcase can foreground its proof spine with mathematical sectioning and early concrete evaluations without wrapping existing proof-support theorems or changing their interfaces.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R801",
+      "source_order": 1,
+      "intent": "Consume the recursive case facts stored by have fn by induc directly and remove explicit successor-unfolding proof scaffolding.",
+      "dependencies": [
+        "R701",
+        "examples/01_proof_patterns/recursive_definition_successor_unfolding.lit"
+      ],
+      "attempts": [
+        {
+          "candidate": "Make the numerical induction base branch completely bodyless.",
+          "result": "failed",
+          "verifier_evidence": "ParseError: numeric induc `? from` requires a trailing colon and an indented body.",
+          "diagnosis": "The recursive base equation is inferable, but the current numeric induction branch syntax still requires at least one proof statement.",
+          "next_change": "Keep the smallest useful base equation and remove successor scaffolding independently."
+        },
+        {
+          "candidate": "Delete the successor equality entirely from the induction step and retain only newton_sqrt_two_greater_than_one.",
+          "result": "failed",
+          "verifier_evidence": "by induc: induction step is not proved sqrt_two_newton_iterate(n + 1) >= 1.",
+          "diagnosis": "The recursive equation is directly provable, but it must be materialized before the comparison can transport through it.",
+          "next_change": "Write the generated successor equality directly at the use site, without a wrapper theorem."
+        },
+        {
+          "candidate": "Delete the successor equality entirely from the nested residual-gap calculation.",
+          "result": "failed",
+          "verifier_evidence": "The chain step abs(residual(iterate(n+1))) = abs(residual(newton(iterate(n)))) remained unknown.",
+          "diagnosis": "Recursive-case matching proves the inner equality but does not automatically rewrite it through both residual and abs.",
+          "next_change": "Materialize the generated successor equality once before the outer calculation."
+        },
+        {
+          "candidate": "Remove the recursive wrapper theorem, write its generated equality directly at the two outer-rewrite consumers, and delete the repeated residual(1) base fact.",
+          "result": "accepted",
+          "verifier_evidence": "All 22 unique source-order blocks returned ok=true in one persistent session.",
+          "diagnosis": "The by-induc definition now discharges the successor equality directly; only its two caller-local materializations remain live verifier bridges.",
+          "next_change": "Materialize the shortened source and run the clean file gate."
+        }
+      ],
+      "accepted_litex": "Delete thm sqrt_two_newton_iterate_step. In sqrt_two_newton_iterate_at_least_one and sqrt_two_newton_gap_step_identity, use the direct fact sqrt_two_newton_iterate(n + 1) = newton_sqrt_two(sqrt_two_newton_iterate(n)). Remove the repeated square_root_two_residual(1) = -1 from the global-bound base case.",
+      "reusable_lesson": "A have fn by induc case equation can be stated directly with no unfolding proof. Materialize it only when a downstream comparison or nested outer function needs the equality in context.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R901",
+      "source_order": 1,
+      "intent": "Reorder the Newton convergence showcase along the natural mathematical narrative and inline proof-only residual helpers into the one-step gap theorem.",
+      "dependencies": [
+        "R801",
+        "newton_sqrt_two",
+        "square_root_two_residual"
+      ],
+      "attempts": [
+        {
+          "candidate": "Inline the exact residual calculation and its nonnegativity consequence into newton_sqrt_two_one_step_gap_identity, deleting both proof-only top-level helper theorems.",
+          "result": "accepted",
+          "verifier_evidence": "R901-11 returned ok=true in the same persistent session after the five definitions and five preview facts were accepted in source order.",
+          "diagnosis": "The two helpers are not reusable mathematical milestones; their facts remain live as consecutive local calculation steps inside the reader-facing one-step gap theorem.",
+          "next_change": "Materialize the merged theorem and organize the remaining proof as numbered steps following the natural-language convergence argument."
+        }
+      ],
+      "accepted_litex": "Keep one top-level newton_sqrt_two_one_step_gap_identity theorem. Its body first derives 4*x^2*residual(newton(x))=residual(x)^2, then proves the new residual nonnegative, then removes abs and concludes the exact gap identity.",
+      "reusable_lesson": "In a mathematical showcase, proof-only lemmas should be localized when a natural exposition presents them as consecutive lines of one calculation rather than as separately named results.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R1000",
+      "source_order": 0,
+      "intent": "Start the required current-source persistent pre-file session before repairing the stale concrete update.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+          "result": "cli_rejected",
+          "verifier_evidence": "cli_error: unsupported CLI command combination",
+          "diagnosis": "The current CLI exposes neither the documented compact session combination nor the same session command without -compact.",
+          "next_change": "Use the task's allocated isolated draft area for literal minimal candidates and require a clean registered module replay before acceptance."
+        },
+        {
+          "candidate": "target/release/litex -session -before showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+          "result": "cli_rejected",
+          "verifier_evidence": "cli_error: unsupported CLI command combination",
+          "diagnosis": "The incompatibility is the session surface itself, not only compact output.",
+          "next_change": "Keep this protocol drift explicit; do not widen the task into a CLI implementation change."
+        }
+      ],
+      "status": "completed_protocol_boundary"
+    },
+    {
+      "id": "R1001",
+      "source_order": 1,
+      "intent": "Repair the concrete second Newton update without changing the update definition.",
+      "dependencies": [
+        "newton_sqrt_two"
+      ],
+      "attempts": [
+        {
+          "candidate": "newton_sqrt_two(3 / 2) = ((3 / 2) + 2 / (3 / 2)) / 2 = 17 / 12",
+          "result": "accepted_in_isolated_probe",
+          "verifier_evidence": "target/release/litex -isolated -f tmp/2026-09-02/manual-fibonacci-python-example/newton_exact_update.lit exited 0 with top-level ok=true; the checked definition reduction and exact rational normalization discharged the two adjacent equalities.",
+          "diagnosis": "The direct endpoint hid both definition reduction and rational normalization; preserving the stored formula as the middle node exposes the actual proof path.",
+          "next_change": "Materialize the continuous equality chain and require the full registered module replay."
+        }
+      ],
+      "accepted_litex": "newton_sqrt_two(3 / 2) = ((3 / 2) + 2 / (3 / 2)) / 2 = 17 / 12",
+      "reusable_lesson": "For a concrete function evaluation that combines definition unfolding and exact arithmetic, retain the function body as a middle node in one equality chain.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R1003",
+      "source_order": 3,
+      "intent": "Repair the next stale concrete residual evaluation exposed by the full module replay.",
+      "dependencies": [
+        "square_root_two_residual",
+        "R1001"
+      ],
+      "attempts": [
+        {
+          "candidate": "square_root_two_residual(17 / 12) = (17 / 12)^2 - 2 = 1 / 144",
+          "result": "accepted_in_isolated_probe",
+          "verifier_evidence": "target/release/litex -isolated -f tmp/2026-09-02/manual-fibonacci-python-example/newton_exact_update.lit exited 0 with top-level ok=true.",
+          "diagnosis": "The same explicit definition-body middle node separates checked reduction from exact rational normalization.",
+          "next_change": "Materialize this chain and replay the full module."
+        }
+      ],
+      "accepted_litex": "square_root_two_residual(17 / 12) = (17 / 12)^2 - 2 = 1 / 144",
+      "reusable_lesson": "Concrete preview evaluations should expose the formula when a current verifier no longer composes function reduction and arithmetic normalization in one endpoint step.",
+      "status": "accepted_materialized"
+    },
+    {
+      "id": "R1002",
+      "source_order": 2,
+      "intent": "Expose an extractor-compatible total Newton step while preserving the positive-real mathematical update.",
+      "dependencies": [
+        "newton_sqrt_two"
+      ],
+      "attempts": [
+        {
+          "candidate": "Define newton_sqrt_two_step : R -> R by cases, attach the same have algo cases, and prove agreement with newton_sqrt_two on R+ through the shared formula.",
+          "result": "accepted_in_isolated_probe",
+          "verifier_evidence": "target/release/litex -isolated -f tmp/2026-09-02/manual-fibonacci-python-example/newton_step_for_python.lit exited 0 with top-level ok=true; -extractpython returned artifact ok=true.",
+          "diagnosis": "Extractor v1 requires an R -> R interface; an explicit x=0 restart totalizes the otherwise partial formula while the proof connects every positive input to the original update.",
+          "next_change": "Verify the same block in the maintained module and keep the zero policy and exact-real/IEEE-754 boundary explicit in documentation."
+        },
+        {
+          "candidate": "Prove only newton_sqrt_two_step(x) = newton_sqrt_two(x) on R+.",
+          "result": "failed_liveness_control",
+          "verifier_evidence": "the direct endpoint equality remained unknown",
+          "diagnosis": "The verifier needs the shared formula as a representation bridge between the case-defined wrapper and the positive-domain function.",
+          "next_change": "Retain exactly the continuous equality chain through (x + 2 / x) / 2."
+        }
+      ],
+      "accepted_litex": "have fn newton_sqrt_two_step(x R) R by cases:\n    case x = 0: 1\n    case x != 0: (x + 2 / x) / 2\n\nhave algo for newton_sqrt_two_step(x):\n    case x = 0: 1\n    case x != 0: (x + 2 / x) / 2\n\nclaim:\n    ? forall x R+:\n        newton_sqrt_two_step(x) = newton_sqrt_two(x)\n    newton_sqrt_two_step(x) = (x + 2 / x) / 2 = newton_sqrt_two(x)",
+      "reusable_lesson": "Keep the mathematical restricted-domain function as the proof interface; add a visibly total execution wrapper only at the extractor boundary and prove their agreement on the mathematical domain.",
+      "status": "accepted_materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": [
+      "R301",
+      "R302",
+      "R303",
+      "R304",
+      "R305",
+      "R306",
+      "R307",
+      "R308",
+      "R309",
+      "R310",
+      "R311",
+      "R401",
+      "R402",
+      "R501",
+      "R701",
+      "R801",
+      "R901",
+      "R1001",
+      "R1002",
+      "R1003"
+    ],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+    "file_gate_result": "success",
+    "module_gate_command": "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell",
+    "module_gate_result": "success",
+    "lean_gate_command": "cd lean && lake env lean ../showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/same_math_in_lean.lean",
+    "lean_gate_result": "success",
+    "r801_pre_concurrent_file_gate_result": "success: runner ok=true and exit code 0",
+    "r801_current_source_build_command": "cargo build --release",
+    "r801_current_source_build_result": "success on current source: cargo build --release finished with exit code 0",
+    "r901_persistent_session_result": "success: all 20 source-order try blocks returned ok=true in one session",
+    "r901_file_gate_result": "success: runner ok=true and exit code 0",
+    "r901_skipped_gates": "module, Rust test, and Lean gates skipped because R901 changes only the presentation and localization of an already verified single-file Litex proof without changing theorem semantics",
+    "r100x_current_source_build_result": "cargo build --release exited 0",
+    "r100x_module_gate_command": "target/release/litex -r showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell",
+    "r100x_module_gate_result": "success: exit 0, top-level ok=true, and final residual checkpoint sqrt_two_newton_gap(2) <= 1/64 verified",
+    "r100x_extraction_gate_command": "target/release/litex -extractpython -r showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell",
+    "r100x_extraction_gate_result": "success: exit 0 and extracted_code artifact ok=true for newton_sqrt_two_step",
+    "r100x_cli_boundary": "both -compact -session -before and -session -before returned cli_error unsupported CLI command combination; isolated drafts plus clean module replay were used",
+    "r100x_skipped_gates": "kernel, To-Lean, and Lean comparison gates skipped because this change only repairs local proof presentation and adds an example-local executable wrapper without changing shared semantics or the existing mathematical theorem statements"
+  }
+}

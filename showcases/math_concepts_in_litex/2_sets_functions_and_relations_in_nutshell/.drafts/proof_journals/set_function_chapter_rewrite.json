@@ -1,0 +1,344 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell/main.lit",
+  "proof_spine": [
+    "introduce two displayed finite sets and prove their set algebra by extensionality",
+    "enumerate first_set to prove that adding one lands in second_set",
+    "show a formula-defined function and an anonymous function value",
+    "represent the successor relation as a subset of N x N",
+    "prove each input has a unique successor output, select it with have fn by exist!, and reconnect it to the graph",
+    "show that the formula, anonymous value, and uniquely selected function agree"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Introduce the first displayed finite set.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "have first_set finite_set = {1, 2, 3}",
+          "result": "accepted",
+          "verifier_evidence": "block B001a: ok=true",
+          "diagnosis": "The displayed set directly inhabits the builtin finite_set binder.",
+          "next_change": "Introduce the translated second set."
+        }
+      ],
+      "accepted_litex": "have first_set finite_set = {1, 2, 3}",
+      "reusable_lesson": "Use the native finite_set carrier for displayed finite examples.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "source_order": 2,
+      "intent": "Introduce the translated second finite set.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "have second_set finite_set = {2, 3, 4}",
+          "result": "accepted",
+          "verifier_evidence": "block B002a: ok=true",
+          "diagnosis": "The second displayed set has the same native carrier.",
+          "next_change": "Prove one extensional set calculation."
+        }
+      ],
+      "accepted_litex": "have second_set finite_set = {2, 3, 4}",
+      "reusable_lesson": "Overlapping displayed sets can feed builtin set constructors directly.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "source_order": 3,
+      "intent": "Compute the union of the two displayed sets by extensionality.",
+      "dependencies": ["B001 first_set", "B002 second_set"],
+      "attempts": [
+        {
+          "candidate": "thm first_union_second ... by extension with finite enumeration over union(first_set, second_set)",
+          "result": "failed",
+          "verifier_evidence": "block B003a: by enumerate finite_set requires each quantified domain to be a list set or a name equal to one; union(first_set, second_set) is not such a domain",
+          "diagnosis": "Finite enumeration can discharge the displayed operand and target domains, but it should not be used as an implicit evaluator for a constructed union domain.",
+          "next_change": "Enumerate the two operand inclusions and the displayed target inclusion, then close equality from the resulting subset facts."
+        },
+        {
+          "candidate": "thm first_union_second ... with three local enumeration claims all binding x",
+          "result": "failed",
+          "verifier_evidence": "block B003b: name x is already active in this scope and cannot be rebound",
+          "diagnosis": "Local proved universal binders remain active enough that sibling claims in one theorem need distinct parameter names.",
+          "next_change": "Rename the three local enumeration binders to left_element, right_element, and target_element."
+        },
+        {
+          "candidate": "claim: ? forall left_element first_set ... by enumerate finite_set: ? forall left_element first_set ...",
+          "result": "failed",
+          "verifier_evidence": "block B003c: name left_element is already active in this scope and cannot be rebound",
+          "diagnosis": "Wrapping the universal in claim and repeating the identical universal inside by enumerate is a wrapper echo and rebinding error.",
+          "next_change": "Use the bodyless by enumerate finite_set goal block directly, then fold the resulting subset fact."
+        },
+        {
+          "candidate": "bodyless enumeration of both named operands and the displayed target, followed by subset folding",
+          "result": "failed",
+          "verifier_evidence": "block B003d: target_element membership in union(first_set, second_set) was not proved during target enumeration",
+          "diagnosis": "Enumeration assigns target values but does not automatically transport their displayed-set membership through both named aliases into the union.",
+          "next_change": "Prove the literal displayed-set union by extensionality and case analysis, then rewrite it through the two named-set definitions."
+        },
+        {
+          "candidate": "extensional proof of union({1, 2, 3}, {2, 3, 4}) = {1, 2, 3, 4}, followed by the named-set rewrite chain",
+          "result": "accepted",
+          "verifier_evidence": "block B003e: ok=true",
+          "diagnosis": "The constructed-union direction uses membership elimination and cases; the displayed target direction is exactly the supported finite enumeration shape.",
+          "next_change": "Make finite enumeration itself the next flagship theorem over first_set."
+        },
+        {
+          "candidate": "replace the inner case split for membership in {1, 2, 3} with by enumerate finite_set while retaining by cases for membership in {2, 3, 4}",
+          "result": "accepted",
+          "verifier_evidence": "block B003F: ok=true",
+          "diagnosis": "A universal enumeration over the displayed first operand instantiates at the current element and closes that union branch, while the second branch can remain ordinary disjunction elimination.",
+          "next_change": "Liveness-probe the repeated membership line in each remaining equality case."
+        },
+        {
+          "candidate": "use bodyless case element = 2, case element = 3, and case element = 4 arms in the remaining by cases proof",
+          "result": "accepted_liveness_probe",
+          "verifier_evidence": "block B003L: ok=true under temporary theorem name first_union_second_liveness",
+          "diagnosis": "Each equality case assumption already closes the common membership goal; repeating the target in all three arms was an inference echo.",
+          "next_change": "Materialize the mixed enumeration/case-analysis proof under the public theorem name."
+        },
+        {
+          "candidate": "keep full case bodies and state 2, 3, and 4 membership in the displayed target set explicitly",
+          "result": "accepted_reader_facing_form",
+          "verifier_evidence": "block B003G: ok=true",
+          "diagnosis": "Equality transport turns each concrete membership fact into the branch goal. Although bodyless arms also verify, the explicit numeric memberships make the case proof readable and were selected by the user as the public showcase style.",
+          "next_change": "Materialize the explicit reader-facing case bodies."
+        }
+      ],
+      "accepted_litex": "thm first_union_second:\n    ? forall:\n        union(first_set, second_set) = {1, 2, 3, 4}\n    by extension:\n        ? union({1, 2, 3}, {2, 3, 4}) = {1, 2, 3, 4}\n        claim:\n            ? forall element union({1, 2, 3}, {2, 3, 4}):\n                element $in {1, 2, 3, 4}\n            element $in {1, 2, 3} or element $in {2, 3, 4}\n            by cases:\n                ? element $in {1, 2, 3, 4}\n                case element $in {1, 2, 3}:\n                    by enumerate finite_set:\n                        ? forall first_element {1, 2, 3}:\n                            first_element $in {1, 2, 3, 4}\n                case element $in {2, 3, 4}:\n                    element = 2 or element = 3 or element = 4\n                    by cases:\n                        ? element $in {1, 2, 3, 4}\n                        case element = 2:\n                            2 $in {1, 2, 3, 4}\n                        case element = 3:\n                            3 $in {1, 2, 3, 4}\n                        case element = 4:\n                            4 $in {1, 2, 3, 4}\n        by enumerate finite_set:\n            ? forall target_element {1, 2, 3, 4}:\n                target_element $in union({1, 2, 3}, {2, 3, 4})\n    union(first_set, second_set) = union({1, 2, 3}, {2, 3, 4}) = {1, 2, 3, 4}",
+      "reusable_lesson": "After union membership exposes two displayed operands, use finite enumeration for one branch and full reader-facing case bodies with concrete membership facts for the other when the pedagogical goal is to contrast Litex proof surfaces.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "source_order": 4,
+      "intent": "Prove by finite enumeration that adding one maps first_set into second_set.",
+      "dependencies": ["B001 first_set", "B002 second_set"],
+      "attempts": [
+        {
+          "candidate": "thm ... ? forall x first_set ... by enumerate finite_set: ? forall x first_set ...",
+          "result": "failed",
+          "verifier_evidence": "block B004a: name x is already active in this scope and cannot be rebound",
+          "diagnosis": "The theorem goal's binder name is active while the proof-method goal is parsed.",
+          "next_change": "Use an alpha-equivalent fresh binder name in the by enumerate finite_set goal."
+        },
+        {
+          "candidate": "by enumerate finite_set over element first_set with target element + 1 $in second_set",
+          "result": "failed",
+          "verifier_evidence": "block B004b: failed to prove element + 1 $in second_set",
+          "diagnosis": "Enumeration sees the named first_set domain but does not unfold the named second_set codomain while checking each assigned target.",
+          "next_change": "Enumerate against the displayed codomain {2, 3, 4}, then let equality transport discharge the theorem's named-codomain goal."
+        },
+        {
+          "candidate": "enumerate element + 1 $in {2, 3, 4} and rely on theorem-final transport to second_set",
+          "result": "failed",
+          "verifier_evidence": "block B004c: enumeration succeeded, but the theorem then-clause x + 1 $in second_set remained unknown",
+          "diagnosis": "The selected universal is not automatically replayed through the named codomain at theorem finalization.",
+          "next_change": "Add one local universal bridge that consumes the enumerated literal membership and rewrites it to second_set."
+        },
+        {
+          "candidate": "enumerate the displayed codomain, then bridge literal membership to second_set in one local universal claim",
+          "result": "accepted",
+          "verifier_evidence": "block B004d: ok=true",
+          "diagnosis": "Finite enumeration proves the three concrete assignments; one representation bridge transports those facts through the named codomain.",
+          "next_change": "Use the theorem as the well-definedness source for a restricted formula-defined function."
+        }
+      ],
+      "accepted_litex": "thm successor_moves_first_set_to_second_set:\n    ? forall x first_set:\n        x + 1 $in second_set\n    by enumerate finite_set:\n        ? forall element first_set:\n            element + 1 $in {2, 3, 4}\n    claim:\n        ? forall input first_set:\n            input + 1 $in second_set\n        input + 1 $in {2, 3, 4}\n        input + 1 $in second_set",
+      "reusable_lesson": "Enumerate named displayed domains directly; when the codomain is a named alias, keep one explicit literal-to-name membership bridge if final replay needs it.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "source_order": 5,
+      "intent": "Define the restricted successor directly by formula.",
+      "dependencies": ["B004 successor_moves_first_set_to_second_set"],
+      "attempts": [
+        {
+          "candidate": "have fn successor_on_first(x first_set) second_set = x + 1",
+          "result": "accepted",
+          "verifier_evidence": "block B005a: ok=true",
+          "diagnosis": "The enumerated mapping theorem supplies exactly the codomain well-definedness required by the function body.",
+          "next_change": "Show the same map as an anonymous first-class function value."
+        }
+      ],
+      "accepted_litex": "have fn successor_on_first(x first_set) second_set = x + 1",
+      "reusable_lesson": "A formula-defined have fn should consume an earlier mapping theorem rather than restating codomain memberships at the definition site.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "source_order": 6,
+      "intent": "Package the same restricted map as an anonymous first-class function value.",
+      "dependencies": ["B004 successor_moves_first_set_to_second_set"],
+      "attempts": [
+        {
+          "candidate": "have successor_as_value fn(x first_set) second_set = fn(input first_set) second_set {input + 1}",
+          "result": "accepted",
+          "verifier_evidence": "block B006a: ok=true",
+          "diagnosis": "The anonymous fn expression is an ordinary object inhabiting the same checked function carrier.",
+          "next_change": "Build the set-theoretic graph relation for unique selection."
+        }
+      ],
+      "accepted_litex": "have successor_as_value fn(x first_set) second_set = fn(input first_set) second_set {input + 1}",
+      "reusable_lesson": "Use an anonymous fn expression when the function itself must be passed or stored as a value.",
+      "status": "materialized"
+    },
+    {
+      "id": "B007",
+      "source_order": 7,
+      "intent": "Represent successor as a relation set inside N x N.",
+      "dependencies": [],
+      "attempts": [
+        {
+          "candidate": "have successor_graph power_set(cart(N, N)) = {pair cart(N, N): pair[2] = pair[1] + 1}",
+          "result": "accepted",
+          "verifier_evidence": "block B007a: ok=true",
+          "diagnosis": "A binary relation is natively a subset of a Cartesian product; the graph predicate lives in the set-builder body.",
+          "next_change": "Prove unique graph output and select the corresponding function."
+        }
+      ],
+      "accepted_litex": "have successor_graph power_set(cart(N, N)) = {pair cart(N, N): pair[2] = pair[1] + 1}",
+      "reusable_lesson": "Use power_set(cart(A, B)) for a first-class relation from A to B; do not introduce a relation structure when membership suffices.",
+      "status": "materialized"
+    },
+    {
+      "id": "B008",
+      "source_order": 8,
+      "intent": "Select a callable successor function from the unique-output graph relation.",
+      "dependencies": ["B007 successor_graph"],
+      "attempts": [
+        {
+          "candidate": "have fn successor_from_graph by exist! with candidate x + 1 and uniqueness read directly from successor_graph membership",
+          "result": "failed",
+          "verifier_evidence": "block B008a: (x, y1)[2] = (x, y1)[1] + 1 remained unknown inside uniqueness",
+          "diagnosis": "Named relation membership did not automatically expose the set-builder predicate during this nested uniqueness proof, although candidate construction and existence succeeded.",
+          "next_change": "Transport each assumed successor_graph membership to the literal set builder before reading its defining coordinate equation."
+        },
+        {
+          "candidate": "transport both assumed memberships to the literal set builder, then state the two builder equations",
+          "result": "failed",
+          "verifier_evidence": "block B008b: the first builder equation still remained unknown",
+          "diagnosis": "The nested proof needs the named relation's defining equality explicitly materialized before membership elimination exposes the set-builder predicate.",
+          "next_change": "Restate successor_graph = {pair ...} immediately before transporting the two memberships."
+        },
+        {
+          "candidate": "restate the graph definition, transport both memberships, then read the set-builder equations",
+          "result": "failed",
+          "verifier_evidence": "block B008c: the first set-builder coordinate equation still remained unknown",
+          "diagnosis": "The current verifier does not expose this transported set-builder predicate inside the nested exist!-uniqueness proof without more administrative machinery.",
+          "next_change": "Use the equivalent unique-output relation y = x + 1 for have fn by exist!, then prove separately that the selected pair belongs to successor_graph."
+        },
+        {
+          "candidate": "have fn successor_from_unique_output by exist!: forall x N, exist! y N st {y = x + 1}",
+          "result": "accepted",
+          "verifier_evidence": "block B008d: ok=true",
+          "diagnosis": "The mathematical unique-output relation is enough to construct the function; graph membership remains a separate downstream specification.",
+          "next_change": "Connect each selected value back to the first-class successor_graph relation."
+        }
+      ],
+      "accepted_litex": "have fn successor_from_unique_output by exist!:\n    ? forall x N:\n        exist! y N st {y = x + 1}\n    witness exist! y N st {y = x + 1} from x + 1:\n        claim:\n            ? forall y1, y2 N:\n                y1 = x + 1\n                y2 = x + 1\n                =>:\n                    y1 = y2\n            y1 = x + 1 = y2",
+      "reusable_lesson": "have fn by exist! selects a callable value from a proved parameterized unique-output relation; keep graph membership as its downstream set-theoretic specification when direct graph elimination would bloat uniqueness.",
+      "status": "materialized"
+    },
+    {
+      "id": "B009",
+      "source_order": 9,
+      "intent": "Show that the uniquely selected function really lies on the set-theoretic successor graph.",
+      "dependencies": ["B007 successor_graph", "B008 successor_from_unique_output"],
+      "attempts": [
+        {
+          "candidate": "theorem constructing (x, successor_from_unique_output(x)) membership with tuple coordinates and set_builder_member",
+          "result": "accepted_with_echo",
+          "verifier_evidence": "block B009a: ok=true",
+          "diagnosis": "The selected function's defining equality supplies the graph predicate, and the explicit set_builder_member theorem constructs the relation membership.",
+          "next_change": "Delete explicit Cartesian-product membership and projection facts, then retry under a temporary theorem name."
+        },
+        {
+          "candidate": "the same graph theorem with only the selected-value equality, one coordinate calculation, set_builder_member, and the named-graph transport",
+          "result": "accepted_liveness_probe",
+          "verifier_evidence": "block B009L2: ok=true under temporary theorem name selected_successor_lies_on_graph_short",
+          "diagnosis": "Tuple well-definedness and projection equalities are inferred; the three explicit facts in B009a were redundant.",
+          "next_change": "Materialize the shorter body under the public theorem name."
+        }
+      ],
+      "accepted_litex": "thm selected_successor_lies_on_graph:\n    ? forall x N:\n        (x, successor_from_unique_output(x)) $in successor_graph\n    successor_from_unique_output(x) = x + 1\n    (x, successor_from_unique_output(x))[2] = successor_from_unique_output(x) = x + 1 = (x, successor_from_unique_output(x))[1] + 1\n    by thm set_builder_member((x, successor_from_unique_output(x)), {pair cart(N, N): pair[2] = pair[1] + 1}) => (x, successor_from_unique_output(x)) $in {pair cart(N, N): pair[2] = pair[1] + 1}\n    (x, successor_from_unique_output(x)) $in successor_graph",
+      "reusable_lesson": "After unique selection, keep the graph theorem separate: it is the downstream specification that reconnects the callable function to the relation set.",
+      "status": "materialized"
+    },
+    {
+      "id": "B010",
+      "source_order": 10,
+      "intent": "Expose that the displayed function domain is a subset of N before applying an N-domain function to its members.",
+      "dependencies": ["B001 first_set"],
+      "attempts": [
+        {
+          "candidate": "first_set $subset N",
+          "result": "failed",
+          "verifier_evidence": "block B010b: subset fact remained unknown",
+          "diagnosis": "The named finite_set definition does not make ambient-carrier containment a one-step direct fact.",
+          "next_change": "Enumerate every member of first_set into N, then fold the subset definition."
+        },
+        {
+          "candidate": "by enumerate finite_set: forall element first_set, element $in N; by def first_set $subset N",
+          "result": "accepted",
+          "verifier_evidence": "block B010c: ok=true",
+          "diagnosis": "Enumeration supplies the elementwise carrier facts and definition folding packages them as a subset.",
+          "next_change": "Retry the three-presentation comparison in the now well-defined domain."
+        }
+      ],
+      "accepted_litex": "by enumerate finite_set:\n    ? forall element first_set:\n        element $in N\nby def first_set $subset N",
+      "reusable_lesson": "A finite_set name records finiteness, not its ambient carrier; expose subset containment explicitly before passing its members to a wider-domain function.",
+      "status": "materialized"
+    },
+    {
+      "id": "B011",
+      "source_order": 11,
+      "intent": "Show that the formula, anonymous-value, and unique-selection presentations agree.",
+      "dependencies": ["B005 successor_on_first", "B006 successor_as_value", "B008 successor_from_unique_output"],
+      "attempts": [
+        {
+          "candidate": "compare all three functions for x first_set in one equality chain",
+          "result": "failed",
+          "verifier_evidence": "block B010a: theorem header was not well-defined because x first_set was not known to satisfy the N domain of successor_from_unique_output",
+          "diagnosis": "The finite_set declaration records finiteness but not the ambient natural-number carrier needed by the all-N selected function.",
+          "next_change": "Expose first_set $subset N before retrying the comparison theorem."
+        },
+        {
+          "candidate": "successor_on_first(x) = x + 1 = successor_as_value(x) = successor_from_unique_output(x)",
+          "result": "failed",
+          "verifier_evidence": "block B011b: final step successor_as_value(x) = successor_from_unique_output(x) remained unknown",
+          "diagnosis": "The calculation chain does not reverse both functions' separate equations to the common value in one step.",
+          "next_change": "Expose the two pairwise common-value chains, then compose the requested three-function equality."
+        },
+        {
+          "candidate": "two pairwise common-value chains followed by a repeated three-function goal chain",
+          "result": "accepted_with_echo",
+          "verifier_evidence": "block B011c: ok=true",
+          "diagnosis": "The pairwise chains establish the result, but the final repeated goal is a liveness candidate.",
+          "next_change": "Delete the repeated endpoint and let theorem finalization consume the pairwise equalities."
+        },
+        {
+          "candidate": "two pairwise common-value chains with no repeated endpoint",
+          "result": "accepted_liveness_probe",
+          "verifier_evidence": "block B011d: ok=true under temporary theorem name three_successor_presentations_agree_short",
+          "diagnosis": "The theorem closes from the two pairwise chains; the explicit final endpoint was redundant.",
+          "next_change": "Materialize the shorter body under the public theorem name."
+        }
+      ],
+      "accepted_litex": "thm three_successor_presentations_agree:\n    ? forall x first_set:\n        successor_on_first(x) = successor_as_value(x) = successor_from_unique_output(x)\n    successor_on_first(x) = x + 1 = successor_as_value(x)\n    successor_as_value(x) = x + 1 = successor_from_unique_output(x)",
+      "reusable_lesson": "When several function presentations share one value, prove two pairwise common-value chains and omit the repeated final equality endpoint.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B006", "B007", "B008", "B009", "B010", "B011"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell/main.lit; target/release/litex -compact -runner -r showcases/math_concepts_in_litex/2_sets_functions_and_relations_in_nutshell",
+    "file_gate_result": "mixed enumerate/cases theorem accepted in session blocks B003F and B003L; fresh file gate returned result=success, ok=true, exit_code=0"
+  }
+}

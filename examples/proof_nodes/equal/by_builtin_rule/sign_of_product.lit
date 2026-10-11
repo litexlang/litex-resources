@@ -1,0 +1,6 @@
+# Node: equal.ByBuiltinRule.SignOfProduct
+# Run: litex -f examples/proof_nodes/equal/by_builtin_rule/sign_of_product.lit
+
+have a R
+have b R
+sign(a * b) = sign(a) * sign(b)

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "target": "showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+  "session_command": "target/release/litex -compact -session -before showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+  "proof_spine": [
+    "Name the residual after one Newton update and the current residual.",
+    "Show the next residual is nonnegative using the exact algebraic identity.",
+    "Replace residuals by their absolute values and close the gap identity."
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "source_order": 1,
+      "intent": "Treat the two repeatedly nested residual expressions as local mathematical atoms.",
+      "dependencies": ["square_root_two_residual", "newton_sqrt_two"],
+      "attempts": [
+        {
+          "id": "B001-A1",
+          "candidate_is_literal": true,
+          "candidate": "thm newton_sqrt_two_one_step_gap_identity:\n    ? forall x R+:\n        4 * x^2 * abs(square_root_two_residual(newton_sqrt_two(x))) = abs(square_root_two_residual(x))^2\n    let next_residual = square_root_two_residual(newton_sqrt_two(x))\n    let current_residual = square_root_two_residual(x)\n    next_residual = newton_sqrt_two(x)^2 - 2\n    current_residual = x^2 - 2\n    newton_sqrt_two(x) = (x + 2 / x) / 2\n    newton_sqrt_two(x)^2 - 2 = ((x + 2 / x) / 2)^2 - 2\n    next_residual = newton_sqrt_two(x)^2 - 2 = ((x + 2 / x) / 2)^2 - 2\n    current_residual^2 = (x^2 - 2)^2\n    4 * x^2 * (((x + 2 / x) / 2)^2 - 2) = (x^2 - 2)^2\n    4 * x^2 * next_residual = 4 * x^2 * (((x + 2 / x) / 2)^2 - 2) = (x^2 - 2)^2 = current_residual^2\n    4 * x^2 > 0\n    4 * x^2 != 0\n    current_residual^2 >= 0\n    4 * x^2 * next_residual >= 0\n    (4 * x^2 * next_residual) / (4 * x^2) >= 0\n    next_residual = (4 * x^2 * next_residual) / (4 * x^2) >= 0\n    abs(next_residual) = next_residual\n    abs(current_residual)^2 = current_residual^2\n    4 * x^2 * abs(next_residual) = 4 * x^2 * next_residual = current_residual^2 = abs(current_residual)^2",
+          "result": "failed",
+          "failed_phase": "proof",
+          "verifier_evidence": "definition result did not directly verify `next_residual = newton_sqrt_two(x)^2 - 2` through the new `let` equality",
+          "diagnosis": "A definition equation is stored in the original expression spelling; the local name needs one explicit continuous equality bridge.",
+          "next_change": "State each canonical residual definition equation once, then connect the corresponding local name."
+        },
+        {
+          "id": "B001-A2",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "    next_residual = newton_sqrt_two(x)^2 - 2\n    current_residual = x^2 - 2\n",
+              "new": "    square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2\n    next_residual = square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2\n    square_root_two_residual(x) = x^2 - 2\n    current_residual = square_root_two_residual(x) = x^2 - 2\n"
+            }
+          ],
+          "result": "failed",
+          "failed_phase": "proof",
+          "verifier_evidence": "all alias-body calculations passed, but the theorem's canonical then-clause remained unproved",
+          "diagnosis": "The public statement intentionally keeps the expanded mathematical spelling, so the final calculation must return from the local names to those canonical endpoints.",
+          "next_change": "Make the last equality chain start and end with the public statement's exact expressions."
+        },
+        {
+          "id": "B001-A3",
+          "base_attempt_id": "B001-A1",
+          "replacements": [
+            {
+              "old": "    next_residual = newton_sqrt_two(x)^2 - 2\n    current_residual = x^2 - 2\n",
+              "new": "    square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2\n    next_residual = square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2\n    square_root_two_residual(x) = x^2 - 2\n    current_residual = square_root_two_residual(x) = x^2 - 2\n"
+            },
+            {
+              "old": "    4 * x^2 * abs(next_residual) = 4 * x^2 * next_residual = current_residual^2 = abs(current_residual)^2",
+              "new": "    4 * x^2 * abs(square_root_two_residual(newton_sqrt_two(x))) = 4 * x^2 * abs(next_residual) = 4 * x^2 * next_residual = current_residual^2 = abs(current_residual)^2 = abs(square_root_two_residual(x))^2"
+            }
+          ],
+          "result": "accepted",
+          "verifier_evidence": "persistent registered source-order session returned ok: true",
+          "diagnosis": "Canonical definition equations introduce the aliases, and one final canonical-endpoint chain discharges the unchanged theorem statement.",
+          "next_change": "Materialize the accepted theorem."
+        }
+      ],
+      "accepted_litex": "thm newton_sqrt_two_one_step_gap_identity:\n    ? forall x R+:\n        4 * x^2 * abs(square_root_two_residual(newton_sqrt_two(x))) = abs(square_root_two_residual(x))^2\n    let next_residual = square_root_two_residual(newton_sqrt_two(x))\n    let current_residual = square_root_two_residual(x)\n    square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2\n    next_residual = square_root_two_residual(newton_sqrt_two(x)) = newton_sqrt_two(x)^2 - 2\n    square_root_two_residual(x) = x^2 - 2\n    current_residual = square_root_two_residual(x) = x^2 - 2\n    newton_sqrt_two(x) = (x + 2 / x) / 2\n    newton_sqrt_two(x)^2 - 2 = ((x + 2 / x) / 2)^2 - 2\n    next_residual = newton_sqrt_two(x)^2 - 2 = ((x + 2 / x) / 2)^2 - 2\n    current_residual^2 = (x^2 - 2)^2\n    4 * x^2 * (((x + 2 / x) / 2)^2 - 2) = (x^2 - 2)^2\n    4 * x^2 * next_residual = 4 * x^2 * (((x + 2 / x) / 2)^2 - 2) = (x^2 - 2)^2 = current_residual^2\n    4 * x^2 > 0\n    4 * x^2 != 0\n    current_residual^2 >= 0\n    4 * x^2 * next_residual >= 0\n    (4 * x^2 * next_residual) / (4 * x^2) >= 0\n    next_residual = (4 * x^2 * next_residual) / (4 * x^2) >= 0\n    abs(next_residual) = next_residual\n    abs(current_residual)^2 = current_residual^2\n    4 * x^2 * abs(square_root_two_residual(newton_sqrt_two(x))) = 4 * x^2 * abs(next_residual) = 4 * x^2 * next_residual = current_residual^2 = abs(current_residual)^2 = abs(square_root_two_residual(x))^2",
+      "reusable_lesson": "For repeated nested values, introduce role-based `let` names, keep the original definition equation once, and let the final calculation return to the public statement's canonical endpoints.",
+      "status": "materialized_clean"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001"],
+    "file_gate_command": "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/13_numerical_analysis_in_nutshell/main.lit",
+    "file_gate_result": "exit 0; top-level ok: true"
+  }
+}

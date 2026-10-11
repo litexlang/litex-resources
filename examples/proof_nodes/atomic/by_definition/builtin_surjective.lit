@@ -1,0 +1,17 @@
+# Node: atomic.ByDefinition.BuiltinProp.Surjective
+# Previous finite witness-search example:
+#
+# have fn id1(x {1}) {1} = x
+# exist x {1} st {x = 1}
+# by def $surjective({1}, {1}, id1)
+# Before: a bare existential assertion was rejected; by def needs a universal.
+# have fn identity(x R) R = x
+# by def $surjective(R, R, identity)
+# Now: prove every preimage by a checked witness, then unfold the definition.
+# Gate: target/release/litex -strict -f examples/proof_nodes/atomic/by_definition/builtin_surjective.lit
+have fn identity(x R) R = x
+claim:
+    ? forall y R:
+        exist x R st {y = identity(x)}
+    witness exist x R st {y = identity(x)} from y
+by def $surjective(R, R, identity)

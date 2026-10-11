@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "date": "2026-08-17",
+  "scope": "showcases/math_concepts_in_litex/*/main.lit",
+  "proof_spine": [
+    "instantiate the same named theorem as before",
+    "select the one atomic result consumed by the next mathematical step",
+    "delete only a following line that exactly echoed the selected result"
+  ],
+  "blocks": [
+    {
+      "id": "B001",
+      "target": "showcases/math_concepts_in_litex/calculus/main.lit",
+      "intent": "Select derivative and differentiability results at each theorem call.",
+      "attempts": [{
+        "candidate": "seven by thm calls rewritten with explicit atomic results",
+        "result": "accepted",
+        "verifier_evidence": "persistent session ready=true; 17 source-order blocks accepted; no failures"
+      }],
+      "accepted_litex": "by thm square_difference_quotient(x0, x) => (square_function(x) - square_function(x0)) / (x - x0) = x + x0",
+      "reusable_lesson": "A theorem result that is immediately used in an equality chain should be selected on the call line.",
+      "status": "materialized"
+    },
+    {
+      "id": "B002",
+      "target": "showcases/math_concepts_in_litex/elementary_algebra_and_inequalities/main.lit",
+      "intent": "Select atomic inequality and equality results while preserving the disjunctive exception.",
+      "attempts": [
+        {
+          "candidate": "by thm factored_quadratic_roots(x) => x = 1 or x = 5",
+          "result": "failed",
+          "verifier_evidence": "ParseError: by thm: `=>` expects exactly one atomic fact",
+          "diagnosis": "The theorem's only result is a disjunction, which the selected-result parser does not accept.",
+          "next_change": "Retain the bare theorem call as the documented non-atomic exception."
+        },
+        {
+          "candidate": "atomic calls selected; disjunctive theorem call retained bare",
+          "result": "accepted",
+          "verifier_evidence": "persistent session ready=true; 15 source-order blocks accepted; no failures"
+        }
+      ],
+      "accepted_litex": "by thm two_variable_am_gm(9, 16) => geometric_mean(9, 16) <= arithmetic_mean(9, 16)\nby thm factored_quadratic_roots(x)\nby thm radical_equation_has_only_solution_five(5) => 5 = 5",
+      "reusable_lesson": "Keep a bare call when the only consumed result is non-atomic and therefore outside selected-result syntax.",
+      "status": "materialized"
+    },
+    {
+      "id": "B003",
+      "target": "showcases/math_concepts_in_litex/number_theory/main.lit",
+      "intent": "Name the exact divisibility, gcd-certificate, and Diophantine facts contributed by theorem calls.",
+      "attempts": [{
+        "candidate": "five by thm calls rewritten with explicit atomic proposition results",
+        "result": "accepted",
+        "verifier_evidence": "persistent session ready=true; 23 source-order blocks accepted; no failures"
+      }],
+      "accepted_litex": "by thm common_divisor_divides_linear_combination(d, a, b, x, y) => $divides_by(d, a * x + b * y)",
+      "reusable_lesson": "Select the witness-facing proposition before transporting it along a following arithmetic equality.",
+      "status": "materialized"
+    },
+    {
+      "id": "B004",
+      "target": "showcases/math_concepts_in_litex/euclidean_geometry/main.lit",
+      "intent": "Split the two-result distance lemma into two atomic selections and preserve the existential exception.",
+      "attempts": [
+        {
+          "candidate": "by thm euclid_book1_proposition_1(...) => exist c ...",
+          "result": "failed",
+          "verifier_evidence": "ParseError: Expected operator or $prop in atomic fact",
+          "diagnosis": "Existential results are outside the selected-result atomic grammar.",
+          "next_change": "Retain the bare theorem call and its existential result line."
+        },
+        {
+          "candidate": "distance facts selected individually; existential theorem call retained bare",
+          "result": "accepted",
+          "verifier_evidence": "persistent session ready=true; 21 source-order blocks accepted; no failures"
+        }
+      ],
+      "accepted_litex": "by thm equilateral_vertex_distance_lemma(a, b) => distance_sq(a, equilateral_vertex(a, b)) = distance_sq(a, b)\nby thm equilateral_vertex_distance_lemma(a, b) => distance_sq(b, equilateral_vertex(a, b)) = distance_sq(a, b)",
+      "reusable_lesson": "When two atomic theorem results are both live, select them with two explicit calls; existential results remain bare.",
+      "status": "materialized"
+    },
+    {
+      "id": "B005",
+      "target": "showcases/math_concepts_in_litex/topology/main.lit",
+      "intent": "Select set-builder membership and relative-complement equality facts.",
+      "attempts": [{
+        "candidate": "thirteen by thm calls rewritten with explicit atomic results",
+        "result": "accepted",
+        "verifier_evidence": "persistent session ready=true; 16 source-order blocks accepted; no failures"
+      }],
+      "accepted_litex": "by thm preimage_of_relative_complement(X, Y, f, F) => {x X: f(x) $in set_minus(Y, F)} = set_minus(X, {x X: f(x) $in F})",
+      "reusable_lesson": "Select the literal set-builder fact; retain later alias-transport lines when they are not exact echoes.",
+      "status": "materialized"
+    },
+    {
+      "id": "B006",
+      "target": "showcases/math_concepts_in_litex/linear_algebra_core/main.lit",
+      "intent": "Select zero, set-builder membership, linearity, and subspace facts.",
+      "attempts": [
+        {
+          "candidate": "source-order replay with selected-result calls",
+          "result": "failed",
+          "verifier_evidence": "the unchanged projection_x_is_linear block failed in persistent session before the first changed theorem dependency; later failures were cascading",
+          "diagnosis": "Existing proof liveness differs in per-statement session replay; the selected-result lines were not the decisive failing edge.",
+          "next_change": "Use the mandatory clean release file runner after materialization and add only explicit proof-liveness bridges required by that gate."
+        },
+        {
+          "candidate": "clean file with explicit projection definition bridges, zero-map equality transport, and a literal tuple equality chain",
+          "result": "accepted",
+          "verifier_evidence": "release file runner ok; registered-directory runner ok",
+          "diagnosis": "The selected-result rewrites were valid. Three pre-existing implicit inference edges needed to be made explicit for the current verifier.",
+          "next_change": "none"
+        },
+        {
+          "candidate": "by thm tuple_equal_from_coordinates(u, v) => u = v",
+          "result": "failed",
+          "verifier_evidence": "builtin theorem requirement not verified: tuple dimensions and all corresponding coordinates agree",
+          "diagnosis": "Fixed cart(R, R) values do not expose the symbolic tuple-dimension metadata required by this builtin.",
+          "next_change": "Use the already established coordinate equalities in an explicit literal tuple equality chain; do not force an inapplicable theorem call."
+        }
+      ],
+      "accepted_litex": "by thm linear_map_sends_zero_to_zero(T) => T((0, 0)) = 0\nby thm kernel_of_linear_map_is_subspace(projection_x) => $is_subspace_R2(kernel_of(projection_x))",
+      "reusable_lesson": "Do not attribute an earlier unchanged session-liveness failure to a later selected-result edit; require the clean registered file gate, and do not force a builtin whose carrier metadata is unavailable.",
+      "status": "materialized"
+    }
+  ],
+  "materialization": {
+    "block_ids": ["B001", "B002", "B003", "B004", "B005", "B006"],
+    "file_gate_commands": [
+      "target/release/litex -compact -runner -f showcases/math_concepts_in_litex/<subject>/main.lit",
+      "target/release/litex -compact -runner -r showcases/math_concepts_in_litex/<subject>"
+    ],
+    "file_gate_result": "all six affected files and all six registered showcase directories passed",
+    "style_scan": "56 total by thm calls: 54 selected-result calls and 2 justified bare non-atomic exceptions",
+    "bare_exceptions": [
+      "factored_quadratic_roots(x): disjunctive result",
+      "euclid_book1_proposition_1((0, 0), (2, 0)): existential result"
+    ],
+    "trust_delta": "none",
+    "diff_check": "passed"
+  }
+}

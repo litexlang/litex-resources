@@ -1,0 +1,56 @@
+{
+  "kind": "def_prop",
+  "name": "is_pos",
+  "typed_parameters": {
+    "groups": [
+      {
+        "params": [
+          {
+            "id": 7,
+            "name": "x"
+          }
+        ],
+        "param_type": {
+          "tag": "Obj",
+          "obj": {
+            "tag": "StandardSet",
+            "set": "R"
+          }
+        }
+      }
+    ]
+  },
+  "iff_facts": [
+    {
+      "tag": "AtomicFact",
+      "atomic": {
+        "tag": "GreaterFact",
+        "fact_id": 42,
+        "left": {
+          "tag": "Identifier",
+          "identifier": {
+            "tag": "Plain",
+            "id": 7,
+            "name": "x"
+          }
+        },
+        "right": {
+          "tag": "Literal",
+          "literal": {
+            "tag": "Number",
+            "text": "0"
+          }
+        },
+        "line_file": null
+      }
+    }
+  ],
+  "line_file": {
+    "line": 1,
+    "origin": {
+      "tag": "RootExport",
+      "path": "test.lit",
+      "export_file_id": 0
+    }
+  }
+}

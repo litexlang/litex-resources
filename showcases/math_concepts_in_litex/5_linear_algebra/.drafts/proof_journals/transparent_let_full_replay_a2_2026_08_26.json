@@ -1,0 +1,714 @@
+{
+  "schema_version": 1,
+  "section": "showcases/math_concepts_in_litex/5_linear_algebra/main.lit",
+  "session_command": [
+    "target/release/litex",
+    "-compact",
+    "-session",
+    "-before",
+    "showcases/math_concepts_in_litex/5_linear_algebra/main.lit"
+  ],
+  "timeout_seconds": 180,
+  "skipped_source_lines": [
+
+  ],
+  "started_at": "2026-08-26T09:31:43+08:00",
+  "completed": true,
+  "blocks": [
+    {
+      "id": "main_9",
+      "source_line": 9,
+      "header": "struct Field<K nonempty_set>:",
+      "candidate_code": "struct Field<K nonempty_set>:\n    zero K\n    one K\n    add fn(x, y K) K\n    neg fn(x K) K\n    mul fn(x, y K) K\n    inv fn(x K) K\n    <=>:\n        zero != one\n        forall x, y, z K:\n            add(add(x, y), z) = add(x, add(y, z))\n            mul(mul(x, y), z) = mul(x, mul(y, z))\n            mul(x, add(y, z)) = add(mul(x, y), mul(x, z))\n        forall x, y K:\n            add(x, y) = add(y, x)\n            mul(x, y) = mul(y, x)\n        forall x K:\n            add(zero, x) = x\n            add(x, neg(x)) = zero\n            mul(one, x) = x\n        forall x K:\n            x != zero\n            =>:\n                mul(x, inv(x)) = one\n\n# A vector space over one fixed scalar field stores its vector operations and\n# compatibility laws as one first-class object.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_9",
+        "ok": true,
+        "seconds": 0.011
+      }
+    },
+    {
+      "id": "main_36",
+      "source_line": 36,
+      "header": "struct VectorSpace<K nonempty_set, field &Field<K>, V nonempty_set>:",
+      "candidate_code": "struct VectorSpace<K nonempty_set, field &Field<K>, V nonempty_set>:\n    zero V\n    add fn(x, y V) V\n    smul fn(a K, x V) V\n    <=>:\n        forall x, y, z V:\n            add(add(x, y), z) = add(x, add(y, z))\n        forall x, y V:\n            add(x, y) = add(y, x)\n        forall x V:\n            add(zero, x) = x\n            exist y V st {add(x, y) = zero}\n        forall a, b K, x V:\n            smul(field.mul(a, b), x) = smul(a, smul(b, x))\n            smul(field.add(a, b), x) = add(smul(a, x), smul(b, x))\n        forall a K, x, y V:\n            smul(a, add(x, y)) = add(smul(a, x), smul(a, y))\n        forall x V:\n            smul(field.one, x) = x\n\n# Settings name recurring theorem contexts. The mathematical data and laws\n# remain owned by the declaration-typed struct values above.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_36",
+        "ok": true,
+        "seconds": 0.03
+      }
+    },
+    {
+      "id": "main_58",
+      "source_line": 58,
+      "header": "setting FieldSetting(K nonempty_set, field &Field<K>)",
+      "candidate_code": "setting FieldSetting(K nonempty_set, field &Field<K>)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_58",
+        "ok": true,
+        "seconds": 0.0
+      }
+    },
+    {
+      "id": "main_60",
+      "source_line": 60,
+      "header": "setting VectorSpaceSetting([FieldSetting(K, field)], V nonempty_set, space &VectorSpace<K, field, V>)",
+      "candidate_code": "setting VectorSpaceSetting([FieldSetting(K, field)], V nonempty_set, space &VectorSpace<K, field, V>)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_60",
+        "ok": true,
+        "seconds": 0.0
+      }
+    },
+    {
+      "id": "main_62",
+      "source_line": 62,
+      "header": "setting VectorSpacesSetting([FieldSetting(K, field)], V, W nonempty_set, source &VectorSpace<K, field, V>, target &VectorSpace<K, field, W>)",
+      "candidate_code": "setting VectorSpacesSetting([FieldSetting(K, field)], V, W nonempty_set, source &VectorSpace<K, field, V>, target &VectorSpace<K, field, W>)\n\n# Any element acting as a left additive identity must equal the stored zero.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_62",
+        "ok": true,
+        "seconds": 0.0
+      }
+    },
+    {
+      "id": "main_65",
+      "source_line": 65,
+      "header": "thm additive_identity_unique:",
+      "candidate_code": "thm additive_identity_unique:\n    ? forall [VectorSpaceSetting], identity_candidate V:\n        forall x V:\n            space.add(identity_candidate, x) = x\n        =>:\n            identity_candidate = space.zero\n    space.add(identity_candidate, space.zero) = space.zero\n    space.add(identity_candidate, space.zero) = space.add(space.zero, identity_candidate) = identity_candidate\n\n# Existence comes from the vector-space law; associativity and commutativity\n# show that any two additive inverses coincide.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_65",
+        "ok": true,
+        "seconds": 0.327
+      }
+    },
+    {
+      "id": "main_76",
+      "source_line": 76,
+      "header": "thm additive_inverse_exists_unique:",
+      "candidate_code": "thm additive_inverse_exists_unique:\n    ? forall [VectorSpaceSetting], x V:\n        exist! y V st {space.add(x, y) = space.zero}\n    obtain y from exist y V st {space.add(x, y) = space.zero}\n    forall y1, y2 V:\n        space.add(x, y1) = space.zero\n        space.add(x, y2) = space.zero\n        =>:\n            space.add(y2, x) = space.add(x, y2) = space.zero\n            y1 = space.add(space.zero, y1) = space.add(space.add(y2, x), y1) = space.add(y2, space.add(x, y1)) = space.add(y2, space.zero) = space.add(space.zero, y2) = y2\n    witness exist! y2 V st {space.add(x, y2) = space.zero} from y\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_76",
+        "ok": true,
+        "seconds": 0.858
+      }
+    },
+    {
+      "id": "main_88",
+      "source_line": 88,
+      "header": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:",
+      "candidate_code": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:\n    have fn vector_neg by exist!:\n        ? forall x V:\n            exist! y V st {space.add(x, y) = space.zero}\n        by thm additive_inverse_exists_unique(K, field, V, space, x)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_88",
+        "ok": true,
+        "seconds": 0.139
+      }
+    },
+    {
+      "id": "main_94",
+      "source_line": 94,
+      "header": "thm vector_neg_spec:",
+      "candidate_code": "thm vector_neg_spec:\n    ? forall [VectorSpaceSetting], x V:\n        space.add(x, \\vector_neg<K, field, V, space>(x)) = space.zero\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_94",
+        "ok": true,
+        "seconds": 0.077
+      }
+    },
+    {
+      "id": "main_98",
+      "source_line": 98,
+      "header": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:",
+      "candidate_code": "template<K nonempty_set, field &Field<K>, V nonempty_set, space &VectorSpace<K, field, V>>:\n    have fn vector_sub(u, v V) V = space.add(u, \\vector_neg<K, field, V, space>(v))\n\n# Add the inverse of the common left operand to both sides.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_98",
+        "ok": true,
+        "seconds": 0.07
+      }
+    },
+    {
+      "id": "main_102",
+      "source_line": 102,
+      "header": "thm add_left_cancel:",
+      "candidate_code": "thm add_left_cancel:\n    ? forall [VectorSpaceSetting], x, y, z V:\n        space.add(x, y) = space.add(x, z)\n        =>:\n            y = z\n    let neg = \\vector_neg<K, field, V, space>\n    by thm vector_neg_spec(K, field, V, space, x) => space.add(x, neg(x)) = space.zero\n    space.add(neg(x), x) = space.add(x, neg(x)) = space.zero\n    space.add(neg(x), space.add(x, y)) = space.add(space.add(neg(x), x), y)\n    space.add(space.add(neg(x), x), y) = space.add(space.zero, y) = y\n    space.add(neg(x), space.add(x, z)) = space.add(space.add(neg(x), x), z)\n    space.add(space.add(neg(x), x), z) = space.add(space.zero, z) = z\n    y = space.add(neg(x), space.add(x, y)) = space.add(neg(x), space.add(x, z)) = z\n\n# Compare 0*x with 0*x + 0*x and cancel to derive the zero-scalar law.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_102",
+        "ok": true,
+        "seconds": 2.551
+      }
+    },
+    {
+      "id": "main_117",
+      "source_line": 117,
+      "header": "thm vector_space_scalar_constants_in_carrier:",
+      "candidate_code": "thm vector_space_scalar_constants_in_carrier:\n    ? forall [VectorSpaceSetting]:\n        field.zero $in K\n        field.one $in K\n    field.zero $in K\n    field.one $in K\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_117",
+        "ok": true,
+        "seconds": 0.077
+      }
+    },
+    {
+      "id": "main_124",
+      "source_line": 124,
+      "header": "thm zero_scalar_times_vector:",
+      "candidate_code": "thm zero_scalar_times_vector:\n    ? forall [VectorSpaceSetting], x V:\n        space.smul(field.zero, x) = space.zero\n    have p V = space.smul(field.zero, x)\n    field.add(field.zero, field.zero) = field.zero\n    space.smul(field.add(field.zero, field.zero), x) = space.add(space.smul(field.zero, x), space.smul(field.zero, x))\n    space.smul(field.add(field.zero, field.zero), x) = space.smul(field.zero, x) = p\n    space.add(space.smul(field.zero, x), space.smul(field.zero, x)) = space.add(p, p)\n    p = space.add(p, p)\n    space.add(p, space.zero) = space.add(space.zero, p) = p\n    space.add(p, p) = space.add(p, space.zero)\n    by thm add_left_cancel(K, field, V, space, p, p, space.zero)\n    p = space.zero\n\n# Distribute a scalar over 0+0, then cancel the repeated term.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_124",
+        "ok": true,
+        "seconds": 1.675
+      }
+    },
+    {
+      "id": "main_139",
+      "source_line": 139,
+      "header": "thm scalar_times_zero_vector:",
+      "candidate_code": "thm scalar_times_zero_vector:\n    ? forall [VectorSpaceSetting], a K:\n        space.smul(a, space.zero) = space.zero\n    have q V = space.smul(a, space.zero)\n    space.add(space.zero, space.zero) = space.zero\n    space.smul(a, space.add(space.zero, space.zero)) = space.smul(a, space.zero) = q\n    space.smul(a, space.add(space.zero, space.zero)) = space.add(space.smul(a, space.zero), space.smul(a, space.zero)) = space.add(q, q)\n    q = space.add(q, q)\n    space.add(q, space.zero) = space.add(space.zero, q) = q\n    space.add(q, q) = space.add(q, space.zero)\n    by thm add_left_cancel(K, field, V, space, q, q, space.zero) => q = space.zero\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_139",
+        "ok": true,
+        "seconds": 1.359
+      }
+    },
+    {
+      "id": "main_151",
+      "source_line": 151,
+      "header": "prop is_linear_map([VectorSpacesSetting], T fn(v V) W):",
+      "candidate_code": "prop is_linear_map([VectorSpacesSetting], T fn(v V) W):\n    forall u, v V:\n        T(source.add(u, v)) = target.add(T(u), T(v))\n    forall a K, v V:\n        T(source.smul(a, v)) = target.smul(a, T(v))\n\n# A linear-map setting extends the two-space context with linearity of T.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_151",
+        "ok": true,
+        "seconds": 0.034
+      }
+    },
+    {
+      "id": "main_158",
+      "source_line": 158,
+      "header": "setting LinearMapSetting([VectorSpacesSetting], T fn(v V) W):",
+      "candidate_code": "setting LinearMapSetting([VectorSpacesSetting], T fn(v V) W):\n    $is_linear_map(K, field, V, W, source, target, T)\n\n# A subspace contains zero and is closed under vector addition and scalar action.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_158",
+        "ok": true,
+        "seconds": 0.001
+      }
+    },
+    {
+      "id": "main_162",
+      "source_line": 162,
+      "header": "prop is_subspace([VectorSpaceSetting], U power_set(V)):",
+      "candidate_code": "prop is_subspace([VectorSpaceSetting], U power_set(V)):\n    space.zero $in U\n    forall u, v V:\n        u $in U\n        v $in U\n        =>:\n            space.add(u, v) $in U\n    forall a K, v V:\n        v $in U\n        =>:\n            space.smul(a, v) $in U\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_162",
+        "ok": true,
+        "seconds": 0.02
+      }
+    },
+    {
+      "id": "main_174",
+      "source_line": 174,
+      "header": "template<V, W set, zeroW W, T fn(v V) W>:",
+      "candidate_code": "template<V, W set, zeroW W, T fn(v V) W>:\n    have linear_kernel power_set(V) = {x V: T(x) = zeroW}\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_174",
+        "ok": true,
+        "seconds": 0.003
+      }
+    },
+    {
+      "id": "main_177",
+      "source_line": 177,
+      "header": "template<V set, zeroV V>:",
+      "candidate_code": "template<V set, zeroV V>:\n    have zero_subspace power_set(V) = {zeroV}\n\n# Additivity forces the image of zero to be the target zero vector.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_177",
+        "ok": true,
+        "seconds": 0.002
+      }
+    },
+    {
+      "id": "main_181",
+      "source_line": 181,
+      "header": "thm linear_map_sends_zero_to_zero:",
+      "candidate_code": "thm linear_map_sends_zero_to_zero:\n    ? forall [LinearMapSetting]:\n        T(source.zero) = target.zero\n    source.add(source.zero, source.zero) = source.zero\n    T(source.add(source.zero, source.zero)) = target.add(T(source.zero), T(source.zero))\n    target.add(T(source.zero), T(source.zero)) = T(source.add(source.zero, source.zero)) = T(source.zero)\n    target.add(T(source.zero), target.zero) = target.add(target.zero, T(source.zero)) = T(source.zero)\n    target.add(T(source.zero), T(source.zero)) = target.add(T(source.zero), target.zero)\n    by thm add_left_cancel(K, field, W, target, T(source.zero), T(source.zero), target.zero) => T(source.zero) = target.zero\n\n# Apply the map to x + (-x) and use uniqueness of the target inverse.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_181",
+        "ok": true,
+        "seconds": 1.744
+      }
+    },
+    {
+      "id": "main_192",
+      "source_line": 192,
+      "header": "thm linear_map_sends_neg_to_neg:",
+      "candidate_code": "thm linear_map_sends_neg_to_neg:\n    ? forall [LinearMapSetting], x V:\n        T(\\vector_neg<K, field, V, source>(x)) = \\vector_neg<K, field, W, target>(T(x))\n    let source_neg = \\vector_neg<K, field, V, source>\n    let target_neg = \\vector_neg<K, field, W, target>\n    by thm vector_neg_spec(K, field, V, source, x) => source.add(x, source_neg(x)) = source.zero\n    by thm vector_neg_spec(K, field, W, target, T(x)) => target.add(T(x), target_neg(T(x))) = target.zero\n    by thm linear_map_sends_zero_to_zero(K, field, V, W, source, target, T) => T(source.zero) = target.zero\n    T(source.add(x, source_neg(x))) = target.add(T(x), T(source_neg(x)))\n    T(source.add(x, source_neg(x))) = T(source.zero) = target.zero\n    target.add(T(x), T(source_neg(x))) = target.zero\n    target.add(T(x), target_neg(T(x))) = target.zero\n    target.add(T(x), T(source_neg(x))) = target.add(T(x), target_neg(T(x)))\n    by thm add_left_cancel(K, field, W, target, T(x), T(source_neg(x)), target_neg(T(x))) => T(source_neg(x)) = target_neg(T(x))\n    T(\\vector_neg<K, field, V, source>(x)) = T(source_neg(x)) = target_neg(T(x)) = \\vector_neg<K, field, W, target>(T(x))\n\n# Verify zero membership and closure under addition and scalar multiplication\n# for the native set-builder kernel.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_192",
+        "ok": true,
+        "seconds": 2.918
+      }
+    },
+    {
+      "id": "main_210",
+      "source_line": 210,
+      "header": "thm linear_map_kernel_is_subspace:",
+      "candidate_code": "thm linear_map_kernel_is_subspace:\n    ? forall [LinearMapSetting]:\n        $is_subspace(K, field, V, source, \\linear_kernel<V, W, target.zero, T>)\n    let kernel = \\linear_kernel<V, W, target.zero, T>\n    by thm linear_map_sends_zero_to_zero(K, field, V, W, source, target, T) => T(source.zero) = target.zero\n    kernel = {x V: T(x) = target.zero}\n    by thm set_builder_member(source.zero, {x V: T(x) = target.zero}) => source.zero $in {x V: T(x) = target.zero}\n    source.zero $in kernel\n    claim:\n        ? forall u, v V:\n            u $in kernel\n            v $in kernel\n            =>:\n                source.add(u, v) $in kernel\n        u $in {x V: T(x) = target.zero}\n        T(u) = target.zero\n        v $in {x V: T(x) = target.zero}\n        T(v) = target.zero\n        T(source.add(u, v)) = target.add(T(u), T(v)) = target.add(target.zero, target.zero) = target.zero\n        by thm set_builder_member(source.add(u, v), {x V: T(x) = target.zero}) => source.add(u, v) $in {x V: T(x) = target.zero}\n        source.add(u, v) $in kernel\n    claim:\n        ? forall a K, v V:\n            v $in kernel\n            =>:\n                source.smul(a, v) $in kernel\n        v $in {x V: T(x) = target.zero}\n        T(v) = target.zero\n        by thm scalar_times_zero_vector(K, field, W, target, a) => target.smul(a, target.zero) = target.zero\n        T(source.smul(a, v)) = target.smul(a, T(v)) = target.smul(a, target.zero) = target.zero\n        by thm set_builder_member(source.smul(a, v), {x V: T(x) = target.zero}) => source.smul(a, v) $in {x V: T(x) = target.zero}\n        source.smul(a, v) $in kernel\n    by def $is_subspace(K, field, V, source, \\linear_kernel<V, W, target.zero, T>)\n\n# Injectivity turns T(x)=0=T(0) into x=0, proving kernel(T)={0}.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_210",
+        "ok": true,
+        "seconds": 4.788
+      }
+    },
+    {
+      "id": "main_245",
+      "source_line": 245,
+      "header": "thm injective_linear_map_has_trivial_kernel:",
+      "candidate_code": "thm injective_linear_map_has_trivial_kernel:\n    ? forall [LinearMapSetting]:\n        $injective(V, W, T)\n        =>:\n            \\linear_kernel<V, W, target.zero, T> = \\zero_subspace<V, source.zero>\n    let kernel = \\linear_kernel<V, W, target.zero, T>\n    let zero_space = \\zero_subspace<V, source.zero>\n    by thm linear_map_sends_zero_to_zero(K, field, V, W, source, target, T) => T(source.zero) = target.zero\n    by def:\n        ? $injective(V, W, T)\n    kernel = {x V: T(x) = target.zero}\n    zero_space = {source.zero}\n    by extension:\n        ? kernel = zero_space\n        forall x kernel:\n            T(x) = target.zero = T(source.zero)\n            x = source.zero\n            x $in {source.zero}\n            x $in zero_space\n        forall x zero_space:\n            x = source.zero\n            T(x) = T(source.zero) = target.zero\n            x $in kernel\n\n# If T(u)=T(v), then u-v lies in the trivial kernel; cancellation gives u=v.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_245",
+        "ok": true,
+        "seconds": 2.893
+      }
+    },
+    {
+      "id": "main_270",
+      "source_line": 270,
+      "header": "thm trivial_kernel_implies_injective:",
+      "candidate_code": "thm trivial_kernel_implies_injective:\n    ? forall [LinearMapSetting]:\n        \\linear_kernel<V, W, target.zero, T> = \\zero_subspace<V, source.zero>\n        =>:\n            $injective(V, W, T)\n    let kernel = \\linear_kernel<V, W, target.zero, T>\n    let zero_space = \\zero_subspace<V, source.zero>\n    let source_neg = \\vector_neg<K, field, V, source>\n    let target_neg = \\vector_neg<K, field, W, target>\n    let sub = \\vector_sub<K, field, V, source>\n    kernel = {x V: T(x) = target.zero}\n    zero_space = {source.zero}\n    claim:\n        ? forall u, v V:\n            T(u) = T(v)\n            =>:\n                u = v\n        by thm linear_map_sends_neg_to_neg(K, field, V, W, source, target, T, v) => T(source_neg(v)) = target_neg(T(v))\n        by thm vector_neg_spec(K, field, W, target, T(v)) => target.add(T(v), target_neg(T(v))) = target.zero\n        sub(u, v) = source.add(u, source_neg(v))\n        T(sub(u, v)) = T(source.add(u, source_neg(v))) = target.add(T(u), T(source_neg(v))) = target.add(T(u), target_neg(T(v))) = target.add(T(v), target_neg(T(v))) = target.zero\n        by thm set_builder_member(sub(u, v), {x V: T(x) = target.zero}) => sub(u, v) $in {x V: T(x) = target.zero}\n        sub(u, v) $in kernel\n        sub(u, v) $in zero_space\n        sub(u, v) $in {source.zero}\n        sub(u, v) = source.zero\n        source.add(u, source_neg(v)) = source.zero\n        source.add(source_neg(v), u) = source.add(u, source_neg(v)) = source.zero\n        by thm vector_neg_spec(K, field, V, source, v) => source.add(v, source_neg(v)) = source.zero\n        source.add(source_neg(v), v) = source.add(v, source_neg(v)) = source.zero\n        source.add(source_neg(v), u) = source.add(source_neg(v), v)\n        by thm add_left_cancel(K, field, V, source, source_neg(v), u, v) => u = v\n    by def:\n        ? $injective(V, W, T)\n\n# The real numbers are the first concrete field instance.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_270",
+        "ok": true,
+        "seconds": 9.194
+      }
+    },
+    {
+      "id": "main_306",
+      "source_line": 306,
+      "header": "have fn real_inv(x R) R by cases:",
+      "candidate_code": "have fn real_inv(x R) R by cases:\n    case x = 0: 0\n    case x != 0: 1 / x\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_306",
+        "ok": true,
+        "seconds": 0.004
+      }
+    },
+    {
+      "id": "main_310",
+      "source_line": 310,
+      "header": "have fn real_add(x, y R) R = x + y",
+      "candidate_code": "have fn real_add(x, y R) R = x + y\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_310",
+        "ok": true,
+        "seconds": 0.006
+      }
+    },
+    {
+      "id": "main_311",
+      "source_line": 311,
+      "header": "have fn real_neg(x R) R = -x",
+      "candidate_code": "have fn real_neg(x R) R = -x\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_311",
+        "ok": true,
+        "seconds": 0.009
+      }
+    },
+    {
+      "id": "main_312",
+      "source_line": 312,
+      "header": "have fn real_mul(x, y R) R = x * y",
+      "candidate_code": "have fn real_mul(x, y R) R = x * y\n\n# Verify the nonzero inverse law for the case-defined reciprocal.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_312",
+        "ok": true,
+        "seconds": 0.015
+      }
+    },
+    {
+      "id": "main_315",
+      "source_line": 315,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x R:\n        x != 0\n        =>:\n            real_mul(x, real_inv(x)) = 1\n    real_inv(x) = 1 / x\n    real_mul(x, real_inv(x)) = x * real_inv(x) = x * (1 / x) = 1\n\n# Verify associativity and distributivity of the concrete real operations.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_315",
+        "ok": true,
+        "seconds": 0.022
+      }
+    },
+    {
+      "id": "main_324",
+      "source_line": 324,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x, y, z R:\n        real_add(real_add(x, y), z) = real_add(x, real_add(y, z))\n        real_mul(real_mul(x, y), z) = real_mul(x, real_mul(y, z))\n        real_mul(x, real_add(y, z)) = real_add(real_mul(x, y), real_mul(x, z))\n    real_add(x, y) = x + y\n    real_add(y, z) = y + z\n    real_add(real_add(x, y), z) = real_add(x, y) + z = (x + y) + z = x + (y + z) = x + real_add(y, z) = real_add(x, real_add(y, z))\n    real_mul(x, y) = x * y\n    real_mul(x, z) = x * z\n    real_mul(y, z) = y * z\n    real_mul(real_mul(x, y), z) = real_mul(x, y) * z = (x * y) * z = x * (y * z) = x * real_mul(y, z) = real_mul(x, real_mul(y, z))\n    real_mul(x, real_add(y, z)) = x * real_add(y, z) = x * (y + z) = x * y + x * z\n    real_add(real_mul(x, y), real_mul(x, z)) = real_mul(x, y) + real_mul(x, z) = x * y + x * z\n    real_mul(x, real_add(y, z)) = real_add(real_mul(x, y), real_mul(x, z))\n\n# Verify commutativity of real addition and multiplication.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_324",
+        "ok": true,
+        "seconds": 0.42
+      }
+    },
+    {
+      "id": "main_341",
+      "source_line": 341,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x, y R:\n        real_add(x, y) = real_add(y, x)\n        real_mul(x, y) = real_mul(y, x)\n    real_add(x, y) = x + y = y + x = real_add(y, x)\n    real_mul(x, y) = x * y = y * x = real_mul(y, x)\n\n# Verify the two identities and additive inverse law for the real operations.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_341",
+        "ok": true,
+        "seconds": 0.019
+      }
+    },
+    {
+      "id": "main_349",
+      "source_line": 349,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x R:\n        real_add(0, x) = x\n        real_add(x, real_neg(x)) = 0\n        real_mul(1, x) = x\n    real_add(0, x) = 0 + x = x\n    real_neg(x) = -x\n    real_add(x, real_neg(x)) = x + real_neg(x) = x + (-x) = 0\n    real_mul(1, x) = 1 * x = x\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_349",
+        "ok": true,
+        "seconds": 0.048
+      }
+    },
+    {
+      "id": "main_359",
+      "source_line": 359,
+      "header": "by thm struct_member((0, 1, real_add, real_neg, real_mul, real_inv), &Field<R>) => (0, 1, real_add, real_neg, real_mul, real_inv) $in &Field<R>",
+      "candidate_code": "by thm struct_member((0, 1, real_add, real_neg, real_mul, real_inv), &Field<R>) => (0, 1, real_add, real_neg, real_mul, real_inv) $in &Field<R>\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_359",
+        "ok": true,
+        "seconds": 0.012
+      }
+    },
+    {
+      "id": "main_360",
+      "source_line": 360,
+      "header": "have real_field &Field<R> = (0, 1, real_add, real_neg, real_mul, real_inv)",
+      "candidate_code": "have real_field &Field<R> = (0, 1, real_add, real_neg, real_mul, real_inv)\n\n# Expose the concrete coordinates of the first-class real field for later\n# vector-space calculations.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_360",
+        "ok": true,
+        "seconds": 0.014
+      }
+    },
+    {
+      "id": "main_364",
+      "source_line": 364,
+      "header": "thm real_field_adapter_values:",
+      "candidate_code": "thm real_field_adapter_values:\n    ? forall x, y R:\n        real_field.zero = 0\n        real_field.one = 1\n        real_field.add = real_add\n        real_field.neg = real_neg\n        real_field.mul = real_mul\n        real_field.add(x, y) = x + y\n        real_field.mul(x, y) = x * y\n    real_field = (0, 1, real_add, real_neg, real_mul, real_inv)\n    real_field.zero = 0\n    real_field.one = 1\n    real_field.add = real_add\n    real_field.neg = real_neg\n    real_field.mul = real_mul\n    real_field.add(x, y) = real_add(x, y) = x + y\n    real_field.mul(x, y) = real_mul(x, y) = x * y\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_364",
+        "ok": true,
+        "seconds": 0.329
+      }
+    },
+    {
+      "id": "main_382",
+      "source_line": 382,
+      "header": "have fn plane_add(u, v cart(R, R)) cart(R, R) = (u[1] + v[1], u[2] + v[2])",
+      "candidate_code": "have fn plane_add(u, v cart(R, R)) cart(R, R) = (u[1] + v[1], u[2] + v[2])\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_382",
+        "ok": true,
+        "seconds": 0.239
+      }
+    },
+    {
+      "id": "main_383",
+      "source_line": 383,
+      "header": "have fn plane_smul(a R, v cart(R, R)) cart(R, R) = (a * v[1], a * v[2])",
+      "candidate_code": "have fn plane_smul(a R, v cart(R, R)) cart(R, R) = (a * v[1], a * v[2])\n\n# Coordinatewise addition is associative.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_383",
+        "ok": true,
+        "seconds": 0.214
+      }
+    },
+    {
+      "id": "main_386",
+      "source_line": 386,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x, y, z cart(R, R):\n        plane_add(plane_add(x, y), z) = plane_add(x, plane_add(y, z))\n    plane_add(x, y) = (x[1] + y[1], x[2] + y[2])\n    plane_add(x, y)[1] = x[1] + y[1]\n    plane_add(x, y)[2] = x[2] + y[2]\n    plane_add(plane_add(x, y), z) = (plane_add(x, y)[1] + z[1], plane_add(x, y)[2] + z[2]) = ((x[1] + y[1]) + z[1], (x[2] + y[2]) + z[2])\n    plane_add(y, z) = (y[1] + z[1], y[2] + z[2])\n    plane_add(y, z)[1] = y[1] + z[1]\n    plane_add(y, z)[2] = y[2] + z[2]\n    plane_add(x, plane_add(y, z)) = (x[1] + plane_add(y, z)[1], x[2] + plane_add(y, z)[2]) = (x[1] + (y[1] + z[1]), x[2] + (y[2] + z[2]))\n    plane_add(plane_add(x, y), z) = ((x[1] + y[1]) + z[1], (x[2] + y[2]) + z[2]) = (x[1] + (y[1] + z[1]), x[2] + (y[2] + z[2])) = plane_add(x, plane_add(y, z))\n\n# Coordinatewise addition is commutative.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_386",
+        "ok": true,
+        "seconds": 2.895
+      }
+    },
+    {
+      "id": "main_400",
+      "source_line": 400,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x, y cart(R, R):\n        plane_add(x, y) = plane_add(y, x)\n    plane_add(x, y) = (x[1] + y[1], x[2] + y[2]) = (y[1] + x[1], y[2] + x[2]) = plane_add(y, x)\n\n# The zero pair is an identity and coordinatewise negation supplies inverses.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_400",
+        "ok": true,
+        "seconds": 0.201
+      }
+    },
+    {
+      "id": "main_406",
+      "source_line": 406,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x cart(R, R):\n        plane_add((0, 0), x) = x\n        exist inverse_x cart(R, R) st {plane_add(x, inverse_x) = (0, 0)}\n    x = (x[1], x[2])\n    plane_add((0, 0), x) = (x[1], x[2]) = x\n    have inverse_x cart(R, R) = (0 - x[1], 0 - x[2])\n    inverse_x[1] = 0 - x[1]\n    inverse_x[2] = 0 - x[2]\n    plane_add(x, inverse_x) = (x[1] + inverse_x[1], x[2] + inverse_x[2]) = (0, 0)\n    witness exist inverse_x2 cart(R, R) st {plane_add(x, inverse_x2) = (0, 0)} from inverse_x\n\n# Coordinatewise scalar multiplication respects scalar products and sums.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_406",
+        "ok": true,
+        "seconds": 0.878
+      }
+    },
+    {
+      "id": "main_419",
+      "source_line": 419,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall a, b R, x cart(R, R):\n        plane_smul(real_field.mul(a, b), x) = plane_smul(a, plane_smul(b, x))\n        plane_smul(real_field.add(a, b), x) = plane_add(plane_smul(a, x), plane_smul(b, x))\n    by thm real_field_adapter_values(a, b)\n    plane_smul(b, x) = (b * x[1], b * x[2])\n    plane_smul(b, x)[1] = b * x[1]\n    plane_smul(b, x)[2] = b * x[2]\n    plane_smul(a, plane_smul(b, x)) = (a * plane_smul(b, x)[1], a * plane_smul(b, x)[2]) = (a * (b * x[1]), a * (b * x[2]))\n    plane_smul(real_field.mul(a, b), x) = ((a * b) * x[1], (a * b) * x[2]) = (a * (b * x[1]), a * (b * x[2])) = plane_smul(a, plane_smul(b, x))\n    plane_smul(a, x) = (a * x[1], a * x[2])\n    plane_smul(a, x)[1] = a * x[1]\n    plane_smul(a, x)[2] = a * x[2]\n    plane_smul(b, x) = (b * x[1], b * x[2])\n    plane_add(plane_smul(a, x), plane_smul(b, x)) = (plane_smul(a, x)[1] + plane_smul(b, x)[1], plane_smul(a, x)[2] + plane_smul(b, x)[2]) = (a * x[1] + b * x[1], a * x[2] + b * x[2])\n    plane_smul(real_field.add(a, b), x) = ((a + b) * x[1], (a + b) * x[2]) = (a * x[1] + b * x[1], a * x[2] + b * x[2]) = plane_add(plane_smul(a, x), plane_smul(b, x))\n\n# Scalar multiplication distributes over vector addition coordinatewise.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_419",
+        "ok": true,
+        "seconds": 3.832
+      }
+    },
+    {
+      "id": "main_437",
+      "source_line": 437,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall a R, x, y cart(R, R):\n        plane_smul(a, plane_add(x, y)) = plane_add(plane_smul(a, x), plane_smul(a, y))\n    plane_add(x, y) = (x[1] + y[1], x[2] + y[2])\n    plane_add(x, y)[1] = x[1] + y[1]\n    plane_add(x, y)[2] = x[2] + y[2]\n    plane_smul(a, plane_add(x, y)) = (a * plane_add(x, y)[1], a * plane_add(x, y)[2]) = (a * (x[1] + y[1]), a * (x[2] + y[2]))\n    plane_smul(a, x) = (a * x[1], a * x[2])\n    plane_smul(a, y) = (a * y[1], a * y[2])\n    plane_smul(a, x)[1] = a * x[1]\n    plane_smul(a, x)[2] = a * x[2]\n    plane_smul(a, y)[1] = a * y[1]\n    plane_smul(a, y)[2] = a * y[2]\n    plane_add(plane_smul(a, x), plane_smul(a, y)) = (a * x[1] + a * y[1], a * x[2] + a * y[2])\n    plane_smul(a, plane_add(x, y)) = (a * (x[1] + y[1]), a * (x[2] + y[2])) = (a * x[1] + a * y[1], a * x[2] + a * y[2]) = plane_add(plane_smul(a, x), plane_smul(a, y))\n\n# Multiplication by the scalar-field identity fixes every vector.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_437",
+        "ok": true,
+        "seconds": 2.695
+      }
+    },
+    {
+      "id": "main_454",
+      "source_line": 454,
+      "header": "claim:",
+      "candidate_code": "claim:\n    ? forall x cart(R, R):\n        plane_smul(real_field.one, x) = x\n    by thm real_field_adapter_values(0, 0)\n    x = (x[1], x[2])\n    plane_smul(real_field.one, x) = (x[1], x[2]) = x\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_454",
+        "ok": true,
+        "seconds": 0.171
+      }
+    },
+    {
+      "id": "main_461",
+      "source_line": 461,
+      "header": "by thm struct_member(((0, 0), plane_add, plane_smul), &VectorSpace<R, real_field, cart(R, R)>)",
+      "candidate_code": "by thm struct_member(((0, 0), plane_add, plane_smul), &VectorSpace<R, real_field, cart(R, R)>)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_461",
+        "ok": true,
+        "seconds": 0.838
+      }
+    },
+    {
+      "id": "main_462",
+      "source_line": 462,
+      "header": "have real_plane &VectorSpace<R, real_field, cart(R, R)> = ((0, 0), plane_add, plane_smul)",
+      "candidate_code": "have real_plane &VectorSpace<R, real_field, cart(R, R)> = ((0, 0), plane_add, plane_smul)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_462",
+        "ok": true,
+        "seconds": 1.595
+      }
+    },
+    {
+      "id": "main_464",
+      "source_line": 464,
+      "header": "have fn projection_x_axis(v cart(R, R)) cart(R, R) = (v[1], 0)",
+      "candidate_code": "have fn projection_x_axis(v cart(R, R)) cart(R, R) = (v[1], 0)\n\n# Check additivity and scalar compatibility of (x,y) |-> (x,0).\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_464",
+        "ok": true,
+        "seconds": 0.139
+      }
+    },
+    {
+      "id": "main_467",
+      "source_line": 467,
+      "header": "thm projection_x_axis_is_linear:",
+      "candidate_code": "thm projection_x_axis_is_linear:\n    ? forall:\n        $is_linear_map(R, real_field, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis)\n    claim:\n        ? forall u, v cart(R, R):\n            projection_x_axis(real_plane.add(u, v)) = real_plane.add(projection_x_axis(u), projection_x_axis(v))\n        real_plane.add = plane_add\n        plane_add(u, v) = (u[1] + v[1], u[2] + v[2])\n        plane_add(u, v)[1] = u[1] + v[1]\n        projection_x_axis(real_plane.add(u, v)) = projection_x_axis(plane_add(u, v)) = (plane_add(u, v)[1], 0) = (u[1] + v[1], 0)\n        projection_x_axis(u) = (u[1], 0)\n        projection_x_axis(v) = (v[1], 0)\n        real_plane.add(projection_x_axis(u), projection_x_axis(v)) = plane_add(projection_x_axis(u), projection_x_axis(v)) = (u[1] + v[1], 0)\n    claim:\n        ? forall a R, v cart(R, R):\n            projection_x_axis(real_plane.smul(a, v)) = real_plane.smul(a, projection_x_axis(v))\n        real_plane.smul = plane_smul\n        plane_smul(a, v) = (a * v[1], a * v[2])\n        plane_smul(a, v)[1] = a * v[1]\n        projection_x_axis(real_plane.smul(a, v)) = projection_x_axis(plane_smul(a, v)) = (plane_smul(a, v)[1], 0) = (a * v[1], 0)\n        projection_x_axis(v) = (v[1], 0)\n        plane_smul(a, projection_x_axis(v)) = (a * v[1], 0)\n        real_plane.smul(a, projection_x_axis(v)) = plane_smul(a, projection_x_axis(v)) = (a * v[1], 0)\n    by def:\n        ? $is_linear_map(R, real_field, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_467",
+        "ok": true,
+        "seconds": 23.381
+      }
+    },
+    {
+      "id": "main_493",
+      "source_line": 493,
+      "header": "by thm projection_x_axis_is_linear() => $is_linear_map(R, real_field, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis)",
+      "candidate_code": "by thm projection_x_axis_is_linear() => $is_linear_map(R, real_field, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_493",
+        "ok": true,
+        "seconds": 0.003
+      }
+    },
+    {
+      "id": "main_494",
+      "source_line": 494,
+      "header": "by thm linear_map_kernel_is_subspace(R, real_field, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis) => $is_subspace(R, real_field, cart(R, R), real_plane, \\linear_kernel<cart(R, R), cart(R, R), real_plane.zero, projection_x_axis>)",
+      "candidate_code": "by thm linear_map_kernel_is_subspace(R, real_field, cart(R, R), cart(R, R), real_plane, real_plane, projection_x_axis) => $is_subspace(R, real_field, cart(R, R), real_plane, \\linear_kernel<cart(R, R), cart(R, R), real_plane.zero, projection_x_axis>)\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_494",
+        "ok": true,
+        "seconds": 1.238
+      }
+    },
+    {
+      "id": "main_496",
+      "source_line": 496,
+      "header": "projection_x_axis((0, 7)) = (0, 0) = real_plane.zero",
+      "candidate_code": "projection_x_axis((0, 7)) = (0, 0) = real_plane.zero\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_496",
+        "ok": true,
+        "seconds": 2.198
+      }
+    },
+    {
+      "id": "main_497",
+      "source_line": 497,
+      "header": "by thm set_builder_member((0, 7), {v cart(R, R): projection_x_axis(v) = real_plane.zero}) => (0, 7) $in {v cart(R, R): projection_x_axis(v) = real_plane.zero}",
+      "candidate_code": "by thm set_builder_member((0, 7), {v cart(R, R): projection_x_axis(v) = real_plane.zero}) => (0, 7) $in {v cart(R, R): projection_x_axis(v) = real_plane.zero}\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_497",
+        "ok": true,
+        "seconds": 6.221
+      }
+    },
+    {
+      "id": "main_498",
+      "source_line": 498,
+      "header": "(0, 7) $in \\linear_kernel<cart(R, R), cart(R, R), real_plane.zero, projection_x_axis>",
+      "candidate_code": "(0, 7) $in \\linear_kernel<cart(R, R), cart(R, R), real_plane.zero, projection_x_axis>\n\n# Two vectors with the same x-coordinate but different y-coordinates give a\n# concrete failure of injectivity.\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_498",
+        "ok": true,
+        "seconds": 2.796
+      }
+    },
+    {
+      "id": "main_502",
+      "source_line": 502,
+      "header": "thm projection_x_axis_is_not_injective:",
+      "candidate_code": "thm projection_x_axis_is_not_injective:\n    ? forall:\n        not $injective(cart(R, R), cart(R, R), projection_x_axis)\n    by contra:\n        ? not $injective(cart(R, R), cart(R, R), projection_x_axis)\n        $injective(cart(R, R), cart(R, R), projection_x_axis)\n        by def:\n            ? $injective(cart(R, R), cart(R, R), projection_x_axis)\n        projection_x_axis((0, 1)) = (0, 0)\n        projection_x_axis((0, 0)) = (0, 0)\n        projection_x_axis((0, 1)) = projection_x_axis((0, 0))\n        (0, 1) = (0, 0)\n        (0, 1)[2] = (0, 0)[2]\n        1 = (0, 1)[2] = (0, 0)[2] = 0\n        impossible 1 != 0\n",
+      "status": "verified",
+      "session_result": {
+        "event": "block",
+        "id": "main_502",
+        "ok": true,
+        "seconds": 1.129
+      }
+    }
+  ],
+  "ready": {
+    "event": "ready",
+    "mode": "project"
+  },
+  "finished_at": "2026-08-26T09:33:03+08:00",
+  "process_status": 0
+}

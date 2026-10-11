@@ -1,0 +1,18 @@
+# Checked function extensionality with explicit callback values.
+# The two premises define the same functions as the former inline lambdas.
+thm direct_anonymous_function_body_equality:
+    ? forall g, left_fn, right_fn fn(x R) R:
+        forall y R:
+            left_fn(y) = -1 * 1 * g(y)
+            right_fn(y) = -1 * g(y)
+        =>:
+            left_fn = right_fn
+    by fn_extension:
+        ? left_fn = right_fn
+        forall y R:
+            left_fn(y) = -1 * 1 * g(y) = -1 * g(y) = right_fn(y)
+            left_fn(y) = right_fn(y)
+have g fn(x R) R
+have fn left_fn(x R) R = -1 * 1 * g(x)
+have fn right_fn(x R) R = -1 * g(x)
+by thm direct_anonymous_function_body_equality(g, left_fn, right_fn) => left_fn = right_fn
